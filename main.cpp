@@ -795,6 +795,7 @@ void Barra_Estat()
 		}
 }
 
+
 //CODI BY LEVON - PRIMERA ESCENA AL DONAR-LI A JUGAR
 void draw_initial_car() {
 	if (ObOBJ == NULL) ObOBJ = ::new COBJModel;
@@ -1039,6 +1040,10 @@ void debugButton(bool& debug) {
 
 }
 
+void fonsMenu()
+{
+	objecte = CUB;
+}
 
 void draw_menuInicial() 
 {
