@@ -29,7 +29,7 @@
 // EntornVGI.ImGui: Gestió de finestres de menú ImGui
 	bool show_demo_window = false;
 	bool show_another_window = false;
-	bool show_EntornVGI_window = false;
+	bool show_EntornVGI_window = true;
 	bool show_window_about = false;
 
 // Entorn V3D: Variables de control per Menú Càmera: Esfèrica, Navega, Mòbil, Zoom, Satelit, Polars... 
@@ -261,6 +261,7 @@
 	bool sortir = false;
 	bool iniciar = false;
 	bool configuracio = false;
+	bool debug = false;
 
 // MAURI: Funcions del joc
 	void draw_ProgramButtons(bool& inici, bool& config, bool& exit);

@@ -901,25 +901,9 @@ void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
 
 void draw_Menu_ImGui()
 {
-	// Start the Dear ImGui frame
-
-	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
-
-	// 2. Show another simple window.
-	if (show_another_window)
-	{
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
-	}
-
 	// 1. Show the EntornVGI window. Finestra amb totes les opcions de l'aplicació.
-	if (show_EntornVGI_window)
-		ShowEntornVGIWindow(&show_EntornVGI_window); //ShowEntornVGIWindow(&show_EntornVGI_window);
+
+	ShowEntornVGIWindow(&show_EntornVGI_window); //ShowEntornVGIWindow(&show_EntornVGI_window);
 
 	// 3. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
 	{
@@ -927,14 +911,8 @@ void draw_Menu_ImGui()
 		static int counter = 0;
 		static float PV[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
+		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
 		ImGui::Begin("Status Menu");                          // Create a window called "Status Menu" and append into it.
-
-		ImGui::Text("FInestres EntornVGI:");               // Display some text (you can use a format strings too)
-		ImGui::SameLine();
-		ImGui::Checkbox("EntornVGI Window", &show_EntornVGI_window);
-		ImGui::Separator();
-		ImGui::Spacing();
-
 		// Transformació PV de Coord. esfèriques (R,anglev,angleh) --> Coord. cartesianes (PVx,PVy,PVz)
 		if (camera == CAM_NAVEGA) { PV[0] = opvN.x; PV[1] = opvN.y; PV[2] = opvN.z; }
 		else {
@@ -989,10 +967,6 @@ void draw_Menu_ImGui()
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 		ImGui::SeparatorText("ImGui:");               // Display some text (you can use a format strings too)
 		ImGui::PopStyleColor();
-		ImGui::Checkbox("Demo ImGui Window", &show_demo_window);      // Edit bools storing our window open/close state
-		ImGui::SameLine();
-		ImGui::Checkbox("Another ImGui Window", &show_another_window);
-		ImGui::Spacing();
 
 		ImGui::Text("imgui versions: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
 		ImGui::Spacing();
@@ -1002,7 +976,42 @@ void draw_Menu_ImGui()
 	}
 }
 
+void debugButton(bool& debug) {
+	int screenHeight = ImGui::GetIO().DisplaySize.y;
+	ImVec2 buttonPosition = ImVec2(10, screenHeight - 50); //Establir posicio del boto debug
+	
+	if (!debug) {
+		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
+		ImGui::Begin("Debug Toggle", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 
+		if (ImGui::Button("Debug")) {
+			debug = true; // Activar el modo debug cuando se presiona el botón
+		}
+		ImGui::End();
+	}
+	else {
+		draw_Menu_ImGui();
+
+		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
+		ImGui::Begin("Debug Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+
+		if (ImGui::Button("Cerrar Debug")) {
+			debug = false; // Desactivar el modo debug
+		}
+		ImGui::End();
+	}
+}
+
+void draw_menuInicial() 
+{
+	if (!iniciar)
+	{
+		draw_ProgramButtons(iniciar, configuracio, sortir);
+	}
+
+	debugButton(debug);
+
+}
 void MostraEntornVGIWindow(bool* p_open)
 {
 // Exceptionally add an extra assert here for people confused about initial Dear ImGui setup
@@ -1388,11 +1397,9 @@ void ShowEntornVGIWindow(bool* p_open)
 	if (unsaved_document)   window_flags |= ImGuiWindowFlags_UnsavedDocument;
 	if (no_close)           p_open = NULL; // Don't pass our bool* to Begin
 
-// We specify a default position/size in case there's no data in the .ini file.
-// We only do it to make the demo applications a little more welcoming, but typically this isn't required.
-	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+	//Mauri: posicio de la fiestra 
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+	ImGui::SetNextWindowPos(ImVec2(screenSize.x - 730, 10), ImGuiCond_Always); // Ajusta según el tamaño de tu ventana
 
 	// Main body of the Demo window starts here.
 	if (!ImGui::Begin("EntornVGI Menu", p_open, window_flags))
@@ -5078,12 +5085,7 @@ int main(void)
 
 
 //AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
-		if (iniciar == false) {
-			draw_ProgramButtons(iniciar, configuracio, sortir);
-		}
-
-// Entorn VGI.ImGui: Dibuixa menú ImGui
-		draw_Menu_ImGui();
+		draw_menuInicial();
 
 // Crida a OnPaint() per redibuixar l'escena
 		OnPaint(window);
