@@ -855,17 +855,22 @@ void draw_inici(){
 
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
 void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
-	// Crear una nueva ventana de ImGui per als botons de la pantalla d'Inici
-	ImGui::SetNextWindowPos(ImVec2(0, 0)); // Posiciona la finestra a la cantonada superior esquerra
-	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize); // Tamany de la finestra igual que la pantalla
+	ImVec2 buttonSize = ImVec2(200, 50); // Tamaño de los botones
+	float totalHeight = buttonSize.y * 6 + 10 * 4; // Altura total: 4 botones + márgenes entre ellos
+	float totalWidth = buttonSize.x; // Ancho total es el mismo que el del botón
+
+	// Obtener el tamaño de la pantalla o la ventana principal
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	// Crear una nueva ventana de ImGui para los botones de la pantalla de Inicio
+	ImGui::SetNextWindowPos(ImVec2((screenSize.x - totalWidth)/2, (screenSize.y - totalHeight)/2)); // Posiciona la ventana en el centro
+	ImGui::SetNextWindowSize(ImVec2(totalWidth, totalHeight), ImGuiCond_Always);
 	ImGui::Begin("Botons centrals", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
-	
+
 	ImVec2 windowSize = ImGui::GetWindowSize();
-	ImVec2 buttonSize = ImVec2(200, 50); // Tamany dels botons
 
 	float centerX = (windowSize.x - buttonSize.x) * 0.5f;
 	float startY = (windowSize.y - buttonSize.y * 3) * 0.5f;
-
 	//PARAMETRES PER MODIFICAR EL COLOR DELS BOTONS
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.7f, 1.0f)); // Color de fons del botó
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.6f, 0.8f, 1.0f)); // Color al pasar el ratoli
