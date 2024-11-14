@@ -24,6 +24,32 @@ void InitGL()
 {
 // TODO: agregar aquí el código de construcción
 
+//Jan RoadRush Variables
+	velPlayer = 0.01;
+	//Cotxes
+	cars =
+	{
+		"..\\x64\\Release\\OBJFiles\\Car 01\\Car.obj",
+		"..\\x64\\Release\\OBJFiles\\Car 02\\Car2.obj",
+		"..\\x64\\Release\\OBJFiles\\Car 03\\Car3.obj",
+		"..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj",
+		"..\\x64\\Release\\OBJFiles\\Car 05\\Car5.obj",
+		"..\\x64\\Release\\OBJFiles\\Car 06\\Car6.obj",
+		"..\\x64\\Release\\OBJFiles\\Car 07\\Car7.obj",
+		"..\\x64\\Release\\OBJFiles\\Car 08\\Car8.obj"
+	};
+
+	//Control Obstacles
+	transfObstacle = false;
+
+	TGObstacle.VTras.x = 0.0;	TGObstacle.VTras.y = 0.0;	TGObstacle.VTras.z = 0;	TGFObstacle.VTras.x = 0.0;	TGFObstacle.VTras.y = 0.0;	TGFObstacle.VTras.z = 0;
+	TGObstacle.VRota.x = 0;		TGObstacle.VRota.y = 0;		TGObstacle.VRota.z = 0;	TGFObstacle.VRota.x = 0;	TGFObstacle.VRota.y = 0;	TGFObstacle.VRota.z = 0;
+	TGObstacle.VScal.x = 1;		TGObstacle.VScal.y = 1;		TGObstacle.VScal.z = 1;	TGFObstacle.VScal.x = 1;	TGFObstacle.VScal.y = 1;	TGFObstacle.VScal.z = 1;
+	GTMatrixObstacle = glm::mat4(1.0);		// Inicialitzar a identitat
+
+	Car player;
+
+
 //------ Entorn VGI: Inicialització de les variables globals de CEntornVGIView
 	int i;
 
@@ -572,6 +598,13 @@ void configura_Escena() {
 
 // Aplicar Transformacions Geometriques segons persiana Transformacio i Quaternions
 	GTMatrix = instancia(transf, TG, TGF);
+
+//JAN Inicialitzador a traves de variables globals noves per cotxes obstacles
+	GTMatrixObstacle = instancia(transfObstacle, TGObstacle, TGFObstacle);
+	
+
+//Jan inicialitzador a traves de la classe CAR, jugador
+	player.GTMatrixPlayer = instancia(player.transfPlayer, player.TGPlayer, player.TGFPlayer);
 }
 
 // dibuixa_Escena: Funcio que crida al dibuix dels diferents elements de l'escana
@@ -587,13 +620,31 @@ void dibuixa_Escena() {
 
 // Escalat d'objectes, per adequar-los a les vistes ortogràfiques (Pràctica 2)
 //	GTMatrix = glm::scale();
+	
+
+//JAN RoadRush Implementacio Principal
+
+	if (objecte == ROAD_RUSH) {
+
+		//UPDATEGAMELOGIC
+		UpdateRoadRows();
+		//Moviment jugador implementat al pitjar tecla
+
+		//Colisions
+
+		//Pickaups
+
+		velPlayer += 0.00001;
+	}
+
+
 
 //	Dibuix geometria de l'escena amb comandes GL.
 	dibuixa_EscenaGL(shader_programID, eixos, eixos_Id, grid, hgrid, objecte, col_obj, sw_material,
 		textura, texturesID, textura_map, tFlag_invert_Y,
 		npts_T, PC_t, pas_CS, sw_Punts_Control, dibuixa_TriedreFrenet,
-		ObOBJ,				// Classe de l'objecte OBJ que conté els VAO's
-		ViewMatrix, GTMatrix);
+		ObOBJs,				// Classe de l'objecte OBJ que conté els VAO's
+		ViewMatrix, player.GTMatrixPlayer, GTMatrixObstacle);
 }
 
 // Barra_Estat: Actualitza la barra d'estat (Status Bar) de l'aplicació amb els
@@ -795,6 +846,19 @@ void Barra_Estat()
 		}
 }
 
+//Jan Moviment Cotxes
+void UpdateRoadRows()
+{
+	//moviment conjunt, es modificara la distancia entre ells a escena.cpp
+
+	player.move(0.01); //Moure el cotxe del jugador
+
+	TGObstacle.VTras.z -= velPlayer;
+	if (TGObstacle.VTras.z < -50) { //Si surt de pantalla
+		TGObstacle.VTras.z = 50; //Torna a generarse al inici
+	}
+}
+
 
 //CODI BY LEVON - PRIMERA ESCENA AL DONAR-LI A JUGAR
 void draw_initial_car() {
@@ -840,15 +904,62 @@ void draw_skycube() {
 	}
 }
 
+//Jan RoadRush
 void draw_inici(){
-	projeccio = PERSPECT;
 
-	draw_initial_car();
+	projeccio = PERSPECT;
+	SkyBoxCube = true;
+	objecte = ROAD_RUSH;
+	ilumina = SUAU;
+	textura = true;
+	oculta = true;
+
+	//Moviment cotxe
+	transf = true;
+	trasl = true;
+	transfObstacle = true;
+
+	ObOBJs.clear();
+
+	/*
+	const char* car1 = "..\\x64\\Release\\OBJFiles\\Car 01\\Car1.obj";
+	const char* car2 = "..\\x64\\Release\\OBJFiles\\Car 02\\Car2.obj";
+	const char* car3 = "..\\x64\\Release\\OBJFiles\\Car 03\\Car3.obj";
+	const char* car4 = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj";
+	*/
+
+	for (auto& car : cars) {
+		ObOBJ = ::new COBJModel;
+		ObOBJ->LoadModel(const_cast<char*>(car));
+		ObOBJs.push_back(ObOBJ);
+	}
+
+	/*
+	ObOBJ = ::new COBJModel;
+	//int error = ObOBJ->LoadModel(nomfitx);			// Carregar objecte OBJ amb textura com a varis VAO's
+	ObOBJ->LoadModel(const_cast<char*>(car1));			// Carregar objecte OBJ amb textura com a varis VAO's
+	ObOBJs.push_back(ObOBJ);
+
+	ObOBJ = ::new COBJModel;
+	ObOBJ->LoadModel(const_cast<char*>(car2));
+	ObOBJs.push_back(ObOBJ);
+
+	ObOBJ = ::new COBJModel;
+	ObOBJ->LoadModel(const_cast<char*>(car2));
+	ObOBJs.push_back(ObOBJ);
+	*/
+
+	//	Pas de paràmetres textura al shader
+	if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "textur"), textura);
+	if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "flag_invert_y"), tFlag_invert_Y);
+
+	//TG.VTras.x -= fact_Tras;
+
+
+	//draw_initial_car();
 
 	//necessari perquè l'objecte es vegi bé, es pot canviar iluminació però compte amb les altres variables
-	ilumina = SUAU;   oculta = true;//test_vis = true; 
-
-	draw_skycube();
+//test_vis = true; 
 
 
 }
@@ -4094,7 +4205,7 @@ void Teclat_TransRota(int key, int action)
 	}
 }
 
-
+//Jan Modificacio moviment jugador
 // Teclat_TransTraslada: Teclat pels canvis del valor de traslació per X,Y,Z.
 void Teclat_TransTraslada(int key, int action)
 {
@@ -4106,6 +4217,7 @@ void Teclat_TransTraslada(int key, int action)
 		switch (key)
 		{
 			// Tecla cursor amunt ('8') - (ASCII:104)
+		/*
 		case GLFW_KEY_UP:
 			TG.VTras.x -= fact_Tras;
 			if (TG.VTras.x < -100000) TG.VTras.x = 100000;
@@ -4116,19 +4228,27 @@ void Teclat_TransTraslada(int key, int action)
 			TG.VTras.x += fact_Tras;
 			if (TG.VTras.x > 10000) TG.VTras.x = 100000;
 			break;
+		*/
 
 			// Tecla cursor esquerra ('4') - (ASCII:100)
 		case GLFW_KEY_LEFT:
-			TG.VTras.y -= fact_Tras;
-			if (TG.VTras.y < -100000) TG.VTras.y = -100000;
+			TG.VTras.x += fact_Tras;
+
+			/*
+			if (TG.VTras.x < ROAD_START + PLAYER_WIDTH / 2) {
+				TG.VTras.x += (ROAD_START + PLAYER_WIDTH / 2 - TG.VTras.x);
+			}
+			*/
+			//if (TG.VTras.x < -100000) TG.VTras.x = -100000;
 			break;
 
 			// Tecla cursor dret ('6') - (ASCII:102)
 		case GLFW_KEY_RIGHT:
-			TG.VTras.y += fact_Tras;
-			if (TG.VTras.y > 100000) TG.VTras.y = 100000;
+			TG.VTras.x -= fact_Tras;
+			//if (TG.VTras.y > 100000) TG.VTras.y = 100000;
 			break;
 
+		/*
 			// Tecla HOME ('7') - (ASCII:103)
 		case GLFW_KEY_HOME:
 			TG.VTras.z += fact_Tras;
@@ -4210,6 +4330,7 @@ void Teclat_TransTraslada(int key, int action)
 			rota = !rota;
 			trasl = !trasl;
 			break;
+		*/
 
 		default:
 			break;
@@ -5178,4 +5299,22 @@ int main(void)
 	if (shaderLighting.getProgramID() != -1) shaderLighting.DeleteProgram();
 	if (shaderSkyBox.getProgramID() != -1) shaderSkyBox.DeleteProgram();
     return 0;
+}
+
+
+//JAN Classe Car
+Car::Car()
+{
+	transfPlayer = true;
+
+	TGPlayer.VTras.x = 0.0;		TGPlayer.VTras.y = 0.0;		TGPlayer.VTras.z = 0;	TGFPlayer.VTras.x = 0.0;	TGFPlayer.VTras.y = 0.0;	TGFPlayer.VTras.z = 0;
+	TGPlayer.VRota.x = 0;		TGPlayer.VRota.y = 0;		TGPlayer.VRota.z = 0;	TGFPlayer.VRota.x = 0;		TGFPlayer.VRota.y = 0;		TGFPlayer.VRota.z = 0;
+	TGPlayer.VScal.x = 1;		TGPlayer.VScal.y = 1;		TGPlayer.VScal.z = 1;	TGFPlayer.VScal.x = 1;		TGFPlayer.VScal.y = 1;		TGFPlayer.VScal.z = 1;
+
+	GTMatrixPlayer = glm::mat4(1.0);		// Inicialitzar a identitat
+}
+
+void Car::move(float dx)
+{
+	TGPlayer.VTras.x += dx;
 }

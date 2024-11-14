@@ -21,6 +21,9 @@
 //#include <gl\glaux.h>
 //#include <gl/glut.h>
 
+//Jan flipao
+#include <list>
+
 // Màxima mida vector VAOList
 #define MAX_SIZE_VAOLIST 125
 

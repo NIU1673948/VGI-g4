@@ -28,6 +28,8 @@
 #define POLARX 'X'
 
 //-------------- VGI: Tipus d'Objectes
+//Jan RoadRush
+#define ROAD_RUSH 'r'
 #define ARC 'a'
 #define CAMIO 'm'
 #define CILINDRE 'y'

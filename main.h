@@ -14,6 +14,32 @@
 
 //-------------- Entorn VGI: Variables globals de main
 
+//JAN RoadRush Declaracio VAriables
+	float velPlayer;
+	//Cotxes
+	std::vector<const char*> cars;
+	//Matriu Jugador
+	glm::mat4 GTMatrixObstacle;
+	bool transfObstacle;
+
+	INSTANCIA TGObstacle;
+	INSTANCIA TGFObstacle;
+
+	//Prova declaracio classe
+	class Car {
+	public:
+		Car();
+		void move(float dx);
+
+		bool transfPlayer;
+		INSTANCIA TGPlayer;
+		INSTANCIA TGFPlayer;
+		glm::mat4 GTMatrixPlayer;
+	};
+
+	//Cotxe jugador
+	Car player;
+
 // Retrieving main monitor
 	GLFWmonitor* primary;
 
@@ -161,6 +187,9 @@
 	COBJModel* ObOBJ;		// Variable d'objecte format OBJ (*.OBJ)
 	CVAO vao_OBJ;			// Identificador VAO per a objecte OBJ
 
+//Jan OBJ creacio llista
+std::list<COBJModel*> ObOBJs;
+
 // Entorn VGI: OBJECTE --> Corbes Bezier i BSpline
 	int npts_T;							// Número de punts de control de la corba en el Vector corbaSpline (<=MAX_PATH_SPLINE)
 	CPunt3D PC_t[MAX_PATCH_CORBA];		// Vector que enmagatzema Punts de Control Corba Spline
@@ -206,6 +235,10 @@
 	void configura_Escena();
 	void dibuixa_Escena();
 	void Barra_Estat();
+
+//Jan RoadRush Funcions GameLogic
+	void UpdateRoadRows();
+
 
 // EntornVGI: Funcions de mostrar Finestres ImGui
 	void draw_Menu_ImGui();

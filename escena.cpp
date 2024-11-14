@@ -73,14 +73,14 @@ void dibuixa_Skybox(GLuint sk_programID, GLuint cmTexture, char eix_Polar, glm::
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
-
+//Jan OBJ parametre list
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, bool eix, GLuint axis_Id, CMask3D reixa, CPunt3D hreixa, char objecte, 
 			CColor col_object, bool sw_mat[5],
 			bool textur, GLuint texturID[NUM_MAX_TEXTURES], bool textur_map, bool flagInvertY,
 			int nptsU, CPunt3D PC_u[MAX_PATCH_CORBA], GLfloat pasCS, bool sw_PC, bool dib_TFrenet,
-			COBJModel* objecteOBJ,
-			glm::mat4 MatriuVista, glm::mat4 MatriuTG)
+			std::list<COBJModel*> objecteOBJs,
+			glm::mat4 MatriuVista, glm::mat4 MatriuTG, glm::mat4 MatriuTGObstacles)
 {
 	float altfar = 0;
 	GLint npunts = 0, nvertexs = 0;
@@ -91,6 +91,9 @@ void dibuixa_EscenaGL(GLuint sh_programID, bool eix, GLuint axis_Id, CMask3D rei
 	
 // Matrius de Transformació
 	glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
+//Jan Prova RoadRush
+	glm::mat4 NormalMatrix2(1.0), ModelMatrix2(1.0), TransMatrix2(1.0), ScaleMatrix2(1.0), RotMatrix2(1.0);
+
 
 // VAO
 	CVAO objectVAO = { 0,0,0,0,0 };
@@ -122,8 +125,84 @@ void dibuixa_EscenaGL(GLuint sh_programID, bool eix, GLuint axis_Id, CMask3D rei
 // Definició propietats de reflexió (emissió, ambient, difusa, especular) del material.
 	SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
 
+	auto it = objecteOBJs.begin();
+	int p = 0;
+
 	switch (objecte)
 	{
+	case ROAD_RUSH:
+		for (it; it != objecteOBJs.end(); it++) {
+			TransMatrix = glm::translate(MatriuTGObstacles, vec3(p, 0, 50));
+			ModelMatrix = glm::rotate(TransMatrix, radians(180.0f), vec3(0.0f, 1.0f, 0.0f));
+			// Pas ModelView Matrix a shader
+			glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+			NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+			// Pas NormalMatrix a shader
+			glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+			// Definir característiques material de cada punt
+			SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
+			// Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+			(*it)->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
+			p += 5;
+		}
+
+		it--;
+		ModelMatrix = MatriuTG;
+		// Pas ModelView Matrix a shader
+		glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+		NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+		// Pas NormalMatrix a shader
+		glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+		// Definir característiques material de cada punt
+		SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
+		// Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+		(*it)->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
+
+		/*
+		TransMatrix = glm::translate(MatriuTG, vec3(5, 0, 20));
+		ModelMatrix = glm::rotate(TransMatrix, radians(180.0f), vec3(0.0f, 1.0f, 0.0f));
+		// Pas ModelView Matrix a shader
+		glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+		NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+		// Pas NormalMatrix a shader
+		glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+		// Definir característiques material de cada punt
+		SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
+		// Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+		(*it)->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
+
+		TransMatrix2 = glm::translate(MatriuTG, vec3(10, 0, 20));
+		ModelMatrix2 = glm::rotate(TransMatrix2, radians(180.0f), vec3(0.0f, 1.0f, 0.0f));
+		// Pas ModelView Matrix a shader
+		glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix2[0][0]);
+		NormalMatrix2 = transpose(inverse(MatriuVista * ModelMatrix2));
+		// Pas NormalMatrix a shader
+		glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix2[0][0]);
+
+		// Definir característiques material de cada punt
+		SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
+		// Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+		(*it)->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
+		/*
+		for (auto& objecteOBJ : objecteOBJs) {
+			ModelMatrix = glm::translate(MatriuTG, vec3(p, 0, 0));
+			// Pas ModelView Matrix a shader
+			glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+			NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+			// Pas NormalMatrix a shader
+			glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+			// Definir característiques material de cada punt
+			SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
+			// Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+			objecteOBJ->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
+			p += 5;
+		}
+		*/
+		break;
 // Arc
 	case ARC:
 		// Definició propietats de reflexió (emissió, ambient, difusa, especular) del material pel color de l'objecte.
@@ -154,19 +233,23 @@ void dibuixa_EscenaGL(GLuint sh_programID, bool eix, GLuint axis_Id, CMask3D rei
 		tie(sh_programID, MatriuVista, MatriuTG, sw_mat);
 		break;
 
+
+//Jan OBJ iterar per diversos OBJs
 // Dibuix de l'objecte OBJ
 	case OBJOBJ:
-		ModelMatrix = MatriuTG;
-		// Pas ModelView Matrix a shader
-		glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
-		NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
-		// Pas NormalMatrix a shader
-		glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+		for (auto& objecteOBJ : objecteOBJs) {
+			ModelMatrix = glm::translate(MatriuTG, vec3(10, 0, 0));
+			// Pas ModelView Matrix a shader
+			glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+			NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+			// Pas NormalMatrix a shader
+			glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-		// Definir característiques material de cada punt
-		SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
-		// Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
-		objecteOBJ->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
+			// Definir característiques material de cada punt
+			SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
+			// Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+			objecteOBJ->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
+		}
 		break;
 
 // Corba Bezier
