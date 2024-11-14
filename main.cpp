@@ -813,6 +813,9 @@ void draw_initial_car() {
 }
 
 void draw_skycube() {
+	
+	projeccio = PERSPECT;
+	ilumina = SUAU;
 	SkyBoxCube = true;
 	Vis_Polar = POLARY;
 
@@ -842,11 +845,11 @@ void draw_inici(){
 	draw_initial_car();
 
 	//necessari perquè l'objecte es vegi bé, es pot canviar iluminació però compte amb les altres variables
-	ilumina = SUAU;  oculta = true; //test_vis = true; 
+	ilumina = SUAU;   oculta = true;//test_vis = true; 
 
 	draw_skycube();
 
-	eixos = false;
+
 }
 
 
@@ -912,8 +915,6 @@ void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
 		{
 			configuracio = false;
 		}
-
-
 	}
 	
 
@@ -939,7 +940,7 @@ void draw_Menu_ImGui()
 		static float PV[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
-		ImGui::Begin("Status Menu");                          // Create a window called "Status Menu" and append into it.
+		ImGui::Begin("Status Menu", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);                          // Create a window called "Status Menu" and append into it.
 		// Transformació PV de Coord. esfèriques (R,anglev,angleh) --> Coord. cartesianes (PVx,PVy,PVz)
 		if (camera == CAM_NAVEGA) { PV[0] = opvN.x; PV[1] = opvN.y; PV[2] = opvN.z; }
 		else {
@@ -1006,13 +1007,15 @@ void draw_Menu_ImGui()
 void debugButton(bool& debug) {
 	int screenHeight = ImGui::GetIO().DisplaySize.y;
 	ImVec2 buttonPosition = ImVec2(10, screenHeight - 50); //Establir posicio del boto debug
+	ImVec2 button2position = ImVec2(100, screenHeight - 50);
 	
 	if (!debug) {
 		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
-		ImGui::Begin("Debug Toggle", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		ImGui::Begin("DebugButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 
 		if (ImGui::Button("Debug")) {
 			debug = true; // Activar el modo debug cuando se presiona el botón
+			eixos = true;
 		}
 		ImGui::End();
 	}
@@ -1024,24 +1027,34 @@ void debugButton(bool& debug) {
 
 		if (ImGui::Button("Cerrar Debug")) {
 			debug = false; // Desactivar el modo debug
+			eixos = false;
 		}
 		ImGui::End();
 	}
+
 }
 
-void fonsMenuInicial()
-{
-	projeccio = PERSPECT;
-	ilumina = SUAU;
-}
 
 void draw_menuInicial() 
 {
 
 	if (!iniciar)
 	{
-		fonsMenuInicial();
+		draw_skycube();
 		draw_ProgramButtons(iniciar, configuracio, sortir);
+	}
+	else 
+	{
+		int screenHeight = ImGui::GetIO().DisplaySize.y;
+		ImVec2 button2position = ImVec2(150, screenHeight - 50);
+		ImGui::SetNextWindowPos(button2position, ImGuiCond_Always);
+		ImGui::Begin("PantallaInicial", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		if (ImGui::Button("Tornar a Inici")) {
+			iniciar = false; // Activar el modo debug cuando se presiona el botón
+			ObOBJ->netejaVAOList_OBJ();
+			ObOBJ->netejaTextures_OBJ();
+		}
+		ImGui::End();
 	}
 
 	debugButton(debug);
@@ -1407,7 +1420,7 @@ void ShowEntornVGIWindow(bool* p_open)
 	}
 
 // Demonstrate the various window flags. Typically you would just use the default!
-	static bool no_titlebar = false;
+	static bool no_titlebar = true;
 	static bool no_scrollbar = false;
 	static bool no_menu = false;
 	static bool no_move = false;
@@ -1415,7 +1428,7 @@ void ShowEntornVGIWindow(bool* p_open)
 	static bool no_collapse = false;
 	static bool no_close = false;
 	static bool no_nav = false;
-	static bool no_background = false;
+	static bool no_background = true;
 	static bool no_bring_to_front = false;
 	static bool unsaved_document = false;
 
