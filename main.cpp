@@ -44,7 +44,7 @@ void InitGL()
 	OPV_G.R = 15.0;		OPV_G.alfa = 0.0;	OPV_G.beta = 0.0;	// Origen PV en esfèriques per a Vista_Geode
 
 // Entorn VGI: Variables de control per Menú Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = false;
+	fullscreen = true;
 	pan = false;
 	eixos = true;	eixos_programID = 0;  eixos_Id = 0;
 	sw_grid = false;
@@ -871,24 +871,51 @@ void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
 	
 	// Agregar botons per les funcionalitats del programa y actualizar estats
 	ImGui::SetCursorPos(ImVec2(centerX, startY));
-	if (ImGui::Button("INICIAR", buttonSize)) {
-		// Acció boto 1
-		iniciar = true;
-		draw_inici();
-	}
+	if (!configuracio)
+	{
+		if (ImGui::Button("INICIAR", buttonSize)) {
+			// Acció boto 1
+			iniciar = true;
+			draw_inici();
+		}
+		ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
+		if (ImGui::Button("CONFIGURACIO", buttonSize)) {
+			// Acció boto 2
+			configuracio = true;
 
-	ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
-	if (ImGui::Button("CONFIGURACIO", buttonSize)) {
-		// Acció boto 2
-		glfwSetWindowMonitor(window, nullptr, 216, 239, 640, 480, mode->refreshRate);
+
+		}
+		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
+		if (ImGui::Button("SORTIR", buttonSize)) {
+			// Acció boto 3
+			exit = true;
+		}
+	}
+	else
+	{
+		if (ImGui::Button("FULLSCREEN", buttonSize))
+		{
+			OnFull_Screen(primary, window);
+		}
+		ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
+		if (ImGui::Button("DIFICUTY", buttonSize))
+		{
+			
+		}
+		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
+		if (ImGui::Button("AUDIO", buttonSize))
+		{
+
+		}
+		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 3));
+		if (ImGui::Button("BACK", buttonSize))
+		{
+			configuracio = false;
+		}
+
 
 	}
-
-	ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
-	if (ImGui::Button("SORTIR", buttonSize)) {
-		// Acció boto 3
-		exit = true;
-	}
+	
 
 	//RESTABLIR VALORS INICIALS DELS BOTONS PER A QUE EL PROGRAMA SEGUEIXI FUNCIONANT AMB NORALITAT
 	ImGui::PopStyleVar();
@@ -1002,10 +1029,18 @@ void debugButton(bool& debug) {
 	}
 }
 
+void fonsMenuInicial()
+{
+	projeccio = PERSPECT;
+	ilumina = SUAU;
+}
+
 void draw_menuInicial() 
 {
+
 	if (!iniciar)
 	{
+		fonsMenuInicial();
 		draw_ProgramButtons(iniciar, configuracio, sortir);
 	}
 
