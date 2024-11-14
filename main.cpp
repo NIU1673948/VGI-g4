@@ -888,13 +888,18 @@ void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
 			draw_inici();
 		}
 		ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
+		if (ImGui::Button("GARATGE", buttonSize)) 
+		{
+			
+		}
+		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
 		if (ImGui::Button("CONFIGURACIO", buttonSize)) {
 			// Acció boto 2
 			configuracio = true;
 
 
 		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
+		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 3));
 		if (ImGui::Button("SORTIR", buttonSize)) {
 			// Acció boto 3
 			exit = true;
@@ -1047,7 +1052,6 @@ void fonsMenu()
 
 void draw_menuInicial() 
 {
-
 	if (!iniciar)
 	{
 		draw_skycube();
