@@ -410,133 +410,47 @@ void OnPaint(GLFWwindow* window)
 
 	// Entorn VGI: Cridem a les funcions de l'escena i la projecció segons s'hagi 
 	// seleccionat una projecció o un altra
-	switch (projeccio)
-	{
-	case AXONOM:
-		// Entorn VGI: PROJECCIÓ AXONOMÈTRICA
-		// Entorn VGI: Activació del retall de pantalla
-		glEnable(GL_SCISSOR_TEST);
 
-		// Entorn VGI: Retall
-		glScissor(0, 0, w, h);
-		glViewport(0, 0, w, h);
+	// Entorn VGI: PROJECCIÓ PERSPECTIVA
+			//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Set Perspective Calculations To Most Accurate
+	glDisable(GL_SCISSOR_TEST);		// Desactivació del retall de pantalla
 
-		// Aquí farem les crides per a definir Viewport, Projecció i Càmara: INICI -------------------------
+	// Entorn VGI: Activar shader Visualització Escena
+	glUseProgram(shader_programID);
 
-		// Aquí farem les cridesper a definir Viewport, Projecció i Càmara:: FI -------------------------
-		// Entorn VGI: Dibuixar Model (escena)
-		configura_Escena();     // Aplicar Transformacions Geometriques segons persiana Transformacio i configurar objectes
-		dibuixa_Escena();		// Dibuix geometria de l'escena amb comandes GL.
+	// Entorn VGI: Definició de Viewport, Projecció i Càmara
+	ProjectionMatrix = Projeccio_Perspectiva(shader_programID, 0, 0, w, h, OPV.R);
 
-		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
-				//glfwSwapBuffers(window);
-		break;
-
-	case ORTO:
-		// Entorn VGI: PROJECCIÓ ORTOGRÀFICA
-		// Entorn VGI: Activació del retall de pantalla
-		glEnable(GL_SCISSOR_TEST);
-
-		// Entorn VGI: Retall
-		glScissor(0, 0, w, h);
-		glViewport(0, 0, w, h);
-
-		// Fons condicionat al color de fons
-		if ((c_fons.r < 0.5) || (c_fons.g < 0.5) || (c_fons.b < 0.5))
-			FonsB();
-		else
-			FonsN();
-
-		// Entorn VGI: TO DO -> Aquí farem les quatre crides a ProjeccioOrto i Ortografica per obtenir 
-		//						les quatre vistes ortogràfiques. De moment n'activem només una de prova
-		//						IMPORTANT: DESCOMENTAR LA RESTA QUAN FUNCIONI LA PRIMERA
-		// PLANTA (Inferior Esquerra)
-				// Definició de Viewport, Projecció i Càmara
-		ProjectionMatrix = Projeccio_Orto();
-		ViewMatrix = Vista_Ortografica(shader_programID, 0, OPV.R, c_fons, col_obj, objecte, mida, pas, front_faces, oculta,
-			test_vis, back_line, ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
+	// Entorn VGI: Definició de la càmera.
+	if (camera == CAM_ESFERICA) {
+		n[0] = 0;		n[1] = 0;		n[2] = 0;
+		ViewMatrix = Vista_Esferica(shader_programID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
+			front_faces, oculta, test_vis, back_line,
+			ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
 			eixos, grid, hgrid);
-		// Dibuix de l'Objecte o l'Escena
-		configura_Escena();     // Aplicar Transformacions Geometriques segons persiana Transformacio i configurar objectes
-		dibuixa_Escena();		// Dibuix geometria de l'escena amb comandes GL.
-		/*
-		// ISOMÈTRICA (Inferior Dreta)
-				// Definició de Viewport, Projecció i Càmara
-				ProjectionMatrix = Projeccio_Orto();
-				ViewMatrix = Vista_Ortografica(shader_programID, 3, OPV.R, c_fons, col_obj, objecte, mida, pas, front_faces, oculta,
-					test_vis, back_line, ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-					eixos, grid, hgrid);
-				// Dibuix de l'Objecte o l'Escena
-				configura_Escena();     // Aplicar Transformacions Geometriques segons persiana Transformacio i configurar objectes
-				dibuixa_Escena();		// Dibuix geometria de l'escena amb comandes GL.
-
-		// ALÇAT (Superior Esquerra)
-				// Definició de Viewport, Projecció i Càmara
-				ProjectionMatrix = Projeccio_Orto();
-				ViewMatrix = Vista_Ortografica(shader_programID, 1, OPV.R, c_fons, col_obj, objecte, mida, pas, front_faces, oculta,
-					test_vis, back_line, ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-					eixos, grid, hgrid);
-				// Dibuix de l'Objecte o l'Escena
-				  configura_Escena();     // Aplicar Transformacions Geom?triques segons persiana Transformacio i configurar objectes
-				  dibuixa_Escena();		// Dibuix geometria de l'escena amb comandes GL.
-
-		// PERFIL (Superior Dreta)
-				// Definició de Viewport, Projecció i Càmara
-				ProjectionMatrix = Projeccio_Orto();
-				ViewMatrix = Vista_Ortografica(shader_programID, 2, OPV.R, c_fons, col_obj, objecte, mida, pas, front_faces, oculta,
-					test_vis, back_line, ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-					eixos, grid, hgrid);
-				// Dibuix de l'Objecte o l'Escena
-				configura_Escena();     // Aplicar Transformacions Geom?triques segons persiana Transformacio i configurar objectes
-				  // glScalef();			// Escalat d'objectes, per adequar-los a les vistes ortogràfiques (Pràctica 2)
-				dibuixa_Escena();		// Dibuix geometria de l'escena amb comandes GL.
-		*/
-		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
-				//glfwSwapBuffers(window);
-
-		break;
-
-	case PERSPECT:
-		// Entorn VGI: PROJECCIÓ PERSPECTIVA
-				//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Set Perspective Calculations To Most Accurate
-		glDisable(GL_SCISSOR_TEST);		// Desactivació del retall de pantalla
-
-		// Entorn VGI: Activar shader Visualització Escena
-		glUseProgram(shader_programID);
-
-		// Entorn VGI: Definició de Viewport, Projecció i Càmara
-		ProjectionMatrix = Projeccio_Perspectiva(shader_programID, 0, 0, w, h, OPV.R);
-
-		// Entorn VGI: Definició de la càmera.
-		if (camera == CAM_ESFERICA) {
-			n[0] = 0;		n[1] = 0;		n[2] = 0;
-			ViewMatrix = Vista_Esferica(shader_programID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
-				front_faces, oculta, test_vis, back_line,
-				ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-				eixos, grid, hgrid);
+	}
+	else if (camera == CAM_NAVEGA) {
+		if (Vis_Polar == POLARZ) {
+			vpv[0] = 0.0;	vpv[1] = 0.0;	vpv[2] = 1.0;
 		}
-		else if (camera == CAM_NAVEGA) {
-			if (Vis_Polar == POLARZ) {
-				vpv[0] = 0.0;	vpv[1] = 0.0;	vpv[2] = 1.0;
-			}
-			else if (Vis_Polar == POLARY) {
-				vpv[0] = 0.0;	vpv[1] = 1.0;	vpv[2] = 0.0;
-			}
-			else if (Vis_Polar == POLARX) {
-				vpv[0] = 1.0;	vpv[1] = 0.0;	vpv[2] = 0.0;
-			}
-			ViewMatrix = Vista_Navega(shader_programID, opvN, //false, 
-				n, vpv, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, true, pas,
-				front_faces, oculta, test_vis, back_line,
-				ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-				eixos, grid, hgrid);
+		else if (Vis_Polar == POLARY) {
+			vpv[0] = 0.0;	vpv[1] = 1.0;	vpv[2] = 0.0;
 		}
-		else if (camera == CAM_GEODE) {
-			ViewMatrix = Vista_Geode(shader_programID, OPV_G, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
-				front_faces, oculta, test_vis, back_line,
-				ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-				eixos, grid, hgrid);
+		else if (Vis_Polar == POLARX) {
+			vpv[0] = 1.0;	vpv[1] = 0.0;	vpv[2] = 0.0;
 		}
+		ViewMatrix = Vista_Navega(shader_programID, opvN, //false, 
+			n, vpv, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, true, pas,
+			front_faces, oculta, test_vis, back_line,
+			ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
+			eixos, grid, hgrid);
+	}
+	else if (camera == CAM_GEODE) {
+		ViewMatrix = Vista_Geode(shader_programID, OPV_G, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
+			front_faces, oculta, test_vis, back_line,
+			ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
+			eixos, grid, hgrid);
+	}
 
 		// Entorn VGI: Dibuix de l'Objecte o l'Escena
 		configura_Escena();     // Aplicar Transformacions Geometriques segons persiana Transformacio i configurar objectes.
@@ -544,26 +458,7 @@ void OnPaint(GLFWwindow* window)
 
 		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
 				//glfwSwapBuffers(window);
-		break;
-
-	default:
-		// Entorn VGI: Càrrega SHADERS
-		// Entorn VGI: Càrrega Shader Eixos
-		if (!eixos_programID) eixos_programID = shaderEixos.loadFileShaders(".\\shaders\\eixos.VERT", ".\\shaders\\eixos.FRAG");
-
-		// Entorn VGI: Càrrega Shader de Gouraud
-		if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\gouraud_shdrML.vert", ".\\shaders\\gouraud_shdrML.frag");
-
-		// Entorn VGI: Creació de la llista que dibuixarà els eixos Coordenades Món. Funció on està codi per dibuixar eixos	
-		if (!eixos_Id) eixos_Id = deixos();						// Funció que defineix els Eixos Coordenades Món com un VAO.
-
-		// Entorn VGI: Crida a la funció Fons Blanc
-		FonsB();
-
-		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
-				//glfwSwapBuffers(window);
-		break;
-	}
+		//break;
 
 	//  Actualitzar la barra d'estat de l'aplicació amb els valors R,A,B,PVx,PVy,PVz
 	if (statusB) Barra_Estat();
@@ -852,6 +747,7 @@ void draw_inici(){
 
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
 void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
+
 	// Crear una nueva ventana de ImGui per als botons de la pantalla d'Inici
 	ImGui::SetNextWindowPos(ImVec2(0, 0)); // Posiciona la finestra a la cantonada superior esquerra
 	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize); // Tamany de la finestra igual que la pantalla
@@ -5086,8 +4982,13 @@ int main(void)
 		draw_Menu_ImGui();
 
 // Crida a OnPaint() per redibuixar l'escena
-		OnPaint(window);
-
+		//assert(ObOBJ);
+		if (iniciar)
+		{
+			OnPaint(window);
+		}
+		else
+			FonsB();
 
 
 // Entorn VGI.ImGui: Capta dades del menú InGui

@@ -80,7 +80,6 @@ void dibuixaCotxe(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, gl
 	glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
 	TransMatrix = MatriuTG;
 
-
 	TransMatrix = glm::translate(TransMatrix, vec3(x, y, z));
 	TransMatrix = glm::rotate(TransMatrix, angle, vec3(0.0f, 0.0f, 1.0f));
 	//ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
@@ -141,7 +140,10 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 // Definició propietats de reflexió (emissió, ambient, difusa, especular) del material.
 	SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
 
-	dibuixaCotxe(sh_programID, sw_mat, MatriuVista, MatriuTG, objecteOBJ, 0, 0, 0, 0);
+	if (objecteOBJ)
+		dibuixaCotxe(sh_programID, sw_mat, MatriuVista, MatriuTG, objecteOBJ, 0, 0, 0, 0);
+	//else
+		//FonsB();
 		
 
 // Enviar les comandes gràfiques a pantalla
