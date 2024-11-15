@@ -1,11 +1,15 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <vector>
 #include <glm/glm.hpp>
 #include <algorithm>
-#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+#include "stdafx.h"
+#include "material.h"
+#include "visualitzacio.h"
+#include "escena.h"
+#include "objLoader.h"	
+
 using namespace std;
 
 
@@ -36,29 +40,29 @@ const float ROAD_WIDTH = LANE_WIDTH*NUM_LANES;
 const float ROAD_START = (WINDOW_WIDTH - ROAD_WIDTH) / 2;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
 
-const std::vector<sf::Color> carColors = {
-    sf::Color(0, 95, 115),
-    sf::Color(10, 147, 150),
-    sf::Color(148, 210, 189),
-    sf::Color(238, 155, 0),
-    sf::Color(187, 62, 3),
-    sf::Color(174, 32, 18),
-    sf::Color(154, 34, 38)
-};
-
-sf::Color getRandomColor();
+//const std::vector<sf::Color> carColors = {
+//    sf::Color(0, 95, 115),
+//    sf::Color(10, 147, 150),
+//    sf::Color(148, 210, 189),
+//    sf::Color(238, 155, 0),
+//    sf::Color(187, 62, 3),
+//    sf::Color(174, 32, 18),
+//    sf::Color(154, 34, 38)
+//};
+//
+//sf::Color getRandomColor();
 
 class Car {
 public:
-    Car(float x = CAR_WIDTH/2, float y = CAR_HEIGHT/2, sf::Color color = sf::Color::Red,
+    Car(float x = CAR_WIDTH/2, float y = CAR_HEIGHT/2,
         float w = CAR_WIDTH, float h = CAR_HEIGHT, float speed = SPEED);
     void move(float dx, float dy);
-    void draw(sf::RenderWindow& window) const;
+    void draw(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 
     float m_x, m_y;
     float m_height, m_width;
     float m_speed;
-    sf::Color m_color;
+    COBJModel* m_model;
     bool m_visible;
 };
 

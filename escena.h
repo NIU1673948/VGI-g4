@@ -9,7 +9,7 @@
 
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
 #include "objLoader.h"	
-//#include "GameLogic.h"
+#include "GameLogic.h"
 
 /* ------------------------------------------------------------------------- */
 /*                            Funcions de les escenes                        */

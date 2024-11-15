@@ -95,6 +95,9 @@ void dibuixaCotxe(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, gl
 	objecteOBJ->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
 }
 
+void dibuixaJoc(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, glm::mat4 MatriuTG) {}
+
+
 
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bool textur, GLuint texturID[NUM_MAX_TEXTURES],
@@ -140,10 +143,8 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 // Definició propietats de reflexió (emissió, ambient, difusa, especular) del material.
 	SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
 
-	if (objecteOBJ)
-		dibuixaCotxe(sh_programID, sw_mat, MatriuVista, MatriuTG, objecteOBJ, 0, 0, 0, 0);
-	//else
-		//FonsB();
+
+	dibuixaJoc(sh_programID, sw_mat, MatriuVista, MatriuTG, game);
 		
 
 // Enviar les comandes gràfiques a pantalla

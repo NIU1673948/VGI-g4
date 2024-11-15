@@ -453,9 +453,8 @@ void OnPaint(GLFWwindow* window)
 	}
 
 		// Entorn VGI: Dibuix de l'Objecte o l'Escena
-		configura_Escena();     // Aplicar Transformacions Geometriques segons persiana Transformacio i configurar objectes.
-		dibuixa_Escena();		// Dibuix geometria de l'escena amb comandes GL.
-
+		//configura_Escena();     // Aplicar Transformacions Geometriques segons persiana Transformacio i configurar objectes.
+		GTMatrix = mat4(1.0);    // De moment la iniciem a default, més endavant aviam si la podem treure del pas de parametres a dibuixa_Escena() ALBERT
 		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
 				//glfwSwapBuffers(window);
 		//break;
@@ -4985,7 +4984,8 @@ int main(void)
 		//assert(ObOBJ);
 		if (iniciar)
 		{
-			OnPaint(window);
+			OnPaint(window); // Ara només configura la càmara i shaders (crec) ALBERT
+			dibuixa_Escena();
 		}
 		else
 			FonsB();

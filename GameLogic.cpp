@@ -1,25 +1,37 @@
 #include "GameLogic.h"
 
-sf::Color getRandomColor() {
-    return carColors[rand() % carColors.size()];
-}
+//sf::Color getRandomColor() {
+//    return carColors[rand() % carColors.size()];
+//}
 
 // Implementació de Car
-Car::Car(float x, float y, sf::Color color, float w, float h, float speed)
-    : m_x(x), m_y(y), m_height(h), m_width(w), m_speed(speed), m_color(color), m_visible(true) {}
+Car::Car(float x, float y, float w, float h, float speed)
+    : m_x(x), m_y(y), m_height(h), m_width(w), m_speed(speed), m_visible(true) {}
 
 void Car::move(float dx, float dy) {
     m_x += dx;
     m_y += dy;
 }
 
-void Car::draw(sf::RenderWindow& window) const {
+void Car::draw(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
+{
     if (m_visible) {
-        sf::RectangleShape rectangle(sf::Vector2f(m_width, m_height));
-        rectangle.setFillColor(m_color);
-        rectangle.setOrigin(m_width/2, m_height/2);
-        rectangle.setPosition(m_x, m_y);
-        window.draw(rectangle);
+        glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
+        TransMatrix = MatriuTG;
+
+        TransMatrix = glm::translate(TransMatrix, vec3(m_x, m_y, 0)); // De moment la z és 0 ALBERT
+        TransMatrix = glm::rotate(TransMatrix, 0.0f, vec3(0.0f, 0.0f, 1.0f)); // De moment l'angle és 0 ALBERT
+        //ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
+        ModelMatrix = TransMatrix;
+
+        // Pas ModelView Matrix a shader
+        glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+        NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+        // Pas NormalMatrix a shader
+        glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+        // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+        m_model->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
     }
 }
 
