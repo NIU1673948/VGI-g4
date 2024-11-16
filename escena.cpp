@@ -74,28 +74,6 @@ void dibuixa_Skybox(GLuint sk_programID, GLuint cmTexture, char eix_Polar, glm::
 }
 
 
-// ALBERT
-void dibuixaCotxe(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, glm::mat4 MatriuTG, COBJModel* objecteOBJ, float x, float y, float z, float angle)
-{
-	glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
-	TransMatrix = MatriuTG;
-
-	TransMatrix = glm::translate(TransMatrix, vec3(x, y, z));
-	TransMatrix = glm::rotate(TransMatrix, angle, vec3(0.0f, 0.0f, 1.0f));
-	//ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
-	ModelMatrix = TransMatrix;
-
-	// Pas ModelView Matrix a shader
-	glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
-	NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
-	// Pas NormalMatrix a shader
-	glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
-
-	// Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
-	objecteOBJ->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
-}
-
-
 
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bool textur, GLuint texturID[NUM_MAX_TEXTURES],
@@ -141,9 +119,8 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 // Definició propietats de reflexió (emissió, ambient, difusa, especular) del material.
 	SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
 
-	game.player.draw(sh_programID, MatriuVista, MatriuTG);
-	//game.draw(sh_programID, MatriuVista, MatriuTG);
-	//dibuixaCotxe(sh_programID, sw_mat, MatriuVista, MatriuTG, game.player.m_model, 0, 0, 0, 0);
+	game.player.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT de moment només dibuixo el jugador, cal mirar coordenades i tal per a dibuixar tot bé
+	//game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta línia enlloc de la de dalt
 		
 
 // Enviar les comandes gràfiques a pantalla

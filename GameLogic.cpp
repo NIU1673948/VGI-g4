@@ -28,7 +28,7 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
         glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
         TransMatrix = MatriuTG;
 
-        TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y)/50.0f); // De moment la z és 0 ALBERT
+        TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y)/50.0f); // ALBERT mirar comentaris a Player::draw (és el mateix)
         //ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
         ModelMatrix = TransMatrix;
 
@@ -292,9 +292,9 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
     glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
     TransMatrix = MatriuTG;
 
-    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4)/50.0f); // De moment la y és 0 ALBERT
+    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4)/50.0f); // De moment la y és 0 ALBERT La z i la y estan intercanviades :(
     TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0)); 
-    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4)/50.0f);
+    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4)/50.0f); // ALBERT el /50.0f és perq el cotxe no se'n vagi lluny i es vegi
     TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
 
     //ModelMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH, CAR_WIDTH, CAR_WIDTH));
