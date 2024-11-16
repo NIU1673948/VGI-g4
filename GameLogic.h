@@ -1,17 +1,15 @@
 #pragma once
 #include <vector>
-#include <glm/glm.hpp>
 #include <algorithm>
 #include <iostream>
 #include <cmath>
 #include "stdafx.h"
 #include "material.h"
 #include "visualitzacio.h"
-#include "escena.h"
 #include "objLoader.h"	
 
 using namespace std;
-
+using namespace glm;
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -57,7 +55,7 @@ public:
     Car(float x = CAR_WIDTH/2, float y = CAR_HEIGHT/2,
         float w = CAR_WIDTH, float h = CAR_HEIGHT, float speed = SPEED);
     void move(float dx, float dy);
-    void draw(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 
     float m_x, m_y;
     float m_height, m_width;
@@ -69,11 +67,11 @@ public:
 class Circle {
 public:
     Circle(float x = 0.0, float y = 0.0, float radius = LANE_WIDTH/4, bool visible = true)
-        : m_x(x), m_y(y), m_radius(radius), m_visible(visible){}
-    void draw(sf::RenderWindow& window) const;
+        : m_x(x), m_y(y), m_radius(radius), m_visible(visible), m_isCoin(true) {}
+    //void draw(sf::RenderWindow& window) const;
 
     float m_x, m_y, m_radius;
-    sf::Color m_color;
+    //sf::Color m_color;
     bool m_visible;
     bool m_isCoin;
 };
@@ -83,7 +81,7 @@ public:
     Player();
     void move(float dx, float dy);
     void rotate(float dAngle);
-    void draw(sf::RenderWindow& window) const;
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
     bool checkCollision(const Car& obstacle) const;
     bool checkCollision(const Circle& object) const;
 
@@ -104,7 +102,7 @@ public:
     bool checkCollision(const Player& player) const;
     void move(float dy);
     float getY() const;
-    void draw(sf::RenderWindow& window) const;
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
     void initRow(float y, int& nextEmptyLane);
     PickUp getPickUp(const Player& player) const;
 
@@ -122,7 +120,7 @@ public:
     GameLogic();
     void GetUserInput();
     void UpdateGameLogic();
-    void draw(sf::RenderWindow& window) const;
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 
     bool gameRunning;
     int nextEmptyLane;

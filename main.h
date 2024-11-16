@@ -5,14 +5,14 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-
+#pragma once
 // Entorn VGI: Llibreries i constants Constants de l'aplicació EntornVGI
-#include "stdafx.h"
+//#include "stdafx.h"
 
 #include "GameLogic.h"
 
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
-#include "objLoader.h"	
+//#include "objLoader.h"	
 
 //-------------- Entorn VGI: Variables globals de main
 
@@ -206,7 +206,7 @@
 
 	void OnPaint(GLFWwindow* window);
 	void configura_Escena();
-	void dibuixa_Escena();
+	void dibuixa_Escena(const GameLogic& game);
 	void Barra_Estat();
 
 // EntornVGI: Funcions de mostrar Finestres ImGui

@@ -473,7 +473,7 @@ void configura_Escena() {
 }
 
 // dibuixa_Escena: Funcio que crida al dibuix dels diferents elements de l'escana
-void dibuixa_Escena() {
+void dibuixa_Escena(const GameLogic& game) {
 
 	//glUseProgram(shader_programID);
 
@@ -488,7 +488,7 @@ void dibuixa_Escena() {
 
 //	Dibuix geometria de l'escena amb comandes GL.
 	dibuixa_EscenaGL(shader_programID, col_obj, &sw_material[5], textura, &texturesID[NUM_MAX_TEXTURES],
-		textura_map, tFlag_invert_Y, ObOBJ, ViewMatrix, GTMatrix);
+		textura_map, tFlag_invert_Y, ObOBJ, ViewMatrix, GTMatrix, game);
 }
 
 // Barra_Estat: Actualitza la barra d'estat (Status Bar) de l'aplicació amb els
@@ -4946,6 +4946,11 @@ int main(void)
 	ImGui_ImplOpenGL3_Init("#version 130");
 // Entorn VGI.ImGui: End Setup Dear ImGui context
 
+// Intent de posar el joc ALBERT
+	GameLogic game;
+	Player& player = game.player;
+	RoadRow* roadRows = game.roadRows;
+
 // Loop until the user closes the window -- MAURI: BUCLE PRINCIPAL
     while (!glfwWindowShouldClose(window) && !sortir)
     {  
@@ -4984,8 +4989,11 @@ int main(void)
 		//assert(ObOBJ);
 		if (iniciar)
 		{
+			game.GetUserInput();
+			game.UpdateGameLogic();
+
 			OnPaint(window); // Ara només configura la càmara i shaders (crec) ALBERT
-			dibuixa_Escena();
+			dibuixa_Escena(game);
 		}
 		else
 			FonsB();

@@ -4,23 +4,31 @@
 //    return carColors[rand() % carColors.size()];
 //}
 
+
+
 // Implementació de Car
 Car::Car(float x, float y, float w, float h, float speed)
-    : m_x(x), m_y(y), m_height(h), m_width(w), m_speed(speed), m_visible(true) {}
+    : m_x(x), m_y(y), m_height(h), m_width(w), m_speed(speed), m_visible(true)
+{
+    m_model = ::new COBJModel;
+    m_model->netejaVAOList_OBJ();
+    m_model->netejaTextures_OBJ();
+    const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj"; 
+    m_model->LoadModel(const_cast<char*>(rutaArxiu));
+}
 
 void Car::move(float dx, float dy) {
     m_x += dx;
     m_y += dy;
 }
 
-void Car::draw(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
+void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
     if (m_visible) {
         glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
         TransMatrix = MatriuTG;
 
-        TransMatrix = glm::translate(TransMatrix, vec3(m_x, m_y, 0)); // De moment la z és 0 ALBERT
-        TransMatrix = glm::rotate(TransMatrix, 0.0f, vec3(0.0f, 0.0f, 1.0f)); // De moment l'angle és 0 ALBERT
+        TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y)/50.0f); // De moment la z és 0 ALBERT
         //ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
         ModelMatrix = TransMatrix;
 
@@ -62,11 +70,11 @@ void RoadRow::move(float dy) {
     m_object.m_y += dy;
 }
 
-void RoadRow::draw(sf::RenderWindow& window) const {
+void RoadRow::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
     for (int i = 0; i < NUM_LANES; i++) {
-        m_obstacles[i].draw(window);
+        m_obstacles[i].draw(sh_programID, MatriuVista, MatriuTG);
     }
-    m_object.draw(window);
+    //m_object.draw(mat4 MatriuVista, mat4 MatriuTG);
 }
 
 void RoadRow::initRow(float y, int& nextEmptyLane)
@@ -75,7 +83,7 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
 
     for (int i = 0; i < NUM_LANES; ++i) 
     {
-        m_obstacles[i].m_color = getRandomColor();
+        //m_obstacles[i].m_color = getRandomColor();
         m_obstacles[i].m_y = y + (rand() % 2 == 0 ? -1 : 1) * (rand() % VERTICAL_NOISE);
         m_obstacles[i].m_visible = true;
     }
@@ -148,26 +156,26 @@ void GameLogic::UpdateGameLogic() {
     player.m_speed += 0.002;
 }
 
-void GameLogic::draw(sf::RenderWindow& window) const
+void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
-    // Dibuixar elements
-    window.clear(sf::Color::Black);
+    //// Dibuixar elements
+    //window.clear(sf::Color::Black);
 
-    // Dibuixar la carretera
-    sf::RectangleShape road(sf::Vector2f(ROAD_WIDTH, WINDOW_HEIGHT));
-    road.setFillColor(sf::Color(50, 50, 50));
-    road.setPosition(ROAD_START, 0);
-    window.draw(road);
+    //// Dibuixar la carretera
+    //sf::RectangleShape road(sf::Vector2f(ROAD_WIDTH, WINDOW_HEIGHT));
+    //road.setFillColor(sf::Color(50, 50, 50));
+    //road.setPosition(ROAD_START, 0);
+    //window.draw(road);
 
-    player.draw(window);  // Dibuixar el jugador
+    player.draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar el jugador
     for (int i = 0; i < NUM_ROWS; i++) {
-        roadRows[i].draw(window);  // Dibuixar cada fila
+        roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar cada fila
     }
 }
 
 void GameLogic::GetUserInput()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (GetKeyState('A') & 0x8000) { //Només per a Windows ALBERT
         player.move(-STEP, 0);
 
         player.rotate(player.m_rotation > -ROTATION_ANGLE ? -ROTATION_SPEED : 0);
@@ -178,7 +186,7 @@ void GameLogic::GetUserInput()
             player.rotate(player.m_rotation < 0 ? ROTATION_SPEED : 0);
         }
     }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    else if (GetKeyState('D') & 0x8000) {
         player.move(STEP, 0);
 
         player.rotate(player.m_rotation < ROTATION_ANGLE ? ROTATION_SPEED : 0);
@@ -229,27 +237,27 @@ void GameLogic::DoPickUps()
             roadRows[i].m_object.m_visible = false;
             if (p == COIN)
             {
-                player.m_speed = max(static_cast<float>(PLAYER_SPEED), player.m_speed-0.2f);
+                player.m_speed = PLAYER_SPEED > player.m_speed - 0.2f? PLAYER_SPEED: player.m_speed-0.2f;
             }
         }
     }
 }
 
 // Implementació Circle
-void Circle::draw(sf::RenderWindow& window) const
-{
-    if (m_visible)
-    {
-        sf::CircleShape circle(m_radius);
-        circle.setOrigin(m_radius, m_radius);
-        circle.setPosition(m_x, m_y);
-        circle.setFillColor(m_isCoin? sf::Color::Yellow : sf::Color(128,128,128));
-        window.draw(circle);
-    }
-}
+//void Circle::draw(sf::RenderWindow& window) const
+//{
+//    if (m_visible)
+//    {
+//        sf::CircleShape circle(m_radius);
+//        circle.setOrigin(m_radius, m_radius);
+//        circle.setPosition(m_x, m_y);
+//        circle.setFillColor(m_isCoin? sf::Color::Yellow : sf::Color(128,128,128));
+//        window.draw(circle);
+//    }
+//}
 
 // Implementació Player
-Player::Player() : Car::Car(WINDOW_WIDTH / 2, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN, sf::Color(0, 18, 25))
+Player::Player() : Car::Car(WINDOW_WIDTH / 2, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN)
 {
     m_rotation = 0;
 
@@ -279,21 +287,27 @@ void Player::rotate(float dAngle)
     }
 }
 
-void Player::draw(sf::RenderWindow& window) const
+void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
-    if (m_visible) {
-        sf::RectangleShape rectangle(sf::Vector2f(m_width, m_height));
-        rectangle.setFillColor(m_color);
-        rectangle.setOrigin(m_width / 2, m_height / 4);
-        rectangle.setRotation(m_rotation / (3.14159265f / 180.f));
-        rectangle.setPosition(m_x, m_y - m_height / 4);
-        window.draw(rectangle);
+    glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
+    TransMatrix = MatriuTG;
 
-        for (int i = 0; i < NUM_CIRCLES; i++)
-        {
-            m_collisionCircles[i].draw(window);
-        }
-    }
+    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4)/50.0f); // De moment la y és 0 ALBERT
+    TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0)); 
+    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4)/50.0f);
+    TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
+
+    //ModelMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH, CAR_WIDTH, CAR_WIDTH));
+    ModelMatrix = TransMatrix;
+
+    // Pas ModelView Matrix a shader
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+    // Pas NormalMatrix a shader
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+    // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+    m_model->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
 }
 
 bool Player::checkCollision(const Car& obstacle) const {

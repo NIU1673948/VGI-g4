@@ -95,13 +95,11 @@ void dibuixaCotxe(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, gl
 	objecteOBJ->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
 }
 
-void dibuixaJoc(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista, glm::mat4 MatriuTG) {}
-
 
 
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bool textur, GLuint texturID[NUM_MAX_TEXTURES],
-	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG)
+	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG, const GameLogic& game)
 {
 	float altfar = 0;
 	GLint npunts = 0, nvertexs = 0;
@@ -143,8 +141,9 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 // Definició propietats de reflexió (emissió, ambient, difusa, especular) del material.
 	SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
 
-
-	dibuixaJoc(sh_programID, sw_mat, MatriuVista, MatriuTG, game);
+	game.player.draw(sh_programID, MatriuVista, MatriuTG);
+	//game.draw(sh_programID, MatriuVista, MatriuTG);
+	//dibuixaCotxe(sh_programID, sw_mat, MatriuVista, MatriuTG, game.player.m_model, 0, 0, 0, 0);
 		
 
 // Enviar les comandes gràfiques a pantalla
