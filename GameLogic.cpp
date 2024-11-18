@@ -13,7 +13,7 @@ Car::Car(float x, float y, float w, float h, float speed)
     m_model = ::new COBJModel;
     m_model->netejaVAOList_OBJ();
     m_model->netejaTextures_OBJ();
-    const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj"; 
+    const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj";
     m_model->LoadModel(const_cast<char*>(rutaArxiu));
 }
 
@@ -28,7 +28,7 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
         glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
         TransMatrix = MatriuTG;
 
-        TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y)/50.0f); // ALBERT mirar comentaris a Player::draw (és el mateix)
+        TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y) / 50.0f); // ALBERT mirar comentaris a Player::draw (és el mateix)
         //ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
         ModelMatrix = TransMatrix;
 
@@ -81,7 +81,7 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
 {
     int currentEmptyLane = nextEmptyLane;
 
-    for (int i = 0; i < NUM_LANES; ++i) 
+    for (int i = 0; i < NUM_LANES; ++i)
     {
         //m_obstacles[i].m_color = getRandomColor();
         m_obstacles[i].m_y = y + (rand() % 2 == 0 ? -1 : 1) * (rand() % VERTICAL_NOISE);
@@ -95,7 +95,7 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
         nextEmptyLane -= variation * 2;
     }
 
-    int numEmptyLanes = rand() % (NUM_LANES-MIN_CARS) + 1;
+    int numEmptyLanes = rand() % (NUM_LANES - MIN_CARS) + 1;
 
     int emptyLanes = 1;
     while (emptyLanes < numEmptyLanes) {
@@ -109,7 +109,7 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
 
     m_object.m_visible = 0 == rand() % PROB_OBJECT;
 
-    while(m_object.m_visible) {
+    while (m_object.m_visible) {
         int i = rand() % NUM_LANES;
 
         if (!m_obstacles[i].m_visible) {
@@ -135,15 +135,15 @@ float RoadRow::getY() const {
 }
 
 // Implementació de GameLogic
-GameLogic::GameLogic(): gameRunning(true) {
+GameLogic::GameLogic() : gameRunning(true) {
     srand(static_cast<unsigned int>(time(nullptr)));
 
     nextEmptyLane = rand() % NUM_LANES;
-    float y = -(CAR_HEIGHT/2 + VERTICAL_NOISE);
+    float y = -(CAR_HEIGHT / 2 + VERTICAL_NOISE);
 
     for (int i = 0; i < NUM_ROWS; ++i) {
         roadRows[i].initRow(y, nextEmptyLane);
-        y += - CAR_HEIGHT - ROW_SPACING;
+        y += -CAR_HEIGHT - ROW_SPACING;
     }
 }
 
@@ -208,7 +208,7 @@ void GameLogic::UpdateRoadRows()
     for (int i = 0; i < NUM_ROWS; ++i) {
         roadRows[i].move(player.m_speed);
 
-        if (roadRows[i].getY() >  2 * WINDOW_HEIGHT) {
+        if (roadRows[i].getY() > 2 * WINDOW_HEIGHT) {
             float newY = roadRows[(i + NUM_ROWS - 1) % NUM_ROWS].getY() - CAR_HEIGHT - ROW_SPACING;
             roadRows[i].initRow(newY, nextEmptyLane);
         }
@@ -237,7 +237,7 @@ void GameLogic::DoPickUps()
             roadRows[i].m_object.m_visible = false;
             if (p == COIN)
             {
-                player.m_speed = PLAYER_SPEED > player.m_speed - 0.2f? PLAYER_SPEED: player.m_speed-0.2f;
+                player.m_speed = PLAYER_SPEED > player.m_speed - 0.2f ? PLAYER_SPEED : player.m_speed - 0.2f;
             }
         }
     }
@@ -292,9 +292,9 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
     glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
     TransMatrix = MatriuTG;
 
-    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4)/50.0f); // De moment la y és 0 ALBERT La z i la y estan intercanviades :(
-    TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0)); 
-    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4)/50.0f); // ALBERT el /50.0f és perq el cotxe no se'n vagi lluny i es vegi
+    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4) / 50.0f); // De moment la y és 0 ALBERT La z i la y estan intercanviades :(
+    TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0));
+    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4) / 50.0f); // ALBERT el /50.0f és perq el cotxe no se'n vagi lluny i es vegi
     TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
 
     //ModelMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH, CAR_WIDTH, CAR_WIDTH));
@@ -346,4 +346,87 @@ bool Player::checkCollision(const Circle& object) const {
         }
     }
     return false;
+}
+
+
+
+//ROAD
+Road::Road() { //Per defecte es genera amb aquestes dimensions
+    vertices = {
+        -30.0f / 2, 0.0f,  0.0f, 0.0f, 0.0f,  // Vértice inferior izquierdo
+         30.0f / 2, 0.0f,  0.0f, 1.0f, 0.0f,  // Vértice inferior derecho
+        -30.0f / 2, 0.0f, -500.0f, 0.0f, 1.0f, // Vértice superior izquierdo
+         30.0f / 2, 0.0f, -500.0f, 1.0f, 1.0f  // Vértice superior derecho
+    };
+
+    indices = {
+        0, 1, 2, // Primer triángulo
+        2, 1, 3  // Segundo triángulo
+    };
+
+    setupMesh();
+}
+
+Road::~Road() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
+void Road::setRoadSize(const float& width, const float& length) {
+    vertices = {
+        -width / 2, 0.0f,  0.0f, 0.0f, 0.0f,  // Vértice inferior izquierdo
+         width / 2, 0.0f,  0.0f, 1.0f, 0.0f,  // Vértice inferior derecho
+        -width / 2, 0.0f, -length, 0.0f, 1.0f, // Vértice superior izquierdo
+         width / 2, 0.0f, -length, 1.0f, 1.0f  // Vértice superior derecho
+    };
+
+    indices = {
+        0, 1, 2, // Primer triángulo
+        2, 1, 3  // Segundo triángulo
+    };
+}
+
+void Road::setupMesh() {
+
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+}
+
+void Road::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
+    glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
+
+    TransMatrix = MatriuTG;
+    // Desplacem la carretera intentant deixar el cotxe en mig
+    TransMatrix = glm::translate(MatriuTG, glm::vec3(5.0f, 0.0f, 15.0f));
+    //ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
+    ModelMatrix = TransMatrix;
+
+    // Pas ModelView Matrix a shader
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+    // Pas NormalMatrix a shader
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }

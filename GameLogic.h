@@ -23,18 +23,18 @@ const float PLAYER_SPEED = 5;
 const int NUM_LANES = 4;
 const int NUM_ROWS = 4;
 const float ROW_SPACING = 300;
-const int VERTICAL_NOISE = ROW_SPACING/2 - CAR_HEIGHT; // Hi ha lloc per a dos cotxes entre files
+const int VERTICAL_NOISE = ROW_SPACING / 2 - CAR_HEIGHT; // Hi ha lloc per a dos cotxes entre files
 const float OBSTACLE_SPEED = 3;
 const float ROTATION_ANGLE = 30 * (3.14159265f / 180.f);
 const float ROTATION_SPEED = 3 * (3.14159265f / 180.f);
 const int NUM_CIRCLES = 3;
-const float COLLISION_START = WINDOW_HEIGHT/4;
+const float COLLISION_START = WINDOW_HEIGHT / 4;
 const int MIN_CARS = 1;
 const int PROB_OBJECT = 10;
 const int PROB_SHIELD = 4;
 
 
-const float ROAD_WIDTH = LANE_WIDTH*NUM_LANES;
+const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
 const float ROAD_START = (WINDOW_WIDTH - ROAD_WIDTH) / 2;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
 
@@ -52,7 +52,7 @@ const float ROAD_END = ROAD_START + ROAD_WIDTH;
 
 class Car {
 public:
-    Car(float x = CAR_WIDTH/2, float y = CAR_HEIGHT/2,
+    Car(float x = CAR_WIDTH / 2, float y = CAR_HEIGHT / 2,
         float w = CAR_WIDTH, float h = CAR_HEIGHT, float speed = SPEED);
     void move(float dx, float dy);
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
@@ -66,8 +66,9 @@ public:
 
 class Circle {
 public:
-    Circle(float x = 0.0, float y = 0.0, float radius = LANE_WIDTH/4, bool visible = true)
-        : m_x(x), m_y(y), m_radius(radius), m_visible(visible), m_isCoin(true) {}
+    Circle(float x = 0.0, float y = 0.0, float radius = LANE_WIDTH / 4, bool visible = true)
+        : m_x(x), m_y(y), m_radius(radius), m_visible(visible), m_isCoin(true) {
+    }
     //void draw(sf::RenderWindow& window) const;
 
     float m_x, m_y, m_radius;
@@ -88,6 +89,20 @@ public:
 
     float m_rotation;
     Circle m_collisionCircles[NUM_CIRCLES];
+};
+
+class Road {
+public:
+    unsigned int VAO, VBO, EBO;
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+    Road();
+    ~Road();
+    void setRoadSize(const float& width, const float& length);
+    void setupMesh();
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+
+
 };
 
 enum PickUp {
@@ -126,4 +141,5 @@ public:
     int nextEmptyLane;
     Player player;
     RoadRow roadRows[NUM_ROWS];
+    Road road;
 };

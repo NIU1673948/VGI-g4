@@ -118,7 +118,8 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 
 // Definició propietats de reflexió (emissió, ambient, difusa, especular) del material.
 	SeleccionaColorMaterial(sh_programID, col_object, sw_mat);
-
+	//game.road.setRoadSize(50, 1000); LEVON mirar on posar les dimensions de la carretera
+	game.road.draw(sh_programID, MatriuVista, MatriuTG);
 	game.player.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT de moment només dibuixo el jugador, cal mirar coordenades i tal per a dibuixar tot bé
 	//game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta línia enlloc de la de dalt
 		
