@@ -740,7 +740,7 @@ void draw_inici(){
 
 	draw_skycube();
 
-	eixos = false;
+	eixos = true;
 }
 
 
@@ -2466,17 +2466,19 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 		else if ((mods == 1) && (action == GLFW_PRESS)) Teclat_Shift(key, window);	// Shorcuts Shift Key
 		else if ((mods == 2) && (action == GLFW_PRESS)) Teclat_Ctrl(key);	// Shortcuts Ctrl Key
 		else if ((objecte == C_BEZIER || objecte == C_BSPLINE || objecte == C_LEMNISCATA || objecte == C_HERMITTE
-				|| objecte == C_CATMULL_ROM) && (action == GLFW_PRESS)) Teclat_PasCorbes(key, action);
+			|| objecte == C_CATMULL_ROM) && (action == GLFW_PRESS)) Teclat_PasCorbes(key, action);
 		else if ((sw_grid) && ((grid.x) || (grid.y) || (grid.z))) Teclat_Grid(key, action);
 		else if (((key == GLFW_KEY_G) && (action == GLFW_PRESS)) && ((grid.x) || (grid.y) || (grid.z))) sw_grid = !sw_grid;
 		else if ((key == GLFW_KEY_O) && (action == GLFW_PRESS)) sw_color = true; // Activació color objecte
 		else if ((key == GLFW_KEY_F) && (action == GLFW_PRESS)) sw_color = false; // Activació color objecte
 		else if (pan) Teclat_Pan(key, action);
 		else if (transf)
-				{	if (rota) Teclat_TransRota(key, action);
-						else if (trasl) Teclat_TransTraslada(key, action);
-							else if (escal) Teclat_TransEscala(key, action);
-				}
+		{
+			if (rota) Teclat_TransRota(key, action);
+			else if (trasl) Teclat_TransTraslada(key, action);
+			else if (escal) Teclat_TransEscala(key, action);
+		}
+		else if (key == GLFW_KEY_R && camera == CAM_ESFERICA) opvN.x = 50.0, opvN.z = -50.0, camera = CAM_NAVEGA;
 		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);
@@ -3480,7 +3482,7 @@ void Teclat_Navega(int key, int action)
 	vdir[0] = vdir[0] / modul;
 	vdir[1] = vdir[1] / modul;
 	vdir[2] = vdir[2] / modul;
-	
+
 	if (action == GLFW_PRESS)
 	{
 		switch (key)
@@ -3531,6 +3533,7 @@ void Teclat_Navega(int key, int action)
 
 		// Tecla cursor esquerra
 		case GLFW_KEY_LEFT:
+			
 			angleZ += fact_pan;
 			if (Vis_Polar == POLARZ) { // (X,Y,Z)
 				n[0] = vdir[0]; // n[0] - opvN.x;
@@ -3557,9 +3560,9 @@ void Teclat_Navega(int key, int action)
 				n[2] = n[2] + opvN.z;
 			}
 			break;
-
+			
 		// Tecla cursor dret
-		case GLFW_KEY_RIGHT:
+		case GLFW_KEY_RIGHT:		
 			angleZ = 360 - fact_pan;
 			if (Vis_Polar == POLARZ) { // (X,Y,Z)
 				n[0] = vdir[0]; // n[0] - opvN.x;
@@ -3586,7 +3589,7 @@ void Teclat_Navega(int key, int action)
 				n[2] = n[2] + opvN.z;
 			}
 			break;
-
+			
 		// Tecla Inicio
 		case GLFW_KEY_HOME:
 			if (Vis_Polar == POLARZ) {
@@ -3629,6 +3632,98 @@ void Teclat_Navega(int key, int action)
 		case GLFW_KEY_PAGE_DOWN:
 			fact_pan *= 2;
 			if (fact_pan > 2048) fact_pan = 2048;
+			break;
+
+		case GLFW_KEY_A:
+			if (Vis_Polar == POLARZ) { // (X,Y,Z)
+				// Calculamos el vector hacia la izquierda (perpendicular a vdir y up)
+				GLdouble leftDirX = vdir[1]; // Intercambiamos y negamos para obtener perpendicular
+				GLdouble leftDirY = -vdir[0];  // Intercambiamos x
+				GLdouble leftDirZ = 0.0;      // No afectamos Z en el plano XY
+				GLdouble length = sqrt(leftDirX * leftDirX + leftDirY * leftDirY); // Normalizamos
+				leftDirX /= length;
+				leftDirY /= length;
+
+				// Desplazamos la posición de la cámara y el punto de vista
+				opvN.x += fact_pan * leftDirX;
+				opvN.y += fact_pan * leftDirY;
+				n[0] += fact_pan * leftDirX;
+				n[1] += fact_pan * leftDirY;
+			}
+			else if (Vis_Polar == POLARY) { // (X,Y,Z) --> (Z,X,Y)
+				// Calculamos el vector hacia la izquierda (perpendicular a vdir y up)
+				GLdouble leftDirX = vdir[2]; // Intercambiamos Z y negamos
+				GLdouble leftDirZ = -vdir[0];  // Intercambiamos X
+				GLdouble length = sqrt(leftDirX * leftDirX + leftDirZ * leftDirZ); // Normalizamos
+				leftDirX /= length;
+				leftDirZ /= length;
+
+				// Desplazamos la posición de la cámara y el punto de vista
+				opvN.x += fact_pan * leftDirX;
+				opvN.z += fact_pan * leftDirZ;
+				n[0] += fact_pan * leftDirX;
+				n[2] += fact_pan * leftDirZ;
+			}
+			else if (Vis_Polar == POLARX) { // (X,Y,Z) --> (Y,Z,X)
+				// Calculamos el vector hacia la izquierda (perpendicular a vdir y up)
+				GLdouble leftDirY = vdir[2]; // Intercambiamos Z y negamos
+				GLdouble leftDirZ = -vdir[1];  // Intercambiamos Y
+				GLdouble length = sqrt(leftDirY * leftDirY + leftDirZ * leftDirZ); // Normalizamos
+				leftDirY /= length;
+				leftDirZ /= length;
+
+				// Desplazamos la posición de la cámara y el punto de vista
+				opvN.y += fact_pan * leftDirY;
+				opvN.z += fact_pan * leftDirZ;
+				n[1] += fact_pan * leftDirY;
+				n[2] += fact_pan * leftDirZ;
+			}
+			break;
+
+		case GLFW_KEY_D:
+			if (Vis_Polar == POLARZ) { // (X,Y,Z)
+				// Vector hacia la derecha en el plano XY
+				GLdouble rightDirX = -vdir[1]; // Intercambiamos y cambiamos de signo
+				GLdouble rightDirY = vdir[0];
+				GLdouble rightDirZ = 0.0;       // No afecta Z en el plano XY
+				GLdouble length = sqrt(rightDirX * rightDirX + rightDirY * rightDirY); // Normalizamos
+				rightDirX /= length;
+				rightDirY /= length;
+
+				// Desplazamos la posición de la cámara y el punto de vista
+				opvN.x += fact_pan * rightDirX;
+				opvN.y += fact_pan * rightDirY;
+				n[0] += fact_pan * rightDirX;
+				n[1] += fact_pan * rightDirY;
+			}
+			else if (Vis_Polar == POLARY) { // (X,Y,Z) --> (Z,X,Y)
+				// Vector hacia la derecha en el plano XZ
+				GLdouble rightDirX = -vdir[2]; // Intercambiamos y cambiamos de signo
+				GLdouble rightDirZ = vdir[0];
+				GLdouble length = sqrt(rightDirX * rightDirX + rightDirZ * rightDirZ); // Normalizamos
+				rightDirX /= length;
+				rightDirZ /= length;
+
+				// Desplazamos la posición de la cámara y el punto de vista
+				opvN.x += fact_pan * rightDirX;
+				opvN.z += fact_pan * rightDirZ;
+				n[0] += fact_pan * rightDirX;
+				n[2] += fact_pan * rightDirZ;
+			}
+			else if (Vis_Polar == POLARX) { // (X,Y,Z) --> (Y,Z,X)
+				// Vector hacia la derecha en el plano YZ
+				GLdouble rightDirY = -vdir[2]; // Intercambiamos y cambiamos de signo
+				GLdouble rightDirZ = vdir[1];
+				GLdouble length = sqrt(rightDirY * rightDirY + rightDirZ * rightDirZ); // Normalizamos
+				rightDirY /= length;
+				rightDirZ /= length;
+
+				// Desplazamos la posición de la cámara y el punto de vista
+				opvN.y += fact_pan * rightDirY;
+				opvN.z += fact_pan * rightDirZ;
+				n[1] += fact_pan * rightDirY;
+				n[2] += fact_pan * rightDirZ;
+			}
 			break;
 
 		default:
@@ -4947,9 +5042,12 @@ int main(void)
 // Entorn VGI.ImGui: End Setup Dear ImGui context
 
 // Intent de posar el joc ALBERT
+
+	
 	GameLogic game;
 	Player& player = game.player;
 	RoadRow* roadRows = game.roadRows;
+	
 
 // Loop until the user closes the window -- MAURI: BUCLE PRINCIPAL
     while (!glfwWindowShouldClose(window) && !sortir)
@@ -4987,6 +5085,7 @@ int main(void)
 
 // Crida a OnPaint() per redibuixar l'escena
 		//assert(ObOBJ);
+
 		if (iniciar)
 		{
 			game.GetUserInput();
@@ -4997,7 +5096,7 @@ int main(void)
 		}
 		else
 			FonsB();
-
+		
 
 // Entorn VGI.ImGui: Capta dades del menú InGui
 

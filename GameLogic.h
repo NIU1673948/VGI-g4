@@ -6,7 +6,7 @@
 #include "stdafx.h"
 #include "material.h"
 #include "visualitzacio.h"
-#include "objLoader.h"	
+#include "objLoader.h"
 
 using namespace std;
 using namespace glm;
