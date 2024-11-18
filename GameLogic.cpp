@@ -162,6 +162,7 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
     //window.clear(sf::Color::Black);
 
     //// Dibuixar la carretera
+    road.draw(sh_programID, MatriuVista, MatriuTG);
     //sf::RectangleShape road(sf::Vector2f(ROAD_WIDTH, WINDOW_HEIGHT));
     //road.setFillColor(sf::Color(50, 50, 50));
     //road.setPosition(ROAD_START, 0);
@@ -353,10 +354,10 @@ bool Player::checkCollision(const Circle& object) const {
 //ROAD
 Road::Road() { //Per defecte es genera amb aquestes dimensions
     vertices = {
-        -30.0f / 2, 0.0f,  0.0f, 0.0f, 0.0f,  // Vértice inferior izquierdo
-         30.0f / 2, 0.0f,  0.0f, 1.0f, 0.0f,  // Vértice inferior derecho
-        -30.0f / 2, 0.0f, -500.0f, 0.0f, 1.0f, // Vértice superior izquierdo
-         30.0f / 2, 0.0f, -500.0f, 1.0f, 1.0f  // Vértice superior derecho
+        -ROAD_WIDTH / 2, 0.0f,  0.0f, 0.0f, 0.0f,  // Vértice inferior izquierdo
+         ROAD_WIDTH / 2, 0.0f,  0.0f, 1.0f, 0.0f,  // Vértice inferior derecho
+        -ROAD_WIDTH / 2, 0.0f, -ROAD_LENGTH, 0.0f, 1.0f, // Vértice superior izquierdo
+         ROAD_WIDTH / 2, 0.0f, -ROAD_LENGTH, 1.0f, 1.0f  // Vértice superior derecho
     };
 
     indices = {

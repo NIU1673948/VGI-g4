@@ -17,7 +17,7 @@ const float MARGIN = 30;
 const float STEP = 5;
 const float SPEED = 5;
 const float CAR_WIDTH = 50;
-const float LANE_WIDTH = 70;
+const float LANE_WIDTH = CAR_WIDTH + MARGIN;
 const float CAR_HEIGHT = 100;
 const float PLAYER_SPEED = 5;
 const int NUM_LANES = 4;
@@ -35,8 +35,10 @@ const int PROB_SHIELD = 4;
 
 
 const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
+const float ROAD_LENGTH = 500.0f;
 const float ROAD_START = (WINDOW_WIDTH - ROAD_WIDTH) / 2;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
+
 
 //const std::vector<sf::Color> carColors = {
 //    sf::Color(0, 95, 115),
