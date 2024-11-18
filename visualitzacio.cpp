@@ -454,11 +454,12 @@ glm::mat4 Projeccio_Perspectiva(GLuint sh_programID, int minx,int miny,GLsizei w
 
 // Vista_Esferica: Definició gluLookAt amb possibilitat de moure el punt de vista interactivament amb el ratolí, 
 //					ilumina i dibuixa l'escena
+//JAN el que passa esq l'esfera per on es mou la camera, segueix estan centrada al 0,0,0 per tant la camera apunta a la normal, pero es mou per la mateixa esfera
 glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPunt3D tr,CPunt3D trF,
 				 CColor col_fons,CColor col_object,char objecte,double mida,int step, 
 				 bool frnt_fcs, bool oculta, bool testv, bool bck_ln, 
 				 char iluminacio, bool llum_amb, LLUM* lumi, bool ifix, bool il2sides,
-				 bool eix, CMask3D reixa, CPunt3D hreixa, vec3 origen)
+				 bool eix, CMask3D reixa, CPunt3D hreixa, vec3 origen, int c)
 {    
 	GLdouble cam[3] = { 0.0,0.0,0.0 }, up[3] = { 0.0,0.0,0.0 };
 	glm::mat4 MatriuVista(1.0);
@@ -505,11 +506,57 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
 
 // Especificació del punt de vista
    //gluLookAt(cam[0],cam[1],cam[2],0.,0.,0.,up[0],up[1],up[2]);
-   MatriuVista = glm::lookAt(
-	   glm::vec3(cam[0], cam[1], cam[2]), // Camera is here
-	   origen, // and looks here
-	   glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
-	   );
+	
+	switch (c)
+	{
+	case 0: //3er
+		MatriuVista = glm::lookAt(
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) + 300), // Camera is here
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
+			glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+		break;
+	case 1: //fora
+		MatriuVista = glm::lookAt(
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2) + 500, 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200), // Camera is here
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200), // and looks here
+			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+		break;
+	case 2: //1a
+		break;
+	default:
+		MatriuVista = glm::lookAt(
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) + 300), // Camera is here
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
+			glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+		break;
+	}
+	
+	/*
+		MatriuVista = glm::lookAt(
+			glm::vec3(cam[0], cam[1], cam[2]), // Camera is here
+			glm::vec3(0, 0, 0), // and looks here
+			glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+	   */
+	
+
+   //Posicio cotxe
+   //vec3(ROAD_START + ROAD_WIDTH / 2, 0, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN)
+   
+   //CAM 3er Persona
+   //Posicio camera
+   //vec3((ROAD_START + ROAD_WIDTH / 2), 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) + 300)
+   //Punt on mira la camera
+   //vec3(ROAD_START + ROAD_WIDTH / 2, 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300)
+   
+   //CAM fora
+   //Posicio camera
+   //vec3((ROAD_START + ROAD_WIDTH / 2) + 500, 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200)
+   //Mira aqui
+   //vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200)
 
    MatriuVista = TransMatrix * MatriuVista;
 

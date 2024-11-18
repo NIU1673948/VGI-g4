@@ -24,6 +24,9 @@ void InitGL()
 {
 // TODO: agregar aquí el código de construcción
 
+//JAN camera
+	c = 0;
+
 //------ Entorn VGI: Inicialització de les variables globals de CEntornVGIView
 	int i;
 
@@ -410,55 +413,77 @@ void OnPaint(GLFWwindow* window)
 
 	// Entorn VGI: Cridem a les funcions de l'escena i la projecció segons s'hagi 
 	// seleccionat una projecció o un altra
+	switch (projeccio)
+	{
+	case PERSPECT:
+		// Entorn VGI: PROJECCIÓ PERSPECTIVA
+				//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Set Perspective Calculations To Most Accurate
+		glDisable(GL_SCISSOR_TEST);		// Desactivació del retall de pantalla
 
-	// Entorn VGI: PROJECCIÓ PERSPECTIVA
-			//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Set Perspective Calculations To Most Accurate
-	glDisable(GL_SCISSOR_TEST);		// Desactivació del retall de pantalla
+		// Entorn VGI: Activar shader Visualització Escena
+		glUseProgram(shader_programID);
 
-	// Entorn VGI: Activar shader Visualització Escena
-	glUseProgram(shader_programID);
+		// Entorn VGI: Definició de Viewport, Projecció i Càmara
+		ProjectionMatrix = Projeccio_Perspectiva(shader_programID, 0, 0, w, h, OPV.R);
 
-	// Entorn VGI: Definició de Viewport, Projecció i Càmara
-	ProjectionMatrix = Projeccio_Perspectiva(shader_programID, 0, 0, w, h, OPV.R);
-
-	// Entorn VGI: Definició de la càmera.
-	if (camera == CAM_ESFERICA) {
-		n[0] = 0;		n[1] = 0;		n[2] = 0;
-		ViewMatrix = Vista_Esferica(shader_programID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
-			front_faces, oculta, test_vis, back_line,
-			ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-			eixos, grid, hgrid, vec3(ROAD_START + ROAD_WIDTH / 2, 0, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN)); // ALBERT afegit origen
-	}
-	else if (camera == CAM_NAVEGA) {
-		if (Vis_Polar == POLARZ) {
-			vpv[0] = 0.0;	vpv[1] = 0.0;	vpv[2] = 1.0;
+		// Entorn VGI: Definició de la càmera.
+		if (camera == CAM_ESFERICA) {
+			n[0] = 0;		n[1] = 0;		n[2] = 0;
+			ViewMatrix = Vista_Esferica(shader_programID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
+				front_faces, oculta, test_vis, back_line,
+				ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
+				eixos, grid, hgrid, vec3(ROAD_START + ROAD_WIDTH / 2, 0, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN), c); // ALBERT afegit origen
 		}
-		else if (Vis_Polar == POLARY) {
-			vpv[0] = 0.0;	vpv[1] = 1.0;	vpv[2] = 0.0;
+		else if (camera == CAM_NAVEGA) {
+			if (Vis_Polar == POLARZ) {
+				vpv[0] = 0.0;	vpv[1] = 0.0;	vpv[2] = 1.0;
+			}
+			else if (Vis_Polar == POLARY) {
+				vpv[0] = 0.0;	vpv[1] = 1.0;	vpv[2] = 0.0;
+			}
+			else if (Vis_Polar == POLARX) {
+				vpv[0] = 1.0;	vpv[1] = 0.0;	vpv[2] = 0.0;
+			}
+			ViewMatrix = Vista_Navega(shader_programID, opvN, //false, 
+				n, vpv, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, true, pas,
+				front_faces, oculta, test_vis, back_line,
+				ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
+				eixos, grid, hgrid);
 		}
-		else if (Vis_Polar == POLARX) {
-			vpv[0] = 1.0;	vpv[1] = 0.0;	vpv[2] = 0.0;
+		else if (camera == CAM_GEODE) {
+			ViewMatrix = Vista_Geode(shader_programID, OPV_G, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
+				front_faces, oculta, test_vis, back_line,
+				ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
+				eixos, grid, hgrid);
 		}
-		ViewMatrix = Vista_Navega(shader_programID, opvN, //false, 
-			n, vpv, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, true, pas,
-			front_faces, oculta, test_vis, back_line,
-			ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-			eixos, grid, hgrid);
-	}
-	else if (camera == CAM_GEODE) {
-		ViewMatrix = Vista_Geode(shader_programID, OPV_G, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
-			front_faces, oculta, test_vis, back_line,
-			ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-			eixos, grid, hgrid);
-	}
 
+		configura_Escena();
+		break;
+
+	default:
+		// Entorn VGI: Càrrega SHADERS
+		// Entorn VGI: Càrrega Shader Eixos
+		if (!eixos_programID) eixos_programID = shaderEixos.loadFileShaders(".\\shaders\\eixos.VERT", ".\\shaders\\eixos.FRAG");
+
+		// Entorn VGI: Càrrega Shader de Gouraud
+		if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\gouraud_shdrML.vert", ".\\shaders\\gouraud_shdrML.frag");
+
+		// Entorn VGI: Creació de la llista que dibuixarà els eixos Coordenades Món. Funció on està codi per dibuixar eixos	
+		if (!eixos_Id) eixos_Id = deixos();						// Funció que defineix els Eixos Coordenades Món com un VAO.
+
+		// Entorn VGI: Crida a la funció Fons Blanc
+		FonsB();
+
+		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
+				//glfwSwapBuffers(window);
+		break;
 		// Entorn VGI: Dibuix de l'Objecte o l'Escena
 		//configura_Escena();     // Aplicar Transformacions Geometriques segons persiana Transformacio i configurar objectes.
 		GTMatrix = mat4(1.0);    // De moment la iniciem a default, més endavant aviam si la podem treure del pas de parametres a dibuixa_Escena() ALBERT
 		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
 				//glfwSwapBuffers(window);
 		//break;
-
+	}
 	//  Actualitzar la barra d'estat de l'aplicació amb els valors R,A,B,PVx,PVy,PVz
 	if (statusB) Barra_Estat();
 }
@@ -740,7 +765,7 @@ void draw_inici(){
 
 	draw_skycube();
 
-	eixos = false;
+	eixos = true;
 }
 
 
@@ -2466,17 +2491,19 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 		else if ((mods == 1) && (action == GLFW_PRESS)) Teclat_Shift(key, window);	// Shorcuts Shift Key
 		else if ((mods == 2) && (action == GLFW_PRESS)) Teclat_Ctrl(key);	// Shortcuts Ctrl Key
 		else if ((objecte == C_BEZIER || objecte == C_BSPLINE || objecte == C_LEMNISCATA || objecte == C_HERMITTE
-				|| objecte == C_CATMULL_ROM) && (action == GLFW_PRESS)) Teclat_PasCorbes(key, action);
+			|| objecte == C_CATMULL_ROM) && (action == GLFW_PRESS)) Teclat_PasCorbes(key, action);
 		else if ((sw_grid) && ((grid.x) || (grid.y) || (grid.z))) Teclat_Grid(key, action);
 		else if (((key == GLFW_KEY_G) && (action == GLFW_PRESS)) && ((grid.x) || (grid.y) || (grid.z))) sw_grid = !sw_grid;
 		else if ((key == GLFW_KEY_O) && (action == GLFW_PRESS)) sw_color = true; // Activació color objecte
 		else if ((key == GLFW_KEY_F) && (action == GLFW_PRESS)) sw_color = false; // Activació color objecte
 		else if (pan) Teclat_Pan(key, action);
 		else if (transf)
-				{	if (rota) Teclat_TransRota(key, action);
-						else if (trasl) Teclat_TransTraslada(key, action);
-							else if (escal) Teclat_TransEscala(key, action);
-				}
+		{
+			if (rota) Teclat_TransRota(key, action);
+			else if (trasl) Teclat_TransTraslada(key, action);
+			else if (escal) Teclat_TransEscala(key, action);
+		}
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS) c = (c < 2) ? (c + 1) : 0;
 		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);

@@ -16,6 +16,9 @@
 
 //-------------- Entorn VGI: Variables globals de main
 
+//JAN Variables canvi camera
+	int c;
+
 // Retrieving main monitor
 	GLFWmonitor* primary;
 
