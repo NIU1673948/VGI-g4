@@ -2503,7 +2503,9 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 			else if (trasl) Teclat_TransTraslada(key, action);
 			else if (escal) Teclat_TransEscala(key, action);
 		}
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS) c = (c < 2) ? (c + 1) : 0;
+		//JAN Canviar la camera al pulsar 'R'
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 1) c = (c < 1) ? (c + 1) : 0, camera = CAM_ESFERICA;
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 1) camera = CAM_NAVEGA, c++;
 		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);
