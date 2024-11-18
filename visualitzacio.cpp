@@ -458,7 +458,7 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
 				 CColor col_fons,CColor col_object,char objecte,double mida,int step, 
 				 bool frnt_fcs, bool oculta, bool testv, bool bck_ln, 
 				 char iluminacio, bool llum_amb, LLUM* lumi, bool ifix, bool il2sides,
-				 bool eix, CMask3D reixa, CPunt3D hreixa)
+				 bool eix, CMask3D reixa, CPunt3D hreixa, vec3 origen)
 {    
 	GLdouble cam[3] = { 0.0,0.0,0.0 }, up[3] = { 0.0,0.0,0.0 };
 	glm::mat4 MatriuVista(1.0);
@@ -507,7 +507,7 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
    //gluLookAt(cam[0],cam[1],cam[2],0.,0.,0.,up[0],up[1],up[2]);
    MatriuVista = glm::lookAt(
 	   glm::vec3(cam[0], cam[1], cam[2]), // Camera is here
-	   glm::vec3(0, 0, 0), // and looks here
+	   origen, // and looks here
 	   glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
 	   );
 

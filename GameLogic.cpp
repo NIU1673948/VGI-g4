@@ -28,8 +28,8 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
         glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
         TransMatrix = MatriuTG;
 
-        TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y) / 50.0f); // ALBERT mirar comentaris a Player::draw (és el mateix)
-        //ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
+        TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y)); // ALBERT mirar comentaris a Player::draw (és el mateix)
+        TransMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH/3.4f, CAR_WIDTH / 3.4f, CAR_WIDTH / 3.4f));
         ModelMatrix = TransMatrix;
 
         // Pas ModelView Matrix a shader
@@ -292,12 +292,11 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
     glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
     TransMatrix = MatriuTG;
 
-    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4) / 50.0f); // De moment la y és 0 ALBERT La z i la y estan intercanviades :(
+    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4)); // De moment la y és 0 ALBERT La z i la y estan intercanviades :(
     TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0));
-    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4) / 50.0f); // ALBERT el /50.0f és perq el cotxe no se'n vagi lluny i es vegi
+    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4)); // ALBERT el /50.0f és perq el cotxe no se'n vagi lluny i es vegi
     TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
-
-    //ModelMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH, CAR_WIDTH, CAR_WIDTH));
+    TransMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH/3.4f, CAR_WIDTH / 3.4f, CAR_WIDTH / 3.4f));
     ModelMatrix = TransMatrix;
 
     // Pas ModelView Matrix a shader
@@ -352,11 +351,13 @@ bool Player::checkCollision(const Circle& object) const {
 
 //ROAD
 Road::Road() { //Per defecte es genera amb aquestes dimensions
+    float w = ROAD_WIDTH;
+    float h = 5000000000000000;
     vertices = {
-        -30.0f / 2, 0.0f,  0.0f, 0.0f, 0.0f,  // Vértice inferior izquierdo
-         30.0f / 2, 0.0f,  0.0f, 1.0f, 0.0f,  // Vértice inferior derecho
-        -30.0f / 2, 0.0f, -500.0f, 0.0f, 1.0f, // Vértice superior izquierdo
-         30.0f / 2, 0.0f, -500.0f, 1.0f, 1.0f  // Vértice superior derecho
+        -w / 2, 0.0f,  0.0f, 0.0f, 0.0f,  // Vértice inferior izquierdo
+         w / 2, 0.0f,  0.0f, 1.0f, 0.0f,  // Vértice inferior derecho
+        -w / 2, 0.0f, -h, 0.0f, 1.0f, // Vértice superior izquierdo
+         w / 2, 0.0f, -h, 1.0f, 1.0f  // Vértice superior derecho
     };
 
     indices = {

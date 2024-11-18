@@ -427,7 +427,7 @@ void OnPaint(GLFWwindow* window)
 		ViewMatrix = Vista_Esferica(shader_programID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
 			front_faces, oculta, test_vis, back_line,
 			ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-			eixos, grid, hgrid);
+			eixos, grid, hgrid, vec3(ROAD_START + ROAD_WIDTH / 2, 0, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN)); // ALBERT afegit origen
 	}
 	else if (camera == CAM_NAVEGA) {
 		if (Vis_Polar == POLARZ) {
