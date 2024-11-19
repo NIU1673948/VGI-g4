@@ -613,7 +613,48 @@ glm::mat4 Vista_Geode(GLuint sh_programID, CEsfe3D opv, char VPol, bool pant, CP
 // Neteja dels buffers de color i profunditat
 	Fons(col_fons);
 
-// Posició càmera i vector cap amunt
+	// Posició càmera i vector cap amunt en GEODE
+	if (VPol == POLARZ) {
+		cam[0] = opv.R * cos(opv.beta) * cos(opv.alfa);
+		cam[1] = opv.R * sin(opv.beta) * cos(opv.alfa);
+		cam[2] = opv.R * sin(opv.alfa);
+		// Vector camp on mira (cap a (R,alfa,beta)
+		camN[0] = cos(opv.beta) * cos(opv.alfa);
+		camN[1] = sin(opv.beta) * cos(opv.alfa);
+		camN[2] = sin(opv.alfa);
+		// Vector tangent (diferencial respecte alfa)
+		up[0] = -cos(opv.beta) * sin(opv.alfa);
+		up[1] = -sin(opv.beta) * sin(opv.alfa);
+		up[2] = cos(opv.alfa);
+		}
+	else if (VPol == POLARY) {
+		cam[0] = opv.R * sin(opv.beta) * cos(opv.alfa);
+		cam[1] = opv.R * sin(opv.alfa);
+		cam[2] = opv.R * cos(opv.beta) * cos(opv.alfa);
+		// Vector camp on mira (cap a (R,alfa,beta)
+		camN[0] = sin(opv.beta) * cos(opv.alfa);
+		camN[1] = sin(opv.alfa);
+		camN[2] = cos(opv.beta) * cos(opv.alfa);
+		// Vector tangent (diferencial respecte alfa)
+		up[0] = -sin(opv.beta) * sin(opv.alfa);
+		up[1] = cos(opv.alfa);
+		up[2] = -cos(opv.beta) * sin(opv.alfa);
+		}
+	else {
+		cam[0] = opv.R * sin(opv.alfa);
+		cam[1] = opv.R * cos(opv.beta) * cos(opv.alfa);
+		cam[2] = opv.R * sin(opv.beta) * cos(opv.alfa);
+		// Vector camp on mira (cap a (R,alfa,beta)
+		camN[0] = sin(opv.alfa);
+		camN[1] = cos(opv.beta) * cos(opv.alfa);
+		camN[2] = sin(opv.beta) * cos(opv.alfa);
+		// Vector tangent (diferencial respecte alfa)
+		up[0] = cos(opv.alfa);
+		up[1] = -cos(opv.beta) * sin(opv.alfa);
+		up[2] = -sin(opv.beta) * sin(opv.alfa);
+		}
+
+/* Posició càmera i vector cap amunt
 	// Posició Càmera
 	cam[0] = opv.R * cos(opv.beta) * cos(opv.alfa);
 	cam[1] = opv.R * sin(opv.beta) * cos(opv.alfa);
@@ -626,6 +667,7 @@ glm::mat4 Vista_Geode(GLuint sh_programID, CEsfe3D opv, char VPol, bool pant, CP
 	up[0] = -cos(opv.beta) * sin(opv.alfa);
 	up[1] = -sin(opv.beta) * sin(opv.alfa);
 	up[2] = cos(opv.alfa);
+*/
 
 // Iluminacio movent-se amb la camara (abans gluLookAt)
 	if (!ifix) Iluminacio(sh_programID, iluminacio, ifix, il2sides, llum_amb, lumi, objecte, frnt_fcs, bck_ln, step);

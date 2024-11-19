@@ -19,6 +19,35 @@
 #include "main.h"
 #include "objLoader.h"
 
+//NIL
+#include <irrKlang/irrKlang.h>
+using namespace irrklang;
+#include <iostream>
+#include <thread>       // Required for std::this_thread::sleep_for
+#include <chrono>       // Required for std::chrono::seconds
+
+
+//Variables globals - NIL
+float carRotationAngle = 0.0f;
+ISoundEngine* SoundEngine = nullptr;
+
+//funcio per la cançó - NIL
+void playSoundLoop(ISoundEngine* SoundEngine, const char* filePath) {
+	while (true) {
+		ISound* song = SoundEngine->play2D(filePath, false, false, true);
+
+		// Verificar si el sonido se reprodujo correctamente
+		if (!song) {
+			return;
+		}
+		while (song && !song->isFinished()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+		if (song) {
+			song->drop();
+		}
+	}
+}
 
 void InitGL()
 {
@@ -44,7 +73,7 @@ void InitGL()
 	OPV_G.R = 15.0;		OPV_G.alfa = 0.0;	OPV_G.beta = 0.0;	// Origen PV en esfèriques per a Vista_Geode
 
 // Entorn VGI: Variables de control per Menú Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = true;
+	fullscreen = false;
 	pan = false;
 	eixos = true;	eixos_programID = 0;  eixos_Id = 0;
 	sw_grid = false;
@@ -535,6 +564,11 @@ void OnPaint(GLFWwindow* window)
 					eixos, grid, hgrid);
 				}
 
+		//NIL:
+		carRotationAngle += 0.25f;
+		if (carRotationAngle > 360.0f)
+			carRotationAngle -= 360.0f;
+
 // Entorn VGI: Dibuix de l'Objecte o l'Escena
 		configura_Escena();     // Aplicar Transformacions Geometriques segons persiana Transformacio i configurar objectes.
 		dibuixa_Escena();		// Dibuix geometria de l'escena amb comandes GL.
@@ -572,6 +606,9 @@ void configura_Escena() {
 
 // Aplicar Transformacions Geometriques segons persiana Transformacio i Quaternions
 	GTMatrix = instancia(transf, TG, TGF);
+	// Rotacio Cotxe Eix Y - NIL
+	GTMatrix = glm::mat4(1.0f);
+	GTMatrix = glm::rotate(GTMatrix, glm::radians(carRotationAngle), glm::vec3(0.0f, 1.0f,0.0f));
 }
 
 // dibuixa_Escena: Funcio que crida al dibuix dels diferents elements de l'escana
@@ -795,7 +832,6 @@ void Barra_Estat()
 		}
 }
 
-
 //CODI BY LEVON - PRIMERA ESCENA AL DONAR-LI A JUGAR
 void draw_initial_car() {
 	if (ObOBJ == NULL) ObOBJ = ::new COBJModel;
@@ -803,10 +839,11 @@ void draw_initial_car() {
 		ObOBJ->netejaVAOList_OBJ();
 		ObOBJ->netejaTextures_OBJ();
 	}
-	const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj"; //IMPORTANTE MIRAR QUE LA RUTA ESTE BIEN (ESPACIOS)
+	const char* rutaArxiu = "C:\\Universidad\\3r curs\\VGI\\Entorn VGI-GLFW-VS2022 - GL4.3 - ImGui\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj"; //IMPORTANTE MIRAR QUE LA RUTA ESTE BIEN (ESPACIOS)
+	const char* rutaNil = "C:\\Users\\mazou\\Desktop\\Entorn VGI-GLFW-VS2022 - GL4.3 - ImGui\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj";
 	//EJEMPLO BIEN:
 	//L"C:\\Universidad\\3r curs\\VGI\\Entorn VGI-MFC-VS2022 - GL4.3\\x64\\Release\\OBJ Files\\Car 07\\Car7.obj"
-	ObOBJ->LoadModel(const_cast<char*>(rutaArxiu));
+	ObOBJ->LoadModel(const_cast<char*>(rutaNil));
 	objecte = OBJOBJ;	textura = true;		tFlag_invert_Y = false;
 
 	if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "textur"), textura);
@@ -814,9 +851,6 @@ void draw_initial_car() {
 }
 
 void draw_skycube() {
-	
-	projeccio = PERSPECT;
-	ilumina = SUAU;
 	SkyBoxCube = true;
 	Vis_Polar = POLARY;
 
@@ -846,32 +880,29 @@ void draw_inici(){
 	draw_initial_car();
 
 	//necessari perquè l'objecte es vegi bé, es pot canviar iluminació però compte amb les altres variables
-	ilumina = SUAU;   oculta = true;//test_vis = true; 
+	ilumina = SUAU;  oculta = true; //test_vis = true; 
 
 	draw_skycube();
 
-
+	eixos = false;
 }
 
 
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
+
+
 void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
-	ImVec2 buttonSize = ImVec2(200, 50); // Tamaño de los botones
-	float totalHeight = buttonSize.y * 6 + 10 * 4; // Altura total: 4 botones + márgenes entre ellos
-	float totalWidth = buttonSize.x; // Ancho total es el mismo que el del botón
-
-	// Obtener el tamaño de la pantalla o la ventana principal
-	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
-
-	// Crear una nueva ventana de ImGui para los botones de la pantalla de Inicio
-	ImGui::SetNextWindowPos(ImVec2((screenSize.x - totalWidth)/2, (screenSize.y - totalHeight)/2)); // Posiciona la ventana en el centro
-	ImGui::SetNextWindowSize(ImVec2(totalWidth, totalHeight), ImGuiCond_Always);
+	// Crear una nueva ventana de ImGui per als botons de la pantalla d'Inici
+	ImGui::SetNextWindowPos(ImVec2(0, 0)); // Posiciona la finestra a la cantonada superior esquerra
+	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize); // Tamany de la finestra igual que la pantalla
 	ImGui::Begin("Botons centrals", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
-
+	
 	ImVec2 windowSize = ImGui::GetWindowSize();
+	ImVec2 buttonSize = ImVec2(200, 50); // Tamany dels botons
 
 	float centerX = (windowSize.x - buttonSize.x) * 0.5f;
 	float startY = (windowSize.y - buttonSize.y * 3) * 0.5f;
+
 	//PARAMETRES PER MODIFICAR EL COLOR DELS BOTONS
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.7f, 1.0f)); // Color de fons del botó
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.6f, 0.8f, 1.0f)); // Color al pasar el ratoli
@@ -880,54 +911,25 @@ void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
 	
 	// Agregar botons per les funcionalitats del programa y actualizar estats
 	ImGui::SetCursorPos(ImVec2(centerX, startY));
-	if (!configuracio)
-	{
-		if (ImGui::Button("INICIAR", buttonSize)) {
-			// Acció boto 1
-			iniciar = true;
-			draw_inici();
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
-		if (ImGui::Button("GARATGE", buttonSize)) 
-		{
-			
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
-		if (ImGui::Button("CONFIGURACIO", buttonSize)) {
-			// Acció boto 2
-			configuracio = true;
-
-
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 3));
-		if (ImGui::Button("SORTIR", buttonSize)) {
-			// Acció boto 3
-			exit = true;
-		}
+	if (ImGui::Button("INICIAR", buttonSize)) {
+		// Acció boto 1
+		iniciar = true;
+		draw_inici();
+		carRotationAngle = 0.0f;
 	}
-	else
-	{
-		if (ImGui::Button("FULLSCREEN", buttonSize))
-		{
-			OnFull_Screen(primary, window);
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
-		if (ImGui::Button("DIFICUTY", buttonSize))
-		{
-			
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
-		if (ImGui::Button("AUDIO", buttonSize))
-		{
 
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 3));
-		if (ImGui::Button("BACK", buttonSize))
-		{
-			configuracio = false;
-		}
+	ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
+	if (ImGui::Button("CONFIGURACIO", buttonSize)) {
+		// Acció boto 2
+		glfwSetWindowMonitor(window, nullptr, 216, 239, 640, 480, mode->refreshRate);
+
 	}
-	
+
+	ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
+	if (ImGui::Button("SORTIR", buttonSize)) {
+		// Acció boto 3
+		exit = true;
+	}
 
 	//RESTABLIR VALORS INICIALS DELS BOTONS PER A QUE EL PROGRAMA SEGUEIXI FUNCIONANT AMB NORALITAT
 	ImGui::PopStyleVar();
@@ -940,9 +942,25 @@ void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
 
 void draw_Menu_ImGui()
 {
-	// 1. Show the EntornVGI window. Finestra amb totes les opcions de l'aplicació.
+	// Start the Dear ImGui frame
 
-	ShowEntornVGIWindow(&show_EntornVGI_window); //ShowEntornVGIWindow(&show_EntornVGI_window);
+	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+	if (show_demo_window)
+		ImGui::ShowDemoWindow(&show_demo_window);
+
+	// 2. Show another simple window.
+	if (show_another_window)
+	{
+		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Text("Hello from another window!");
+		if (ImGui::Button("Close Me"))
+			show_another_window = false;
+		ImGui::End();
+	}
+
+	// 1. Show the EntornVGI window. Finestra amb totes les opcions de l'aplicació.
+	if (show_EntornVGI_window)
+		ShowEntornVGIWindow(&show_EntornVGI_window); //ShowEntornVGIWindow(&show_EntornVGI_window);
 
 	// 3. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
 	{
@@ -950,8 +968,14 @@ void draw_Menu_ImGui()
 		static int counter = 0;
 		static float PV[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
-		ImGui::Begin("Status Menu", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);                          // Create a window called "Status Menu" and append into it.
+		ImGui::Begin("Status Menu");                          // Create a window called "Status Menu" and append into it.
+
+		ImGui::Text("FInestres EntornVGI:");               // Display some text (you can use a format strings too)
+		ImGui::SameLine();
+		ImGui::Checkbox("EntornVGI Window", &show_EntornVGI_window);
+		ImGui::Separator();
+		ImGui::Spacing();
+
 		// Transformació PV de Coord. esfèriques (R,anglev,angleh) --> Coord. cartesianes (PVx,PVy,PVz)
 		if (camera == CAM_NAVEGA) { PV[0] = opvN.x; PV[1] = opvN.y; PV[2] = opvN.z; }
 		else {
@@ -1006,6 +1030,10 @@ void draw_Menu_ImGui()
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 		ImGui::SeparatorText("ImGui:");               // Display some text (you can use a format strings too)
 		ImGui::PopStyleColor();
+		ImGui::Checkbox("Demo ImGui Window", &show_demo_window);      // Edit bools storing our window open/close state
+		ImGui::SameLine();
+		ImGui::Checkbox("Another ImGui Window", &show_another_window);
+		ImGui::Spacing();
 
 		ImGui::Text("imgui versions: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
 		ImGui::Spacing();
@@ -1015,65 +1043,7 @@ void draw_Menu_ImGui()
 	}
 }
 
-void debugButton(bool& debug) {
-	int screenHeight = ImGui::GetIO().DisplaySize.y;
-	ImVec2 buttonPosition = ImVec2(10, screenHeight - 50); //Establir posicio del boto debug
-	ImVec2 button2position = ImVec2(100, screenHeight - 50);
-	
-	if (!debug) {
-		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
-		ImGui::Begin("DebugButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 
-		if (ImGui::Button("Debug")) {
-			debug = true; // Activar el modo debug cuando se presiona el botón
-			eixos = true;
-		}
-		ImGui::End();
-	}
-	else {
-		draw_Menu_ImGui();
-
-		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
-		ImGui::Begin("Debug Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
-
-		if (ImGui::Button("Cerrar Debug")) {
-			debug = false; // Desactivar el modo debug
-			eixos = false;
-		}
-		ImGui::End();
-	}
-
-}
-
-void fonsMenu()
-{
-	objecte = CUB;
-}
-
-void draw_menuInicial() 
-{
-	if (!iniciar)
-	{
-		draw_skycube();
-		draw_ProgramButtons(iniciar, configuracio, sortir);
-	}
-	else 
-	{
-		int screenHeight = ImGui::GetIO().DisplaySize.y;
-		ImVec2 button2position = ImVec2(150, screenHeight - 50);
-		ImGui::SetNextWindowPos(button2position, ImGuiCond_Always);
-		ImGui::Begin("PantallaInicial", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
-		if (ImGui::Button("Tornar a Inici")) {
-			iniciar = false; // Activar el modo debug cuando se presiona el botón
-			ObOBJ->netejaVAOList_OBJ();
-			ObOBJ->netejaTextures_OBJ();
-		}
-		ImGui::End();
-	}
-
-	debugButton(debug);
-
-}
 void MostraEntornVGIWindow(bool* p_open)
 {
 // Exceptionally add an extra assert here for people confused about initial Dear ImGui setup
@@ -1434,7 +1404,7 @@ void ShowEntornVGIWindow(bool* p_open)
 	}
 
 // Demonstrate the various window flags. Typically you would just use the default!
-	static bool no_titlebar = true;
+	static bool no_titlebar = false;
 	static bool no_scrollbar = false;
 	static bool no_menu = false;
 	static bool no_move = false;
@@ -1442,7 +1412,7 @@ void ShowEntornVGIWindow(bool* p_open)
 	static bool no_collapse = false;
 	static bool no_close = false;
 	static bool no_nav = false;
-	static bool no_background = true;
+	static bool no_background = false;
 	static bool no_bring_to_front = false;
 	static bool unsaved_document = false;
 
@@ -1459,9 +1429,11 @@ void ShowEntornVGIWindow(bool* p_open)
 	if (unsaved_document)   window_flags |= ImGuiWindowFlags_UnsavedDocument;
 	if (no_close)           p_open = NULL; // Don't pass our bool* to Begin
 
-	//Mauri: posicio de la fiestra 
-	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
-	ImGui::SetNextWindowPos(ImVec2(screenSize.x - 730, 10), ImGuiCond_Always); // Ajusta según el tamaño de tu ventana
+// We specify a default position/size in case there's no data in the .ini file.
+// We only do it to make the demo applications a little more welcoming, but typically this isn't required.
+	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
 
 	// Main body of the Demo window starts here.
 	if (!ImGui::Begin("EntornVGI Menu", p_open, window_flags))
@@ -5120,6 +5092,14 @@ int main(void)
 	ImGui_ImplOpenGL3_Init("#version 130");
 // Entorn VGI.ImGui: End Setup Dear ImGui context
 
+
+	//Carregar tema - NIL
+	SoundEngine = createIrrKlangDevice(irrklang::ESOD_WIN_MM);
+	if (!SoundEngine) {
+		return -1;
+	}
+	std::thread soundThread(playSoundLoop, SoundEngine, "C:/Users/mazou/Desktop/Entorn VGI-GLFW-VS2022 - GL4.3 - ImGui/resources/Release/Quiero_Cafe.wav");
+
 // Loop until the user closes the window -- MAURI: BUCLE PRINCIPAL
     while (!glfwWindowShouldClose(window) && !sortir)
     {  
@@ -5145,9 +5125,13 @@ int main(void)
 
 
 
-
 //AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
-		draw_menuInicial();
+		if (iniciar == false) {
+			draw_ProgramButtons(iniciar, configuracio, sortir);
+		}
+
+// Entorn VGI.ImGui: Dibuixa menú ImGui
+		draw_Menu_ImGui();
 
 // Crida a OnPaint() per redibuixar l'escena
 		OnPaint(window);
@@ -5169,6 +5153,10 @@ int main(void)
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(window) == 0 && !sortir);
 
+//Finalitzar el thread de la cançó - NIL
+	if (soundThread.joinable()) {
+		soundThread.detach();
+	}
 // Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -5181,5 +5169,7 @@ int main(void)
 
 	if (shaderLighting.getProgramID() != -1) shaderLighting.DeleteProgram();
 	if (shaderSkyBox.getProgramID() != -1) shaderSkyBox.DeleteProgram();
+
+	SoundEngine->drop();
     return 0;
 }
