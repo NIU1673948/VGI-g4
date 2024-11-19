@@ -4853,6 +4853,7 @@ int main(void)
 	float time = elapsedTime;
 	float now;
 	float delta;
+	float logicTime = 0.0f;
 
 
 // glfw: initialize and configure
@@ -5009,6 +5010,7 @@ int main(void)
 //AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
 		if (iniciar == false) {
 			draw_ProgramButtons(iniciar, configuracio, sortir);
+			logicTime = 0.0f;
 		}
 
 // Entorn VGI.ImGui: Dibuixa menú ImGui
@@ -5016,12 +5018,21 @@ int main(void)
 
 // Crida a OnPaint() per redibuixar l'escena
 		//assert(ObOBJ);
+
+		logicTime += delta;
+
+		// Executa la lògica del joc amb el pas de temps fix
+		
+
 		if (iniciar)
 		{
 			movi = game.player.m_x;
 
-			game.GetUserInput();
-			game.UpdateGameLogic();
+			if (logicTime >= FRAME_TIME) {
+				game.GetUserInput();
+				game.UpdateGameLogic();
+				logicTime -= FRAME_TIME;
+			}
 
 			OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT
 			dibuixa_Escena(game);

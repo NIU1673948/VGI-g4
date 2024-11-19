@@ -33,9 +33,12 @@ const int MIN_CARS = 1;
 const int PROB_OBJECT = 10;
 const int PROB_SHIELD = 4;
 
+const float TARGET_FPS = 60.0f;      // Freqüència de la lògica
+const float FRAME_TIME = 1.0f / TARGET_FPS;
+
 
 const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
-const float ROAD_START = (WINDOW_WIDTH - ROAD_WIDTH) / 2;
+const float ROAD_START = 0;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
 
 //const std::vector<sf::Color> carColors = {
@@ -96,6 +99,7 @@ public:
     unsigned int VAO, VBO, EBO;
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
+
     Road();
     ~Road();
     void setRoadSize(const float& width, const float& length);

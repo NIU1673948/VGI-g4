@@ -167,6 +167,7 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
     //road.setPosition(ROAD_START, 0);
     //window.draw(road);
 
+    road.draw(sh_programID, MatriuVista, MatriuTG);
     player.draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar el jugador
     for (int i = 0; i < NUM_ROWS; i++) {
         roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar cada fila
@@ -257,7 +258,7 @@ void GameLogic::DoPickUps()
 //}
 
 // Implementació Player
-Player::Player() : Car::Car(WINDOW_WIDTH / 2, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN)
+Player::Player() : Car::Car(ROAD_START + ROAD_WIDTH / 2, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN)
 {
     m_rotation = 0;
 
@@ -292,9 +293,10 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
     glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
     TransMatrix = MatriuTG;
 
-    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4)); // De moment la y és 0 ALBERT La z i la y estan intercanviades :(
+    TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4));
+    TransMatrix = glm::translate(TransMatrix, vec3(-m_width / 2, 0, -m_height / 4));
     TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0));
-    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4)); // ALBERT el /50.0f és perq el cotxe no se'n vagi lluny i es vegi
+    TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4)); 
     TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
     TransMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH/3.4f, CAR_WIDTH / 3.4f, CAR_WIDTH / 3.4f));
     ModelMatrix = TransMatrix;
@@ -352,12 +354,12 @@ bool Player::checkCollision(const Circle& object) const {
 //ROAD
 Road::Road() { //Per defecte es genera amb aquestes dimensions
     float w = ROAD_WIDTH;
-    float h = 5000000000000000;
+    float h = WINDOW_HEIGHT;
     vertices = {
-        -w / 2, 0.0f,  0.0f, 0.0f, 0.0f,  // Vértice inferior izquierdo
-         w / 2, 0.0f,  0.0f, 1.0f, 0.0f,  // Vértice inferior derecho
-        -w / 2, 0.0f, -h, 0.0f, 1.0f, // Vértice superior izquierdo
-         w / 2, 0.0f, -h, 1.0f, 1.0f  // Vértice superior derecho
+        0.0f, 0.0f,  -h, 0.0f, 0.0f,    // Vèrtex inferior esquerre
+         w,  0.0f,  -h, 1.0f, 0.0f,    // Vèrtex inferior dret
+        0.0f, 0.0f, h, 0.0f, 1.0f,       // Vèrtex superior esquerre
+         w,  0.0f, h, 1.0f, 1.0f         // Vèrtex superior dret
     };
 
     indices = {
