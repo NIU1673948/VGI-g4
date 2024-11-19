@@ -592,7 +592,7 @@ glm::mat4 Vista_Navega(GLuint sh_programID, CPunt3D pv, GLdouble n[3],GLdouble v
 				  CColor col_fons,CColor col_object,char objecte,bool color, int step,
 				  bool frnt_fcs, bool oculta, bool testv, bool bck_ln, 
 				  char iluminacio, bool llum_amb, LLUM* lumi, bool ifix, bool il2sides,
-				  bool eix, CMask3D reixa, CPunt3D hreixa)
+				  bool eix, CMask3D reixa, CPunt3D hreixa, float movi)
 {   double altfar=0;
 	glm::mat4 MatriuVista(1.0), TransMatrix(1.0);
 
@@ -608,11 +608,20 @@ glm::mat4 Vista_Navega(GLuint sh_programID, CPunt3D pv, GLdouble n[3],GLdouble v
 
 // Especificació del punt de vista (CÀMERA)
 	//gluLookAt(pv.x,pv.y,pv.z,n[0],n[1],n[2],v[0],v[1],v[2]);
-	MatriuVista = glm::lookAt(
-		glm::vec3(pv.x, pv.y, pv.z), // Camera is here
-		glm::vec3(n[0], n[1], n[2]), // and looks here
-		glm::vec3(v[0], v[1], v[2])  // Head is up (set to 0,-1,0 to look upside-down)
+	if (movi != NULL) {
+		MatriuVista = glm::lookAt(
+			glm::vec3(movi + 20, 50, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 10), // Camera is here
+			glm::vec3(movi + 20, 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
+			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
+	}
+	else {
+	MatriuVista = glm::lookAt(
+		glm::vec3(ROAD_START + ROAD_WIDTH / 2, 50, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 10), // Camera is here
+		glm::vec3(ROAD_START + ROAD_WIDTH / 2, 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
+		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+	);
+	}
 
 // Concatenar matrius Traslació amb la de càmera per al pan
 	MatriuVista = TransMatrix * MatriuVista;

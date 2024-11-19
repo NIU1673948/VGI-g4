@@ -26,7 +26,7 @@ void InitGL()
 
 //JAN camera
 	c = 0;
-
+	movi = 0;
 //------ Entorn VGI: Inicialització de les variables globals de CEntornVGIView
 	int i;
 
@@ -401,7 +401,7 @@ void OnSize(GLFWwindow* window, int width, int height)
 
 
 // OnPaint: Funció de dibuix i visualització en frame buffer del frame
-void OnPaint(GLFWwindow* window)
+void OnPaint(GLFWwindow* window, const GameLogic& game)
 {
 	// TODO: Agregue aquí su código de controlador de mensajes
 	GLdouble vpv[3] = { 0.0, 0.0, 1.0 };
@@ -448,7 +448,7 @@ void OnPaint(GLFWwindow* window)
 				n, vpv, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, true, pas,
 				front_faces, oculta, test_vis, back_line,
 				ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
-				eixos, grid, hgrid);
+				eixos, grid, hgrid, movi);
 		}
 		else if (camera == CAM_GEODE) {
 			ViewMatrix = Vista_Geode(shader_programID, OPV_G, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
@@ -5018,10 +5018,12 @@ int main(void)
 		//assert(ObOBJ);
 		if (iniciar)
 		{
+			movi = game.player.m_x;
+
 			game.GetUserInput();
 			game.UpdateGameLogic();
 
-			OnPaint(window); // Ara només configura la càmara i shaders (crec) ALBERT
+			OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT
 			dibuixa_Escena(game);
 		}
 		else

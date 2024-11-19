@@ -18,6 +18,7 @@
 
 //JAN Variables canvi camera
 	int c;
+	float movi;
 
 // Retrieving main monitor
 	GLFWmonitor* primary;
@@ -207,7 +208,7 @@
 // Entorn VGI: Control de l'EVENT ONSIZE
 	void OnSize(GLFWwindow* window, int width, int height);
 
-	void OnPaint(GLFWwindow* window);
+	void OnPaint(GLFWwindow* window, const GameLogic& game);
 	void configura_Escena();
 	void dibuixa_Escena(const GameLogic& game);
 	void Barra_Estat();
