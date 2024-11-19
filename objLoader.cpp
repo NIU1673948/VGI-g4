@@ -382,7 +382,7 @@ bool _stdcall COBJModel::LoadMaterialLib(const char szFileName[],
 ////////////////////////////////////////////////////////////////////////
 
 	char szString[MAX_STR_SIZE];	// Buffer used while reading the file
-	bool bFirstMaterial = TRUE;		// Only increase index after first 
+	bool bFirstMaterial = TRUE;		// Only increase index after first
 									// material has been set
 	FILE *hFileT = NULL;
 	int errno;
