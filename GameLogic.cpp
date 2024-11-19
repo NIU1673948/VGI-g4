@@ -10,11 +10,16 @@
 Car::Car(float x, float y, float w, float h, float speed)
     : m_x(x), m_y(y), m_height(h), m_width(w), m_speed(speed), m_visible(true)
 {
+
+    int i = rand() % 8 + 1;
     m_model = ::new COBJModel;
     m_model->netejaVAOList_OBJ();
     m_model->netejaTextures_OBJ();
-    const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj";
-    m_model->LoadModel(const_cast<char*>(rutaArxiu));
+    const string rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 0"+to_string(i)+"\\Car"+to_string(i)+".obj";
+    char rutaCopia[1024];
+    std::strncpy(rutaCopia, rutaArxiu.c_str(), sizeof(rutaCopia) - 1);
+    rutaCopia[sizeof(rutaCopia) - 1] = '\0';
+    m_model->LoadModel(const_cast<char*>(rutaCopia));
 }
 
 void Car::move(float dx, float dy) {
@@ -29,7 +34,7 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
         TransMatrix = MatriuTG;
 
         TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y)); // ALBERT mirar comentaris a Player::draw (és el mateix)
-        TransMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH/3.4f, CAR_WIDTH / 3.4f, CAR_WIDTH / 3.4f));
+        TransMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH/MODEL_WIDTH, CAR_WIDTH / MODEL_WIDTH, CAR_WIDTH / MODEL_WIDTH));
         ModelMatrix = TransMatrix;
 
         // Pas ModelView Matrix a shader
@@ -298,7 +303,7 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
     TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0));
     TransMatrix = glm::translate(TransMatrix, vec3(m_width / 2, 0, m_height / 4)); 
     TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
-    TransMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH/3.4f, CAR_WIDTH / 3.4f, CAR_WIDTH / 3.4f));
+    TransMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH/MODEL_WIDTH, CAR_WIDTH / MODEL_WIDTH, CAR_WIDTH / MODEL_WIDTH));
     ModelMatrix = TransMatrix;
 
     // Pas ModelView Matrix a shader

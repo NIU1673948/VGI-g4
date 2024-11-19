@@ -5032,6 +5032,8 @@ int main(void)
 				game.GetUserInput();
 				game.UpdateGameLogic();
 				logicTime -= FRAME_TIME;
+				if (!game.gameRunning)
+					sortir = true;
 			}
 
 			OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT

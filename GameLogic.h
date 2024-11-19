@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cmath>
+#include <string>
 #include "stdafx.h"
 #include "material.h"
 #include "visualitzacio.h"
@@ -32,6 +33,7 @@ const float COLLISION_START = WINDOW_HEIGHT / 4;
 const int MIN_CARS = 1;
 const int PROB_OBJECT = 10;
 const int PROB_SHIELD = 4;
+const float MODEL_WIDTH = 3.2; //3.4 original
 
 const float TARGET_FPS = 60.0f;      // Freqüència de la lògica
 const float FRAME_TIME = 1.0f / TARGET_FPS;
