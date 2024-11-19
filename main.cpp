@@ -882,7 +882,7 @@ void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
 	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
 	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
 
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3.0f); // Grosor del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
 	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
