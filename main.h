@@ -263,6 +263,7 @@
 	bool configuracio = false;
 	bool debug = false;
 	bool pantallaCompleta = true;
+	bool pantallaInici = true;
 
 // MAURI: Funcions del joc
 	void draw_ProgramButtons(bool& inici, bool& config, bool& exit);

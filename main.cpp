@@ -855,87 +855,101 @@ void draw_inici(){
 
 
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
-void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
-	ImVec2 buttonSize = ImVec2(200, 50); // Tamaño de los botones
-	float totalHeight = buttonSize.y * 6 + 10 * 4; // Altura total: 4 botones + márgenes entre ellos
-	float totalWidth = buttonSize.x; // Ancho total es el mismo que el del botón
 
-	// Obtener el tamaño de la pantalla o la ventana principal
+void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
+	// Obtener el tamaño de la pantalla o ventana principal
 	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
 
-	// Crear una nueva ventana de ImGui para los botones de la pantalla de Inicio
-	ImGui::SetNextWindowPos(ImVec2((screenSize.x - totalWidth)/2, (screenSize.y - totalHeight)/2)); // Posiciona la ventana en el centro
-	ImGui::SetNextWindowSize(ImVec2(totalWidth, totalHeight), ImGuiCond_Always);
+	// Calcular tamaño y márgenes dinámicos para los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f); // Botones ocupan 20% de ancho y 10% de alto de la pantalla
+	float buttonSpacing = screenSize.x * 0.02f; // Espaciado entre botones (2% del ancho)
+	float totalWidth = buttonSize.x * 4 + buttonSpacing * 3; // Ancho total considerando los márgenes
+	float totalHeight = buttonSize.y + 20.0f; // Altura total con margen adicional
+
+	// Ajustar la posición para centrar los botones en la pantalla
+	float windowWidth = totalWidth + 20;
+	float windowHeight = totalHeight + 20;
+	float posX = (screenSize.x - windowWidth) / 2.0f;
+	float posY = screenSize.y - windowHeight - 200.0f;
+
+	// Configurar la ventana de ImGui para los botones
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowSize(ImVec2(totalWidth + 20, totalHeight + 20), ImGuiCond_Always);
 	ImGui::Begin("Botons centrals", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
 
-	ImVec2 windowSize = ImGui::GetWindowSize();
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
+	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
 
-	float centerX = (windowSize.x - buttonSize.x) * 0.5f;
-	float startY = (windowSize.y - buttonSize.y * 3) * 0.5f;
-	//PARAMETRES PER MODIFICAR EL COLOR DELS BOTONS
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.7f, 1.0f)); // Color de fons del botó
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.6f, 0.8f, 1.0f)); // Color al pasar el ratoli
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.4f, 0.6f, 1.0f)); // Color al presionar
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f); // Boto arrodonit
-	
-	// Agregar botons per les funcionalitats del programa y actualizar estats
-	ImGui::SetCursorPos(ImVec2(centerX, startY));
-	if (!configuracio)
-	{
-		if (ImGui::Button("INICIAR", buttonSize)) {
-			// Acció boto 1
-			iniciar = true;
-			draw_inici();
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
-		if (ImGui::Button("GARATGE", buttonSize)) 
-		{
-			
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
-		if (ImGui::Button("CONFIGURACIO", buttonSize)) {
-			// Acció boto 2
-			configuracio = true;
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3.0f); // Grosor del borde
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
+	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f); // Bordes redondeados
 
+	if (pantallaInici) {
+		float centerX = (totalWidth - buttonSize.x) / 2.0f;
+		float centerY = (totalHeight - buttonSize.y) / 2.0f;
 
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 3));
-		if (ImGui::Button("SORTIR", buttonSize)) {
-			// Acció boto 3
-			exit = true;
+		ImGui::SetCursorPos(ImVec2(centerX, centerY));
+		if (ImGui::Button("PLAY", buttonSize)) {
+			pantallaInici = false;
 		}
 	}
-	else
-	{
-		if (ImGui::Button("FULLSCREEN", buttonSize))
-		{
-			OnFull_Screen(primary, window);
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
-		if (ImGui::Button("DIFICUTY", buttonSize))
-		{
-			
-		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
-		if (ImGui::Button("AUDIO", buttonSize))
-		{
+	else {
+		if (!config) {
+			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+			if (ImGui::Button("INICIAR", buttonSize)) {
+				inici = true;
+				draw_inici();
+			}
 
+			ImGui::SameLine();
+			if (ImGui::Button("GARATGE", buttonSize)) {
+				// Acció boto garatge
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("CONFIGURACIO", buttonSize)) {
+				config = true;
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("SORTIR", buttonSize)) {
+				exit = true;
+			}
 		}
-		ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 3));
-		if (ImGui::Button("BACK", buttonSize))
-		{
-			configuracio = false;
+		else {
+			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+			if (ImGui::Button("FULLSCREEN", buttonSize)) {
+				OnFull_Screen(primary, window);
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("DIFICULTAD", buttonSize)) {
+				// Acció boto dificultat
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("AUDIO", buttonSize)) {
+				// Acció boto audio
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("BACK", buttonSize)) {
+				config = false;
+			}
 		}
 	}
-	
 
-	//RESTABLIR VALORS INICIALS DELS BOTONS PER A QUE EL PROGRAMA SEGUEIXI FUNCIONANT AMB NORALITAT
-	ImGui::PopStyleVar();
-	ImGui::PopStyleColor(3);
+	// Restaurar estilos
+	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(4);
 
 	ImGui::End();
 }
-
 
 
 void draw_Menu_ImGui()
@@ -1018,7 +1032,6 @@ void draw_Menu_ImGui()
 void debugButton(bool& debug) {
 	int screenHeight = ImGui::GetIO().DisplaySize.y;
 	ImVec2 buttonPosition = ImVec2(10, screenHeight - 50); //Establir posicio del boto debug
-	ImVec2 button2position = ImVec2(100, screenHeight - 50);
 	
 	if (!debug) {
 		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
@@ -1042,38 +1055,93 @@ void debugButton(bool& debug) {
 		}
 		ImGui::End();
 	}
+}
 
+GLuint background = 0; // Variable global per a la textura del fons
+
+void carregarFons() {
+	// Cargar la textura una sola vez
+	if (background == 0) {
+		background = loadIMA_SOIL("..\\x64\\Release\\textures\\Menu.png");
+	}
+}
+
+void netejarFons() {
+	if (background != 0) {
+		glDeleteTextures(1, &background);
+		background = 0;
+	}
 }
 
 void fonsMenu()
 {
-	objecte = CUB;
+	carregarFons();
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Sin padding en la ventana
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);     // Sin borde en la ventana
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+
+	ImGui::Begin("Background", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs);
+	ImGui::Image((ImTextureID)(intptr_t)background, ImVec2(screenSize.x, screenSize.y));
+	
+	ImGui::PopStyleVar(2);
+	ImGui::End();
 }
 
-void draw_menuInicial() 
+
+void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 {
+	/*
+		Aquesta es la funcio principal del menu inicial del joc i es la funcio que genera tots els btotons que tinguin 
+		a verue amb l'entorn i la jugabilitat.
+		
+		La majoria de variables que condicionen els botons que estan activats i els que no es troben al main.h.
+
+		Quan inciar = false, es mostra la imatge de fons del menu i els botons del menu del joc, en canvi quan s'activa es mostra un boto
+		petit a baix a l'esquerra per tornar a la pantalla principal.
+
+		També hi ha implementada una funcio que converteix la finestra de la configuracio de l'entorn en un boto petit anomenat debug.
+		Aquest boto hauria d'apareixer sempre (i si mes endavant no el volem el podem borrar) pero de moment funciona be fins que cliquem al boto
+		per tornar a la pantalla inicial <--FALTA REVISAR.
+
+		Per a que el menu funcioni correctament s'ha de crear una carpeta anomenada "Fonts" (amb 2 tipografies que utilitzarem pel joc)
+		a la mateixa carpeta on es troben les textures, obj etc.. i s'ha de tenir la imatge de fons a la carpeta de Textures.
+	
+	*/
 	if (!iniciar)
 	{
-		draw_skycube();
+		fonsMenu();
+		ImGui::PushFont(fontJoc);
 		draw_ProgramButtons(iniciar, configuracio, sortir);
+		ImGui::PopFont();
 	}
-	else 
+	else
 	{
+		
 		int screenHeight = ImGui::GetIO().DisplaySize.y;
 		ImVec2 button2position = ImVec2(150, screenHeight - 50);
 		ImGui::SetNextWindowPos(button2position, ImGuiCond_Always);
 		ImGui::Begin("PantallaInicial", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		ImGui::PushFont(fontDebug);
 		if (ImGui::Button("Tornar a Inici")) {
-			iniciar = false; // Activar el modo debug cuando se presiona el botón
+			iniciar = false;
 			ObOBJ->netejaVAOList_OBJ();
 			ObOBJ->netejaTextures_OBJ();
 		}
+		ImGui::PopFont();
 		ImGui::End();
+
 	}
 
-	debugButton(debug);
+	ImGui::PushFont(fontDebug);
+	debugButton(debug); //MAURI: El menu debug desapareix quan inicies i despres surts de la partida ns pq
+	ImGui::PopFont();
 
 }
+
 void MostraEntornVGIWindow(bool* p_open)
 {
 // Exceptionally add an extra assert here for people confused about initial Dear ImGui setup
@@ -4999,7 +5067,6 @@ int main(void)
 	float now;
 	float delta;
 
-
 // glfw: initialize and configure
 // ------------------------------
 	if (!glfwInit())
@@ -5108,6 +5175,7 @@ int main(void)
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -5119,6 +5187,17 @@ int main(void)
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 // Entorn VGI.ImGui: End Setup Dear ImGui context
+
+	// Cargar la fuente principal
+// Intentamos cargar la primera fuente
+	io.Fonts->AddFontFromFileTTF("..\\x64\\Release\\Fonts\\Fifties Movies.ttf", 24.0f);
+	ImFont* largeFont = io.Fonts->Fonts.back(); // Obtén la fuente cargada
+
+	// Intentamos cargar la segunda fuente
+	io.Fonts->AddFontFromFileTTF("..\\x64\\Release\\Fonts\\ConsolaMono-Book.ttf", 16.0f);
+	ImFont* debugFont = io.Fonts->Fonts.back();  // Obtén la fuente cargada
+
+
 
 // Loop until the user closes the window -- MAURI: BUCLE PRINCIPAL
     while (!glfwWindowShouldClose(window) && !sortir)
@@ -5143,11 +5222,8 @@ int main(void)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-
-
-
 //AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
-		draw_menuInicial();
+		draw_menuInicial(largeFont, debugFont);
 
 // Crida a OnPaint() per redibuixar l'escena
 		OnPaint(window);
@@ -5168,6 +5244,8 @@ int main(void)
 // Check if the ESC key was pressed or the window was closed (MAURI: O si el boto sortir de la pantalla d'inici ha estat clicat)
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(window) == 0 && !sortir);
+
+	netejarFons();
 
 // Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();
