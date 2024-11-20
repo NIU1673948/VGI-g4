@@ -770,76 +770,108 @@ void draw_inici(){
 
 
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
+
 void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
+	// Obtener el tamaño de la pantalla o ventana principal
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
 
-	// Crear una nueva ventana de ImGui per als botons de la pantalla d'Inici
-	ImGui::SetNextWindowPos(ImVec2(0, 0)); // Posiciona la finestra a la cantonada superior esquerra
-	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize); // Tamany de la finestra igual que la pantalla
+	// Calcular tamaño y márgenes dinámicos para los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f); // Botones ocupan 20% de ancho y 10% de alto de la pantalla
+	float buttonSpacing = screenSize.x * 0.02f; // Espaciado entre botones (2% del ancho)
+	float totalWidth = buttonSize.x * 4 + buttonSpacing * 3; // Ancho total considerando los márgenes
+	float totalHeight = buttonSize.y + 20.0f; // Altura total con margen adicional
+
+	// Ajustar la posición para centrar los botones en la pantalla
+	float windowWidth = totalWidth + 20;
+	float windowHeight = totalHeight + 20;
+	float posX = (screenSize.x - windowWidth) / 2.0f;
+	float posY = screenSize.y - windowHeight - 200.0f;
+
+	// Configurar la ventana de ImGui para los botones
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowSize(ImVec2(totalWidth + 20, totalHeight + 20), ImGuiCond_Always);
 	ImGui::Begin("Botons centrals", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
-	
-	ImVec2 windowSize = ImGui::GetWindowSize();
-	ImVec2 buttonSize = ImVec2(200, 50); // Tamany dels botons
 
-	float centerX = (windowSize.x - buttonSize.x) * 0.5f;
-	float startY = (windowSize.y - buttonSize.y * 3) * 0.5f;
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
+	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
 
-	//PARAMETRES PER MODIFICAR EL COLOR DELS BOTONS
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.7f, 1.0f)); // Color de fons del botó
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.6f, 0.8f, 1.0f)); // Color al pasar el ratoli
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.4f, 0.6f, 1.0f)); // Color al presionar
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f); // Boto arrodonit
-	
-	// Agregar botons per les funcionalitats del programa y actualizar estats
-	ImGui::SetCursorPos(ImVec2(centerX, startY));
-	if (ImGui::Button("INICIAR", buttonSize)) {
-		// Acció boto 1
-		iniciar = true;
-		draw_inici();
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
+	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f); // Bordes redondeados
+
+	if (pantallaInici) {
+		float centerX = (totalWidth - buttonSize.x) / 2.0f;
+		float centerY = (totalHeight - buttonSize.y) / 2.0f;
+
+		ImGui::SetCursorPos(ImVec2(centerX, centerY));
+		if (ImGui::Button("PLAY", buttonSize)) {
+			pantallaInici = false;
+		}
+	}
+	else {
+		if (!config) {
+			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+			if (ImGui::Button("INICIAR", buttonSize)) {
+				inici = true;
+				draw_inici();
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("GARATGE", buttonSize)) {
+				// Acció boto garatge
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("CONFIGURACIO", buttonSize)) {
+				config = true;
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("SORTIR", buttonSize)) {
+				exit = true;
+			}
+		}
+		else {
+			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+			if (ImGui::Button("FULLSCREEN", buttonSize)) {
+				OnFull_Screen(primary, window);
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("DIFICULTAD", buttonSize)) {
+				// Acció boto dificultat
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("AUDIO", buttonSize)) {
+				// Acció boto audio
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("BACK", buttonSize)) {
+				config = false;
+			}
+		}
 	}
 
-	ImGui::SetCursorPos(ImVec2(centerX, startY + buttonSize.y + 10));
-	if (ImGui::Button("CONFIGURACIO", buttonSize)) {
-		// Acció boto 2
-		glfwSetWindowMonitor(window, nullptr, 216, 239, 640, 480, mode->refreshRate);
-
-	}
-
-	ImGui::SetCursorPos(ImVec2(centerX, startY + (buttonSize.y + 10) * 2));
-	if (ImGui::Button("SORTIR", buttonSize)) {
-		// Acció boto 3
-		exit = true;
-	}
-
-	//RESTABLIR VALORS INICIALS DELS BOTONS PER A QUE EL PROGRAMA SEGUEIXI FUNCIONANT AMB NORALITAT
-	ImGui::PopStyleVar();
-	ImGui::PopStyleColor(3);
+	// Restaurar estilos
+	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(4);
 
 	ImGui::End();
 }
 
 
-
 void draw_Menu_ImGui()
 {
-	// Start the Dear ImGui frame
-
-	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
-
-	// 2. Show another simple window.
-	if (show_another_window)
-	{
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
-	}
-
 	// 1. Show the EntornVGI window. Finestra amb totes les opcions de l'aplicació.
-	if (show_EntornVGI_window)
-		ShowEntornVGIWindow(&show_EntornVGI_window); //ShowEntornVGIWindow(&show_EntornVGI_window);
+
+	ShowEntornVGIWindow(&show_EntornVGI_window); //ShowEntornVGIWindow(&show_EntornVGI_window);
 
 	// 3. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
 	{
@@ -847,14 +879,8 @@ void draw_Menu_ImGui()
 		static int counter = 0;
 		static float PV[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-		ImGui::Begin("Status Menu");                          // Create a window called "Status Menu" and append into it.
-
-		ImGui::Text("FInestres EntornVGI:");               // Display some text (you can use a format strings too)
-		ImGui::SameLine();
-		ImGui::Checkbox("EntornVGI Window", &show_EntornVGI_window);
-		ImGui::Separator();
-		ImGui::Spacing();
-
+		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
+		ImGui::Begin("Status Menu", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);                          // Create a window called "Status Menu" and append into it.
 		// Transformació PV de Coord. esfèriques (R,anglev,angleh) --> Coord. cartesianes (PVx,PVy,PVz)
 		if (camera == CAM_NAVEGA) { PV[0] = opvN.x; PV[1] = opvN.y; PV[2] = opvN.z; }
 		else {
@@ -881,11 +907,11 @@ void draw_Menu_ImGui()
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 		ImGui::SeparatorText("CAMERA:");
 		ImGui::PopStyleColor();
-		
+
 		ImGui::InputFloat3("Esferiques (R,alfa,beta)", cam_Esferica);
 		ImGui::InputFloat3("Cartesianes (PVx,PVy,PVz)", PV);
 		//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		
+
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 		ImGui::SeparatorText("COLORS:");
 		ImGui::PopStyleColor();
@@ -899,20 +925,16 @@ void draw_Menu_ImGui()
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 		ImGui::SeparatorText("TRANSFORMA:");
 		ImGui::PopStyleColor();
-		float tras_ImGui[3] = { (float) TG.VTras.x,(float) TG.VTras.y,(float) TG.VTras.z };
+		float tras_ImGui[3] = { (float)TG.VTras.x,(float)TG.VTras.y,(float)TG.VTras.z };
 		ImGui::InputFloat3("Traslacio (Tx,Ty,Tz)", tras_ImGui);
-		float rota_ImGui[3] = { (float) TG.VRota.x,(float) TG.VRota.y,(float) TG.VRota.z };
+		float rota_ImGui[3] = { (float)TG.VRota.x,(float)TG.VRota.y,(float)TG.VRota.z };
 		ImGui::InputFloat3("Rotacio (Rx,Ry,Rz)", rota_ImGui);
-		float scal_ImGui[3] = { (float) TG.VScal.x,(float) TG.VScal.y,(float) TG.VScal.z };
+		float scal_ImGui[3] = { (float)TG.VScal.x,(float)TG.VScal.y,(float)TG.VScal.z };
 		ImGui::InputFloat3("Escala (Sx, Sy, Sz)", scal_ImGui);
 
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 		ImGui::SeparatorText("ImGui:");               // Display some text (you can use a format strings too)
 		ImGui::PopStyleColor();
-		ImGui::Checkbox("Demo ImGui Window", &show_demo_window);      // Edit bools storing our window open/close state
-		ImGui::SameLine();
-		ImGui::Checkbox("Another ImGui Window", &show_another_window);
-		ImGui::Spacing();
 
 		ImGui::Text("imgui versions: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
 		ImGui::Spacing();
@@ -920,6 +942,117 @@ void draw_Menu_ImGui()
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
 	}
+}
+
+void debugButton(bool& debug) {
+	int screenHeight = ImGui::GetIO().DisplaySize.y;
+	ImVec2 buttonPosition = ImVec2(10, screenHeight - 50); //Establir posicio del boto debug
+
+	if (!debug) {
+		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
+		ImGui::Begin("DebugButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+
+		if (ImGui::Button("Debug")) {
+			debug = true; // Activar el modo debug cuando se presiona el botón
+			eixos = true;
+		}
+		ImGui::End();
+	}
+	else {
+		draw_Menu_ImGui();
+
+		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
+		ImGui::Begin("Debug Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+
+		if (ImGui::Button("Cerrar Debug")) {
+			debug = false; // Desactivar el modo debug
+			eixos = false;
+		}
+		ImGui::End();
+	}
+}
+
+GLuint background = 0; // Variable global per a la textura del fons
+
+void carregarFons() {
+	// Cargar la textura una sola vez
+	if (background == 0) {
+		background = loadIMA_SOIL("..\\x64\\Release\\textures\\Menu.png");
+	}
+}
+
+void netejarFons() {
+	if (background != 0) {
+		glDeleteTextures(1, &background);
+		background = 0;
+	}
+}
+
+void fonsMenu()
+{
+	carregarFons();
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Sin padding en la ventana
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);     // Sin borde en la ventana
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+
+	ImGui::Begin("Background", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs);
+	ImGui::Image((ImTextureID)(intptr_t)background, ImVec2(screenSize.x, screenSize.y));
+
+	ImGui::PopStyleVar(2);
+	ImGui::End();
+}
+
+
+void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
+{
+	/*
+		Aquesta es la funcio principal del menu inicial del joc i es la funcio que genera tots els btotons que tinguin
+		a verue amb l'entorn i la jugabilitat.
+
+		La majoria de variables que condicionen els botons que estan activats i els que no es troben al main.h.
+
+		Quan inciar = false, es mostra la imatge de fons del menu i els botons del menu del joc, en canvi quan s'activa es mostra un boto
+		petit a baix a l'esquerra per tornar a la pantalla principal.
+
+		També hi ha implementada una funcio que converteix la finestra de la configuracio de l'entorn en un boto petit anomenat debug.
+		Aquest boto hauria d'apareixer sempre (i si mes endavant no el volem el podem borrar) pero de moment funciona be fins que cliquem al boto
+		per tornar a la pantalla inicial <--FALTA REVISAR.
+
+		Per a que el menu funcioni correctament s'ha de crear una carpeta anomenada "Fonts" (amb 2 tipografies que utilitzarem pel joc)
+		a la mateixa carpeta on es troben les textures, obj etc.. i s'ha de tenir la imatge de fons a la carpeta de Textures.
+
+	*/
+	if (!iniciar)
+	{
+		fonsMenu();
+		ImGui::PushFont(fontJoc);
+		draw_ProgramButtons(iniciar, configuracio, sortir);
+		ImGui::PopFont();
+	}
+	else
+	{
+		int screenHeight = ImGui::GetIO().DisplaySize.y;
+		ImVec2 button2position = ImVec2(150, screenHeight - 50);
+		ImGui::SetNextWindowPos(button2position, ImGuiCond_Always);
+		ImGui::Begin("PantallaInicial", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		ImGui::PushFont(fontDebug);
+		if (ImGui::Button("Tornar a Inici")) {
+			iniciar = false;
+			ObOBJ->netejaVAOList_OBJ();
+			ObOBJ->netejaTextures_OBJ();
+		}
+		ImGui::PopFont();
+		ImGui::End();
+	}
+
+	ImGui::PushFont(fontDebug);
+	debugButton(debug); //MAURI: El menu debug desapareix quan inicies i despres surts de la partida ns pq
+	ImGui::PopFont();
+
 }
 
 
@@ -1220,11 +1353,11 @@ void ShowEntornVGIWindow(bool* p_open)
 	int i = 0; // Variable per a menús de selecció.
 	static int selected = -1;
 
-// Exceptionally add an extra assert here for people confused about initial Dear ImGui setup
-// Most functions would normally just crash if the context is missing.
+	// Exceptionally add an extra assert here for people confused about initial Dear ImGui setup
+	// Most functions would normally just crash if the context is missing.
 	IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!");
 
-// Examples Apps(accessible from the "Examples" menu)
+	// Examples Apps(accessible from the "Examples" menu)
 	static bool show_app_main_menu_bar = false;
 	static bool show_app_documents = false;
 	static bool show_app_console = false;
@@ -1244,21 +1377,21 @@ void ShowEntornVGIWindow(bool* p_open)
 
 	if (show_window_about)       ShowAboutWindow(&show_window_about);
 
-/*
-	if (show_app_main_menu_bar)       ShowExampleAppMainMenuBar();
-	if (show_app_documents)           ShowExampleAppDocuments(&show_app_documents);
-	if (show_app_console)             ShowExampleAppConsole(&show_app_console);
-	if (show_app_log)                 ShowExampleAppLog(&show_app_log);
-	if (show_app_layout)              ShowExampleAppLayout(&show_app_layout);
-	if (show_app_property_editor)     ShowExampleAppPropertyEditor(&show_app_property_editor);
-	if (show_app_long_text)           ShowExampleAppLongText(&show_app_long_text);
-	if (show_app_auto_resize)         ShowExampleAppAutoResize(&show_app_auto_resize);
-	if (show_app_constrained_resize)  ShowExampleAppConstrainedResize(&show_app_constrained_resize);
-	if (show_app_simple_overlay)      ShowExampleAppSimpleOverlay(&show_app_simple_overlay);
-	if (show_app_fullscreen)          ShowExampleAppFullscreen(&show_app_fullscreen);
-	if (show_app_window_titles)       ShowExampleAppWindowTitles(&show_app_window_titles);
-	if (show_app_custom_rendering)    ShowExampleAppCustomRendering(&show_app_custom_rendering);
-*/
+	/*
+		if (show_app_main_menu_bar)       ShowExampleAppMainMenuBar();
+		if (show_app_documents)           ShowExampleAppDocuments(&show_app_documents);
+		if (show_app_console)             ShowExampleAppConsole(&show_app_console);
+		if (show_app_log)                 ShowExampleAppLog(&show_app_log);
+		if (show_app_layout)              ShowExampleAppLayout(&show_app_layout);
+		if (show_app_property_editor)     ShowExampleAppPropertyEditor(&show_app_property_editor);
+		if (show_app_long_text)           ShowExampleAppLongText(&show_app_long_text);
+		if (show_app_auto_resize)         ShowExampleAppAutoResize(&show_app_auto_resize);
+		if (show_app_constrained_resize)  ShowExampleAppConstrainedResize(&show_app_constrained_resize);
+		if (show_app_simple_overlay)      ShowExampleAppSimpleOverlay(&show_app_simple_overlay);
+		if (show_app_fullscreen)          ShowExampleAppFullscreen(&show_app_fullscreen);
+		if (show_app_window_titles)       ShowExampleAppWindowTitles(&show_app_window_titles);
+		if (show_app_custom_rendering)    ShowExampleAppCustomRendering(&show_app_custom_rendering);
+	*/
 
 	// Dear ImGui Tools/Apps (accessible from the "Tools" menu)
 	static bool show_app_metrics = false;
@@ -1282,8 +1415,8 @@ void ShowEntornVGIWindow(bool* p_open)
 		ImGui::End();
 	}
 
-// Demonstrate the various window flags. Typically you would just use the default!
-	static bool no_titlebar = false;
+	// Demonstrate the various window flags. Typically you would just use the default!
+	static bool no_titlebar = true;
 	static bool no_scrollbar = false;
 	static bool no_menu = false;
 	static bool no_move = false;
@@ -1291,7 +1424,7 @@ void ShowEntornVGIWindow(bool* p_open)
 	static bool no_collapse = false;
 	static bool no_close = false;
 	static bool no_nav = false;
-	static bool no_background = false;
+	static bool no_background = true;
 	static bool no_bring_to_front = false;
 	static bool unsaved_document = false;
 
@@ -1308,11 +1441,9 @@ void ShowEntornVGIWindow(bool* p_open)
 	if (unsaved_document)   window_flags |= ImGuiWindowFlags_UnsavedDocument;
 	if (no_close)           p_open = NULL; // Don't pass our bool* to Begin
 
-// We specify a default position/size in case there's no data in the .ini file.
-// We only do it to make the demo applications a little more welcoming, but typically this isn't required.
-	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+	//Mauri: posicio de la fiestra 
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+	ImGui::SetNextWindowPos(ImVec2(screenSize.x - 730, 10), ImGuiCond_Always); // Ajusta según el tamaño de tu ventana
 
 	// Main body of the Demo window starts here.
 	if (!ImGui::Begin("EntornVGI Menu", p_open, window_flags))
@@ -1322,13 +1453,13 @@ void ShowEntornVGIWindow(bool* p_open)
 		return;
 	}
 
-// Most "big" widgets share a common width settings by default. See 'Demo->Layout->Widgets Width' for details.
-// e.g. Use 2/3 of the space for widgets and 1/3 for labels (right align)
-//ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.35f);
-// e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
+	// Most "big" widgets share a common width settings by default. See 'Demo->Layout->Widgets Width' for details.
+	// e.g. Use 2/3 of the space for widgets and 1/3 for labels (right align)
+	//ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.35f);
+	// e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
 	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
-// Entorn VGI: Menu Bar (Pop Ups desplagables (Arxius, About)
+	// Entorn VGI: Menu Bar (Pop Ups desplagables (Arxius, About)
 	if (ImGui::BeginMenuBar())
 	{
 		if (ImGui::BeginMenu("Arxius"))
@@ -1354,13 +1485,13 @@ void ShowEntornVGIWindow(bool* p_open)
 	ImGui::Text("Finestra de menus d'EntornVGI");
 	ImGui::Spacing();
 
-// Entorn VGI: DESPLEGABLES
-// DESPLEGABLE CAMERA
-	//IMGUI_DEMO_MARKER("Help");
+	// Entorn VGI: DESPLEGABLES
+	// DESPLEGABLE CAMERA
+		//IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("CAMERA"))
 	{
 		// Entorn VGI. Mostrar Opcions desplegable TIPUS CAMERA
- 
+
 		//IMGUI_DEMO_MARKER("Widgets/Basic/RadioButton");
 		oCamera = shortCut_Camera();	//static int oCamera = 0;
 		ImGui::RadioButton("Esferica (<Shift>+L)", &oCamera, 0); ImGui::SameLine();
@@ -1384,7 +1515,7 @@ void ShowEntornVGIWindow(bool* p_open)
 			clickCE = 0;
 			if (camera == CAM_ESFERICA) {
 				OPV.R = 15.0;	OPV.alfa = 0.0; OPV.beta = 0.0;
-				}
+			}
 		}
 
 		static int clickCN = 0;
@@ -1410,7 +1541,8 @@ void ShowEntornVGIWindow(bool* p_open)
 
 		// EntornVGI: Si s'ha apretat el botó "Origen Geode"
 		if (clickCG)
-		{	clickCG = 0;
+		{
+			clickCG = 0;
 			if (camera == CAM_GEODE) {
 				OPV.R = 0.0;		OPV.alfa = 0.0;		OPV.beta = 0.0;				// Origen PV en esfèriques
 				mobil = true;		zzoom = true;	zzoomO = false;	 satelit = false;	pan = false;
@@ -1429,42 +1561,44 @@ void ShowEntornVGIWindow(bool* p_open)
 			break;
 		case 1: // Opció CAMERA Navega
 			if ((projeccio != ORTO) && (projeccio != CAP))
-				{	camera = CAM_NAVEGA;
-					// Desactivació de zoom, mobil, Transformacions Geomètriques via mouse i pan 
-					//		si navega activat
-					mobil = true;	zzoom = true;
-					transX = false;	transY = false;	transZ = false;
-					//pan = false;
-					tr_cpv.x = 0.0;		tr_cpv.y = 0.0;		tr_cpv.z = 0.0;		// Inicialitzar a 0 desplaçament de pantalla
-					tr_cpvF.x = 0.0;	tr_cpvF.y = 0.0;	tr_cpvF.x = 0.0;	// Inicialitzar a 0 desplaçament de pantalla
+			{
+				camera = CAM_NAVEGA;
+				// Desactivació de zoom, mobil, Transformacions Geomètriques via mouse i pan 
+				//		si navega activat
+				mobil = true;	zzoom = true;
+				transX = false;	transY = false;	transZ = false;
+				//pan = false;
+				tr_cpv.x = 0.0;		tr_cpv.y = 0.0;		tr_cpv.z = 0.0;		// Inicialitzar a 0 desplaçament de pantalla
+				tr_cpvF.x = 0.0;	tr_cpvF.y = 0.0;	tr_cpvF.x = 0.0;	// Inicialitzar a 0 desplaçament de pantalla
 
-					// Incialitzar variables Navega segons configuració eixos en Polars
-					if (Vis_Polar == POLARZ) {
-						opvN.x = 10.0;	opvN.y = 0.0;	opvN.z = 0.0; // opvN = (10,0,0)
-						n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
-						angleZ = 0.0;
-					}
-						else if (Vis_Polar == POLARY) {
-								opvN.x = 0.0;	opvN.y = 0.0;	opvN.z = 10.0; // opvN = (10,0,0)
-								n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
-								angleZ = 0.0;
-								}
-									else if (Vis_Polar == POLARX) {
-											opvN.x = 0.0;	opvN.y = 10.0;	opvN.z = 0.0;	 // opvN = (0,10,0)
-											n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
-											angleZ = 0.0;
-											}
+				// Incialitzar variables Navega segons configuració eixos en Polars
+				if (Vis_Polar == POLARZ) {
+					opvN.x = 10.0;	opvN.y = 0.0;	opvN.z = 0.0; // opvN = (10,0,0)
+					n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
+					angleZ = 0.0;
 				}
+				else if (Vis_Polar == POLARY) {
+					opvN.x = 0.0;	opvN.y = 0.0;	opvN.z = 10.0; // opvN = (10,0,0)
+					n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
+					angleZ = 0.0;
+				}
+				else if (Vis_Polar == POLARX) {
+					opvN.x = 0.0;	opvN.y = 10.0;	opvN.z = 0.0;	 // opvN = (0,10,0)
+					n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
+					angleZ = 0.0;
+				}
+			}
 			break;
 		case 2:	// Opció CAMERA Geode
 			if ((projeccio != ORTO) && (projeccio != CAP))
-				{	camera = CAM_GEODE;
-					// Inicialitzar paràmetres Càmera Geode
-					OPV.R = 0.0;		OPV.alfa = 0.0;		OPV.beta = 0.0;				// Origen PV en esfèriques
-					mobil = true;	zzoom = true;	zzoomO = false;	 satelit = false;	pan = false;
-					Vis_Polar = POLARZ;
-					llumGL[5].encesa = true;
-				}
+			{
+				camera = CAM_GEODE;
+				// Inicialitzar paràmetres Càmera Geode
+				OPV.R = 0.0;		OPV.alfa = 0.0;		OPV.beta = 0.0;				// Origen PV en esfèriques
+				mobil = true;	zzoom = true;	zzoomO = false;	 satelit = false;	pan = false;
+				Vis_Polar = POLARZ;
+				llumGL[5].encesa = true;
+			}
 			break;
 		default: // Opció PROJECCIÓ <Altres Projeccions>
 			break;
@@ -1474,7 +1608,7 @@ void ShowEntornVGIWindow(bool* p_open)
 		ImGui::SeparatorText("POLARS");
 		ImGui::PopStyleColor();
 		// Entorn VGI. Mostrar Opcions desplegable POLARS
-		
+
 		//IMGUI_DEMO_MARKER("Widgets/Basic/RadioButton");
 		static int oPolars = 2;
 		ImGui::RadioButton("Polars X (<Shift>+X)", &oPolars, 0); ImGui::SameLine();
@@ -1491,7 +1625,7 @@ void ShowEntornVGIWindow(bool* p_open)
 				opvN.x = 0.0;	opvN.y = 10.0;	opvN.z = 0.0;	 // opvN = (0,10,0)
 				n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
 				angleZ = 0.0;
-				}
+			}
 			break;
 		case 1: // Opció POLARS Y
 			if ((camera == CAM_ESFERICA) || (camera == CAM_NAVEGA)) Vis_Polar = POLARY;
@@ -1500,7 +1634,7 @@ void ShowEntornVGIWindow(bool* p_open)
 				opvN.x = 0.0;	opvN.y = 0.0;	opvN.z = 10.0; // opvN = (0,0,10)
 				n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
 				angleZ = 0.0;
-				}
+			}
 			break;
 		case 2:	// Opció POLARS Z
 			if ((camera == CAM_ESFERICA) || (camera == CAM_NAVEGA)) Vis_Polar = POLARZ;
@@ -1514,16 +1648,17 @@ void ShowEntornVGIWindow(bool* p_open)
 		}
 	}
 
-// DESPLEGABLE VISTA
-	//IMGUI_DEMO_MARKER("Help");
+	// DESPLEGABLE VISTA
+		//IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("VISTA"))
 	{
 		if (ImGui::BeginTable("split", 2))
-		{	ImGui::TableNextColumn(); ImGui::Checkbox("Full Screen? ", &fullscreen);
+		{
+			ImGui::TableNextColumn(); ImGui::Checkbox("Full Screen? ", &fullscreen);
 			ImGui::TableNextColumn(); ImGui::Checkbox("Eixos?", &eixos);
 			ImGui::TableNextColumn(); ImGui::Checkbox("SkyBox?", &SkyBoxCube);
 			ImGui::EndTable();
-			}
+		}
 		ImGui::Spacing();
 		ImGui::Separator();
 
@@ -1563,20 +1698,22 @@ void ShowEntornVGIWindow(bool* p_open)
 
 		if (clicked)
 		{
-			if (pan) {	clicked = 0;
-						fact_pan = 1;
-						tr_cpv.x = 0;	tr_cpv.y = 0;	tr_cpv.z = 0;
-					}
+			if (pan) {
+				clicked = 0;
+				fact_pan = 1;
+				tr_cpv.x = 0;	tr_cpv.y = 0;	tr_cpv.z = 0;
+			}
 		}
 
-		if (pan) {	mobil = true;		zzoom = true;
-					transX = false;		transY = false;		transZ = false;
-					//navega = false;
-				}
+		if (pan) {
+			mobil = true;		zzoom = true;
+			transX = false;		transY = false;		transZ = false;
+			//navega = false;
+		}
 	}
 
-// DESPLEGABLE PROJECCIO
-		//IMGUI_DEMO_MARKER("Help");
+	// DESPLEGABLE PROJECCIO
+			//IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("PROJECCIO"))
 	{
 		//IMGUI_DEMO_MARKER("Widgets/Selectables/Single Selection PROJECCIO");
@@ -1620,47 +1757,47 @@ void ShowEntornVGIWindow(bool* p_open)
 		}
 	}
 
-// DESPLEGABLE VISTA
-	//IMGUI_DEMO_MARKER("Help");
+	// DESPLEGABLE VISTA
+		//IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("OBJECTE"))
 	{
 		// Entorn VGI. Mostrar Opcions desplegable OBJECTES
 		//IMGUI_DEMO_MARKER("Widgets/Basic/RadioButton");
 		oObjecte = shortCut_Objecte(); //static int oObjecte = 0;
-/*
-		ImGui::RadioButton("Cap(<Shift>+B)", &oObjecte, 0);
-		if (ImGui::BeginTable("split", 3))
-		{
-			ImGui::TableNextColumn(); ImGui::RadioButton("Cub (<Shift>+C)", &oObjecte, 1);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Cub RGB (<Shift>+D)", &oObjecte, 2);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Esfera (<Shift>+E)", &oObjecte, 3);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Tetera (<Shift>+T)", &oObjecte, 4);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Arc (<Shift>+R)", &oObjecte, 5);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Matriu Primitives (<Shift>+H)", &oObjecte, 6);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Matriu Primitives VAO (<Shift>+V)", &oObjecte, 7);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Tie (<Shift>+I)", &oObjecte, 8);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Arxiu OBJ", &oObjecte, 9);
-			ImGui::EndTable();
-		}
-		
-		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-		ImGui::SeparatorText("CORBES:");
-		ImGui::PopStyleColor();
-		if (ImGui::BeginTable("split", 3))
-		{	ImGui::TableNextColumn(); ImGui::RadioButton("Bezier (<Shift>+F9)", &oObjecte, 10);
-			ImGui::TableNextColumn(); ImGui::RadioButton("B-spline (<Shift>+F10)", &oObjecte, 11);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Lemniscata (<Shift>+F11)", &oObjecte, 12);
-			ImGui::EndTable();
-		}
-		//ImGui::Separator();
-		ImGui::Spacing();
-*/
+		/*
+				ImGui::RadioButton("Cap(<Shift>+B)", &oObjecte, 0);
+				if (ImGui::BeginTable("split", 3))
+				{
+					ImGui::TableNextColumn(); ImGui::RadioButton("Cub (<Shift>+C)", &oObjecte, 1);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Cub RGB (<Shift>+D)", &oObjecte, 2);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Esfera (<Shift>+E)", &oObjecte, 3);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Tetera (<Shift>+T)", &oObjecte, 4);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Arc (<Shift>+R)", &oObjecte, 5);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Matriu Primitives (<Shift>+H)", &oObjecte, 6);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Matriu Primitives VAO (<Shift>+V)", &oObjecte, 7);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Tie (<Shift>+I)", &oObjecte, 8);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Arxiu OBJ", &oObjecte, 9);
+					ImGui::EndTable();
+				}
+
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+				ImGui::SeparatorText("CORBES:");
+				ImGui::PopStyleColor();
+				if (ImGui::BeginTable("split", 3))
+				{	ImGui::TableNextColumn(); ImGui::RadioButton("Bezier (<Shift>+F9)", &oObjecte, 10);
+					ImGui::TableNextColumn(); ImGui::RadioButton("B-spline (<Shift>+F10)", &oObjecte, 11);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Lemniscata (<Shift>+F11)", &oObjecte, 12);
+					ImGui::EndTable();
+				}
+				//ImGui::Separator();
+				ImGui::Spacing();
+		*/
 
 		// Using the _simplified_ one-liner Combo() api here
 		// See "Combo" section for examples of how to use the more flexible BeginCombo()/EndCombo() api.
 		//IMGUI_DEMO_MARKER("Widgets/Basic/Combo");
-		const char* items[] = { "Cap(<Shift>+B)", "Cub (<Shift>+C)", "Cub RGB (<Shift>+D)", "Esfera (<Shift>+E)", "Tetera (<Shift>+T)", 
-			"Arc (<Shift>+R)", "Matriu Primitives (<Shift>+M)", "Matriu Primitives VAO (<Shift>+V)", "Tie (<Shift>+I)", "Arxiu OBJ", 
+		const char* items[] = { "Cap(<Shift>+B)", "Cub (<Shift>+C)", "Cub RGB (<Shift>+D)", "Esfera (<Shift>+E)", "Tetera (<Shift>+T)",
+			"Arc (<Shift>+R)", "Matriu Primitives (<Shift>+M)", "Matriu Primitives VAO (<Shift>+V)", "Tie (<Shift>+I)", "Arxiu OBJ",
 			"Bezier (<Shift>+F7)", "B-spline (<Shift>+F8)", "Lemniscata (<Shift>+F9)", "Hermitte (<Shift>+F10)", "Catmull-Rom (<Shift>+F11)" };
 		//static int item_current = 0;
 		ImGui::Combo(" ", &oObjecte, items, IM_ARRAYSIZE(items));
@@ -1682,7 +1819,7 @@ void ShowEntornVGIWindow(bool* p_open)
 			}
 		}
 
-// EntornVGI: Variables associades a Pop Up OBJECTE
+		// EntornVGI: Variables associades a Pop Up OBJECTE
 		bool testA = false;
 		int error = 0;
 		CColor color_Mar;
@@ -1691,7 +1828,7 @@ void ShowEntornVGIWindow(bool* p_open)
 		nfdchar_t* nomFitxer = NULL;
 		nfdresult_t result; // = NFD_OpenDialog(NULL, NULL, &nomFitxer);
 
-// Entorn VGI. Gestió opcions desplegable OBJECTES segons el valor de la variable selected
+		// Entorn VGI. Gestió opcions desplegable OBJECTES segons el valor de la variable selected
 		switch (oObjecte)
 		{
 		case 0: // Opció OBJECTE Cap
@@ -1906,8 +2043,8 @@ void ShowEntornVGIWindow(bool* p_open)
 					// Definr Corba BSpline com a VAO
 						//Set_VAOList(CRV_BSPLINE, load_BSpline_Curve_VAO(npts_T, PC_t, pas_CS)); // Genera corba i la guarda a la posició CRV_BSPLINE.
 					Set_VAOList(CRV_BSPLINE, load_BSpline_Curve_EBO(npts_T, PC_t, pas_CS)); // Genera corba i la guarda a la posició CRV_BSPLINE.
-					}
 				}
+			}
 			break;
 		case 12: // Opció OBJECTE CORBA LEMNISCATA
 			if (objecte != C_LEMNISCATA) {
@@ -1922,7 +2059,7 @@ void ShowEntornVGIWindow(bool* p_open)
 				// Definr Corba Lemniscata 3D com a VAO
 					//Set_VAOList(CRV_LEMNISCATA3D, load_Lemniscata3D_VAO(800, pas_CS * 20.0)); // Genera corba i la guarda a la posició CRV_LEMNISCATA3D.
 				Set_VAOList(CRV_LEMNISCATA3D, load_Lemniscata3D_EBO(800, pas_CS * 20.0)); // Genera corba i la guarda a la posició CRV_LEMNISCATA3D.
-				}
+			}
 			break;
 		case 13: // Opció OBJECTE CORBA HERMITTE
 			if (objecte != C_HERMITTE) {
@@ -1950,8 +2087,8 @@ void ShowEntornVGIWindow(bool* p_open)
 					// Definr Corba Hermitte com a VAO
 					//Set_VAOList(CRV_HERMITTE, load_BSpline_Curve_VAO(npts_T, PC_t, pas_CS)); // Genera corba i la guarda a la posició CRV_HERMITTE.
 					Set_VAOList(CRV_HERMITTE, load_Hermitte_Curve_EBO(npts_T, PC_t, pas_CS)); // Genera corba i la guarda a la posició CRV_HERMITTE.
-					}
 				}
+			}
 			break;
 		case 14: // Opció OBJECTE CORBA CATMULL-ROM
 			if (objecte != C_CATMULL_ROM) {
@@ -1979,8 +2116,8 @@ void ShowEntornVGIWindow(bool* p_open)
 					// Definr Corba Catmull-Rom com a VAO
 					//Set_VAOList(CRV_CATMULL_ROM, load_BSpline_Curve_VAO(npts_T, PC_t, pas_CS)); // Genera corba i la guarda a la posició CRV_CATMULL_ROM.
 					Set_VAOList(CRV_CATMULL_ROM, load_CatmullRom_Curve_EBO(npts_T, PC_t, pas_CS)); // Genera corba i la guarda a la posició CRV_CATMULL_ROM.
-					}
 				}
+			}
 			break;
 		}
 	}
@@ -2082,20 +2219,22 @@ void ShowEntornVGIWindow(bool* p_open)
 	{
 		//IMGUI_DEMO_MARKER("Widgets/Selectables/Single Selection OCULTACIONS");
 		if (ImGui::BeginTable("split", 2))
-		{	ImGui::TableNextColumn(); ImGui::Checkbox("Test Visibilitat? (<Ctrl>+C)", &test_vis);
+		{
+			ImGui::TableNextColumn(); ImGui::Checkbox("Test Visibilitat? (<Ctrl>+C)", &test_vis);
 			ImGui::TableNextColumn(); ImGui::Checkbox("Z-Buffer? (<Ctrl>+O)", &oculta);
 			ImGui::EndTable();
 		}
-			ImGui::Separator();
+		ImGui::Separator();
 		if (ImGui::BeginTable("split", 2))
-		{	ImGui::TableNextColumn(); ImGui::Checkbox("Front Faces? (<Ctrl>+D)", &front_faces);
+		{
+			ImGui::TableNextColumn(); ImGui::Checkbox("Front Faces? (<Ctrl>+D)", &front_faces);
 			ImGui::TableNextColumn(); ImGui::Checkbox("Back Line? (<Ctrl>+B)", &back_line);
 			ImGui::EndTable();
 		}
 	}
 
-// DESPLEGABLE ILUMINACIO
-//IMGUI_DEMO_MARKER("Help");
+	// DESPLEGABLE ILUMINACIO
+	//IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("ILUMINACIO"))
 	{
 		ImGui::Checkbox("Llum Fixe (T) / Llum lligada a camera (F)", &ifixe);
@@ -2108,33 +2247,33 @@ void ShowEntornVGIWindow(bool* p_open)
 
 		oIlumina = shortCut_Iluminacio();	//static int oIlumina = 1;
 
-/*
-		//IMGUI_DEMO_MARKER("Widgets/Basic/RadioButton");
-		if (ImGui::BeginTable("split", 3))
-		{
-			ImGui::TableNextColumn(); ImGui::RadioButton("Punts (<Ctrl>+F1)", &oIlumina, 0);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Filferros (<Ctrl>+F2)", &oIlumina, 1);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Plana (<Ctrl>+F3)", &oIlumina, 2);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Gouraud (<Ctrl>+F4)", &oIlumina, 3);
-			ImGui::TableNextColumn(); ImGui::RadioButton("Phong (<Ctrl>+F5)", &oIlumina, 4);
-			ImGui::EndTable();
-		}
-		ImGui::Spacing();
-*/
+		/*
+				//IMGUI_DEMO_MARKER("Widgets/Basic/RadioButton");
+				if (ImGui::BeginTable("split", 3))
+				{
+					ImGui::TableNextColumn(); ImGui::RadioButton("Punts (<Ctrl>+F1)", &oIlumina, 0);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Filferros (<Ctrl>+F2)", &oIlumina, 1);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Plana (<Ctrl>+F3)", &oIlumina, 2);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Gouraud (<Ctrl>+F4)", &oIlumina, 3);
+					ImGui::TableNextColumn(); ImGui::RadioButton("Phong (<Ctrl>+F5)", &oIlumina, 4);
+					ImGui::EndTable();
+				}
+				ImGui::Spacing();
+		*/
 
-/*
-		// Using the _simplified_ one-liner Combo() api here
-		// See "Combo" section for examples of how to use the more flexible BeginCombo()/EndCombo() api.
-		//IMGUI_DEMO_MARKER("Widgets/Basic/Combo");
-		const char* itemsI[] = { "Punts (<Ctrl>+F1)", "Filferros (<Ctrl>+F2)", "Plana (<Ctrl>+F3)", 
-			"Gouraud (<Ctrl>+F4)", "Phong (<Ctrl>+F5)"};
-		ImGui::Combo(" ", &oIlumina, itemsI, IM_ARRAYSIZE(itemsI));
-		ImGui::Spacing();
-*/
+		/*
+				// Using the _simplified_ one-liner Combo() api here
+				// See "Combo" section for examples of how to use the more flexible BeginCombo()/EndCombo() api.
+				//IMGUI_DEMO_MARKER("Widgets/Basic/Combo");
+				const char* itemsI[] = { "Punts (<Ctrl>+F1)", "Filferros (<Ctrl>+F2)", "Plana (<Ctrl>+F3)",
+					"Gouraud (<Ctrl>+F4)", "Phong (<Ctrl>+F5)"};
+				ImGui::Combo(" ", &oIlumina, itemsI, IM_ARRAYSIZE(itemsI));
+				ImGui::Spacing();
+		*/
 
 		// Combo Boxes are also called "Dropdown" in other systems
 		// Expose flags as checkbox for the demo
-		static ImGuiComboFlags flags = ( 0 && ImGuiComboFlags_PopupAlignLeft && ImGuiComboFlags_NoPreview && ImGuiComboFlags_NoArrowButton);
+		static ImGuiComboFlags flags = (0 && ImGuiComboFlags_PopupAlignLeft && ImGuiComboFlags_NoPreview && ImGuiComboFlags_NoArrowButton);
 
 		// Using the generic BeginCombo() API, you have full control over how to display the combo contents.
 		// (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
@@ -2143,8 +2282,10 @@ void ShowEntornVGIWindow(bool* p_open)
 			"Suau (<Ctrl>+F4)" };
 		const char* combo_preview_value = items[oIlumina];  // Pass in the preview value visible before opening the combo (it could be anything)
 		if (ImGui::BeginCombo("combo 1", combo_preview_value, flags))
-		{	for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-			{	const bool is_selected = (oIlumina == n);
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (oIlumina == n);
 				if (ImGui::Selectable(items[n], is_selected))
 					oIlumina = n;
 
@@ -2197,7 +2338,8 @@ void ShowEntornVGIWindow(bool* p_open)
 		if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "sw_material"), sw_material[4]);
 
 		if (ImGui::BeginTable("split", 2))
-		{	ImGui::TableNextColumn(); ImGui::Checkbox("Emissio?", &sw_material[0]);
+		{
+			ImGui::TableNextColumn(); ImGui::Checkbox("Emissio?", &sw_material[0]);
 			ImGui::TableNextColumn(); ImGui::Checkbox("Ambient?", &sw_material[1]);
 			ImGui::TableNextColumn(); ImGui::Checkbox("Difusa?", &sw_material[2]);
 			ImGui::TableNextColumn(); ImGui::Checkbox("Especular?", &sw_material[3]);
@@ -2206,7 +2348,8 @@ void ShowEntornVGIWindow(bool* p_open)
 
 		// Pas de propietats de materials al shader
 		if (!shader_programID)
-		{	glUniform1i(glGetUniformLocation(shader_programID, "sw_intensity[0]"), sw_material[0]);
+		{
+			glUniform1i(glGetUniformLocation(shader_programID, "sw_intensity[0]"), sw_material[0]);
 			glUniform1i(glGetUniformLocation(shader_programID, "sw_intensity[1]"), sw_material[1]);
 			glUniform1i(glGetUniformLocation(shader_programID, "sw_intensity[2]"), sw_material[2]);
 			glUniform1i(glGetUniformLocation(shader_programID, "sw_intensity[3]"), sw_material[3]);
@@ -2223,7 +2366,7 @@ void ShowEntornVGIWindow(bool* p_open)
 		static int clickITS = 0;
 		if (ImGui::Button("Imatge Textura SOIL")) clickITS++;
 		// EntornVGI: Si s'ha apretat el botó "Image Textura SOIL"
-		if (clickITS)	{
+		if (clickITS) {
 			clickITS = 0;
 			t_textura = FITXERIMA;		tFlag_invert_Y = true;
 
@@ -2243,24 +2386,24 @@ void ShowEntornVGIWindow(bool* p_open)
 						glDeleteTextures(1, &texturesID[i]);
 						//err = glIsTexture(texturesID[i]);
 						texturesID[i] = 0;
-						}
 					}
+				}
 				// EntornVGI: Carregar fitxer textura i definir buffer de textura.Identificador guardat a texturesID[0].
 				texturesID[0] = loadIMA_SOIL(nomFitxer);
 
 				//	Pas de textura al shader
 				if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "texture0"), GLint(0));
 				free(nomFitxer);
-				}
 			}
+		}
 
 		ImGui::Spacing();
 		ImGui::Checkbox("Flag_Invert_Y?", &tFlag_invert_Y);
 		if ((tFlag_invert_Y) && (!shader_programID)) glUniform1i(glGetUniformLocation(shader_programID, "flag_invert_y"), tFlag_invert_Y);
 	}
 
-// DESPLEGABLE LLUMS
-//IMGUI_DEMO_MARKER("Help");
+	// DESPLEGABLE LLUMS
+	//IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("LLUMS"))
 	{
 		ImGui::Checkbox("Llum Ambient? (<Ctrl>+A)", &llum_ambient);
@@ -2268,47 +2411,53 @@ void ShowEntornVGIWindow(bool* p_open)
 		ImGui::Spacing();
 
 		if (ImGui::BeginTable("split", 2))
-			{	ImGui::TableNextColumn(); ImGui::Checkbox("Llum #0 (+Z)? (<Ctrl>+1)", &llumGL[0].encesa);
-				ImGui::TableNextColumn(); ImGui::Checkbox("Llum #1 (+X)? (<Ctrl>+2)", &llumGL[1].encesa);
-				ImGui::TableNextColumn(); ImGui::Checkbox("Llum #2 (+Y)? (<Ctrl>+2)", &llumGL[2].encesa);
-				ImGui::TableNextColumn(); ImGui::Checkbox("Llum #3 (Z=Y=X) (<Ctrl>+3)?", &llumGL[3].encesa);
-				ImGui::TableNextColumn(); ImGui::Checkbox("Llum #4 (-Z)?(<Ctrl>+4)", &llumGL[4].encesa);
-				ImGui::EndTable();
-			}
+		{
+			ImGui::TableNextColumn(); ImGui::Checkbox("Llum #0 (+Z)? (<Ctrl>+1)", &llumGL[0].encesa);
+			ImGui::TableNextColumn(); ImGui::Checkbox("Llum #1 (+X)? (<Ctrl>+2)", &llumGL[1].encesa);
+			ImGui::TableNextColumn(); ImGui::Checkbox("Llum #2 (+Y)? (<Ctrl>+2)", &llumGL[2].encesa);
+			ImGui::TableNextColumn(); ImGui::Checkbox("Llum #3 (Z=Y=X) (<Ctrl>+3)?", &llumGL[3].encesa);
+			ImGui::TableNextColumn(); ImGui::Checkbox("Llum #4 (-Z)?(<Ctrl>+4)", &llumGL[4].encesa);
+			ImGui::EndTable();
+		}
 
-		if (llum_ambient) 
-			{	sw_il = true;
-				//if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "sw_intensity[1]"), (llum_ambient && sw_material[1])); // Pas màscara llums al shade
-			}
-			else sw_il = true;
+		if (llum_ambient)
+		{
+			sw_il = true;
+			//if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "sw_intensity[1]"), (llum_ambient && sw_material[1])); // Pas màscara llums al shade
+		}
+		else sw_il = true;
 
 		if (llumGL[0].encesa)
-			{	sw_il = true;
-				glUniform1i(glGetUniformLocation(shader_programID, "sw_lights[0]"), llumGL[0].encesa); // Pas màscara Llum #0 al shader
-			}
-			else sw_il = true;
+		{
+			sw_il = true;
+			glUniform1i(glGetUniformLocation(shader_programID, "sw_lights[0]"), llumGL[0].encesa); // Pas màscara Llum #0 al shader
+		}
+		else sw_il = true;
 
 		if (llumGL[1].encesa)
-			{	sw_il = true;
-				glUniform1i(glGetUniformLocation(shader_programID, "sw_lights[0]"), llumGL[1].encesa); // Pas màscara Llum #1 al shader
-			}
-			else sw_il = true;
+		{
+			sw_il = true;
+			glUniform1i(glGetUniformLocation(shader_programID, "sw_lights[0]"), llumGL[1].encesa); // Pas màscara Llum #1 al shader
+		}
+		else sw_il = true;
 
 		if (llumGL[2].encesa)
-			{	sw_il = true;
+		{
+			sw_il = true;
 			glUniform1i(glGetUniformLocation(shader_programID, "sw_lights[0]"), llumGL[2].encesa); // Pas màscara Llum #2 al shader
-			}
-			else sw_il = true;
+		}
+		else sw_il = true;
 
 		if (llumGL[3].encesa)
-			{	sw_il = true;
-				glUniform1i(glGetUniformLocation(shader_programID, "sw_lights[0]"), llumGL[3].encesa); // Pas màscara Llum #3 al shader
-			}
-			else sw_il = true;
+		{
+			sw_il = true;
+			glUniform1i(glGetUniformLocation(shader_programID, "sw_lights[0]"), llumGL[3].encesa); // Pas màscara Llum #3 al shader
+		}
+		else sw_il = true;
 	}
 
-// DESPLEGABLE SHADERS
-//IMGUI_DEMO_MARKER("Help");
+	// DESPLEGABLE SHADERS
+	//IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("SHADERS"))
 	{
 		// Combo Boxes are also called "Dropdown" in other systems
@@ -2404,7 +2553,7 @@ void ShowEntornVGIWindow(bool* p_open)
 		ImGui::Separator();
 	}
 
-// End of ShowDemoWindow()
+	// End of ShowDemoWindow()
 	ImGui::PopItemWidth();
 	ImGui::End();
 }
@@ -4976,6 +5125,16 @@ int main(void)
 	ImGui_ImplOpenGL3_Init("#version 130");
 // Entorn VGI.ImGui: End Setup Dear ImGui context
 
+
+// Cargar la fuente principal- Mauri
+// Intentamos cargar la primera fuente
+	io.Fonts->AddFontFromFileTTF("..\\x64\\Release\\Fonts\\Fifties Movies.ttf", 24.0f);
+	ImFont* largeFont = io.Fonts->Fonts.back(); // Obtén la fuente cargada
+
+	// Intentamos cargar la segunda fuente
+	io.Fonts->AddFontFromFileTTF("..\\x64\\Release\\Fonts\\ConsolaMono-Book.ttf", 16.0f);
+	ImFont* debugFont = io.Fonts->Fonts.back();  // Obtén la fuente cargada
+
 // Intent de posar el joc ALBERT
 	GameLogic game;
 	Player& player = game.player;
@@ -5005,16 +5164,15 @@ int main(void)
 		ImGui::NewFrame();
 
 
+//AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
+		draw_menuInicial(largeFont, debugFont);
 
 
 //AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
 		if (iniciar == false) {
-			draw_ProgramButtons(iniciar, configuracio, sortir);
+			//draw_ProgramButtons(iniciar, configuracio, sortir);
 			logicTime = 0.0f;
 		}
-
-// Entorn VGI.ImGui: Dibuixa menú ImGui
-		draw_Menu_ImGui();
 
 // Crida a OnPaint() per redibuixar l'escena
 		//assert(ObOBJ);
@@ -5035,14 +5193,13 @@ int main(void)
 				if (!game.gameRunning)
 					sortir = true;
 			}
-
-			OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT
-			dibuixa_Escena(game);
 		}
 		else
 			FonsB();
 
 
+		OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT
+		dibuixa_Escena(game);
 // Entorn VGI.ImGui: Capta dades del menú InGui
 
 //Tancar frame --MAURI
@@ -5059,6 +5216,8 @@ int main(void)
 // Check if the ESC key was pressed or the window was closed (MAURI: O si el boto sortir de la pantalla d'inici ha estat clicat)
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(window) == 0 && !sortir);
+
+	netejarFons();
 
 // Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();

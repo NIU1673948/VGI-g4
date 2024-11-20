@@ -1123,56 +1123,55 @@ void FonsB()
 //					BMP, JPG, TIFF, TGA, GIF, i d'altres suportats per SOIL
 //		- Retorna: Identificador dins la taula textures on volem
 //                assignar la imatge
-GLint loadIMA_SOIL(const char * filename)
-{	FILE *file = NULL;
+GLint loadIMA_SOIL(const char* filename)
+{
+	FILE* file = NULL;
 	int errno;
 	GLuint textureID = 0;
 
-// Open the image file for reading
-//  file=fopen(nomf,"r");					// Funció Visual Studio 6.0
-	errno = fopen_s(&file, filename, "rb");		// Funció Visual 2010
+	// Abre el archivo de imagen
+	errno = fopen_s(&file, filename, "rb");
 
-// If the file is empty (or non existent) print an error and return false
-// if (file == NULL)
+	// Si no se puede abrir el archivo, retorna 0
 	if (errno != 0)
-	{	//	printf("Could not open file '%s'.\n",filename) ;
-		return false;
+	{
+		printf("No se pudo abrir el archivo '%s'.\n", filename);
+		return 0;
 	}
 
-// Close the image file
+	// Cierra el archivo
 	fclose(file);
 
-/*
-// SOIL_load_OGL_texture: Funció que llegeix la imatge del fitxer filename
-//				si és compatible amb els formats SOIL (BMP,JPG,GIF,TIF,TGA,etc.)
-//				i defineix la imatge com a textura OpenGL retornant l'identificador 
-//				de textura OpenGL.
-	textureID = SOIL_load_OGL_texture
-	(filename,
-		SOIL_LOAD_AUTO,
-		SOIL_CREATE_NEW_ID,
-		SOIL_FLAG_MIPMAPS | SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_INVERT_Y
-	);
-*/
-
-//Generate texture ID and load texture data 
+	// Genera un ID de textura
 	glGenTextures(1, &textureID);
+
+	// Carga la imagen usando SOIL con formato RGBA
 	int width, height;
-	unsigned char* image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGB);
-// Assign texture to ID
+	unsigned char* image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGBA);
+	if (!image)
+	{
+		printf("Error al cargar la imagen '%s': %s\n", filename, SOIL_last_result());
+		return 0;
+	}
+
+	// Asigna la textura al ID generado
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-// Parameters
+	// Configura los parámetros de la textura
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Desvincula la textura
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Libera los datos de la imagen
 	SOIL_free_image_data(image);
 
-// If execution arrives here it means that all went well. Return true
+	// Retorna el ID de la textura
 	return textureID;
 }
 

@@ -263,10 +263,15 @@
 	void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
 		const GLchar* message, const void* userParam);
 
+
 // MAURI: variables de la pantalla d'inici
 	bool sortir = false;
 	bool iniciar = false;
 	bool configuracio = false;
+	bool debug = false;
+	bool pantallaCompleta = true;
+	bool pantallaInici = true;
+
 
 // MAURI: Funcions del joc
 	void draw_ProgramButtons(bool& inici, bool& config, bool& exit);
