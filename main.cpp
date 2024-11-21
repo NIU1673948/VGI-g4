@@ -1120,7 +1120,6 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 	}
 	else
 	{
-		
 		int screenHeight = ImGui::GetIO().DisplaySize.y;
 		ImVec2 button2position = ImVec2(150, screenHeight - 50);
 		ImGui::SetNextWindowPos(button2position, ImGuiCond_Always);
@@ -1133,7 +1132,6 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 		}
 		ImGui::PopFont();
 		ImGui::End();
-
 	}
 
 	ImGui::PushFont(fontDebug);
@@ -1530,6 +1528,7 @@ void ShowEntornVGIWindow(bool* p_open)
 	//Mauri: posicio de la fiestra 
 	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
 	ImGui::SetNextWindowPos(ImVec2(screenSize.x - 730, 10), ImGuiCond_Always); // Ajusta según el tamaño de tu ventana
+
 
 	// Main body of the Demo window starts here.
 	if (!ImGui::Begin("EntornVGI Menu", p_open, window_flags))
