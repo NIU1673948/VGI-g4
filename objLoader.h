@@ -85,6 +85,10 @@ class OBJLOADER_CLASS_DECL COBJModel
 	  void _stdcall netejaTextures_OBJ();
 	  void _stdcall draw_TriVAO_OBJ(GLuint sh_programID);
 
+	  float m_width;
+	  float m_height;
+	  float m_depth;
+
   private:
 	  void _stdcall ReadNextString(char szString[], FILE *hStream);
 //	  int _stdcall LoadTexture(const char szFileName[_MAX_PATH]);

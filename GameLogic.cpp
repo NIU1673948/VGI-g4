@@ -337,10 +337,8 @@ bool Player::checkCollision(const Car& obstacle) const {
             glm::vec2 closest = aabb_center + clamped;
             difference = closest - center;
 
-            if (glm::length(difference)<25)
-                cout << glm::length(difference) << endl;
-          /*  if (glm::length(difference) < playerCircle.m_radius)
-                return true;*/
+            if (glm::length(difference) < playerCircle.m_radius)
+                return true;
         }
     }
     return false;

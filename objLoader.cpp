@@ -13,6 +13,7 @@
 
 #include "stdafx.h"
 #include "objLoader.h"
+#include <iostream>
 
 // OBJ File string indentifiers
 #define VERTEX_ID		 "v"
@@ -130,6 +131,10 @@ int _stdcall COBJModel::LoadModel(char* szFileName)
 
 // Start reading the file from the start
 	rewind(hFile);
+
+	float minX = FLT_MAX, maxX = FLT_MIN;
+	float minY = FLT_MAX, maxY = FLT_MIN;
+	float minZ = FLT_MAX, maxZ = FLT_MIN;
 	
 // Quit reading when end of file has been reached
 	while (!feof(hFile))
@@ -145,6 +150,18 @@ int _stdcall COBJModel::LoadModel(char* szFileName)
 				&pVertices[CurrentIndex.iVertexCount].fX,
 				&pVertices[CurrentIndex.iVertexCount].fY,
 				&pVertices[CurrentIndex.iVertexCount].fZ);
+
+			float x = pVertices[CurrentIndex.iVertexCount].fX;
+			float y = pVertices[CurrentIndex.iVertexCount].fY;
+			float z = pVertices[CurrentIndex.iVertexCount].fZ;
+
+			if (x < minX) minX = x;
+			if (x > maxX) maxX = x;
+			if (y < minY) minY = y;
+			if (y > maxY) maxY = y;
+			if (z < minZ) minZ = z;
+			if (z > maxZ) maxZ = z;
+
 			// Next vertex
 			CurrentIndex.iVertexCount++;
 		}
@@ -218,6 +235,10 @@ int _stdcall COBJModel::LoadModel(char* szFileName)
 			}
 		}
 	}	
+
+	m_width = maxX - minX;
+	m_height = maxY - minY;
+	m_depth = maxZ - minZ;
 
 	// Close OBJ file
 	fclose(hFile);
@@ -382,7 +403,7 @@ bool _stdcall COBJModel::LoadMaterialLib(const char szFileName[],
 ////////////////////////////////////////////////////////////////////////
 
 	char szString[MAX_STR_SIZE];	// Buffer used while reading the file
-	bool bFirstMaterial = TRUE;		// Only increase index after first
+	bool bFirstMaterial = TRUE;		// Only increase index after first 
 									// material has been set
 	FILE *hFileT = NULL;
 	int errno;
