@@ -35,6 +35,7 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
 
         TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y)); // ALBERT mirar comentaris a Player::draw (és el mateix)
         TransMatrix = glm::scale(TransMatrix, vec3(CAR_WIDTH/MODEL_WIDTH, CAR_WIDTH / MODEL_WIDTH, CAR_WIDTH / MODEL_WIDTH));
+        TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
         ModelMatrix = TransMatrix;
 
         // Pas ModelView Matrix a shader
@@ -140,8 +141,16 @@ float RoadRow::getY() const {
 }
 
 // Implementació de GameLogic
-GameLogic::GameLogic() : gameRunning(true) {
-    srand(static_cast<unsigned int>(time(nullptr)));
+GameLogic::GameLogic() : gameRunning(true), m_roadY(0){
+    //srand(static_cast<unsigned int>(time(nullptr)));
+    srand(static_cast<unsigned int>(0));
+
+
+    m_road = ::new COBJModel;
+    m_road->netejaVAOList_OBJ();
+    m_road->netejaTextures_OBJ();
+    const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Road\\road.obj";
+    m_road->LoadModel(const_cast<char*>(rutaArxiu));
 
     nextEmptyLane = rand() % NUM_LANES;
     float y = -(CAR_HEIGHT / 2 + VERTICAL_NOISE);
@@ -159,6 +168,7 @@ void GameLogic::UpdateGameLogic() {
     DoPickUps();
 
     player.m_speed += 0.002;
+    m_roadY += player.m_speed;
 }
 
 void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
@@ -166,13 +176,8 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
     //// Dibuixar elements
     //window.clear(sf::Color::Black);
 
-    //// Dibuixar la carretera
-    //sf::RectangleShape road(sf::Vector2f(ROAD_WIDTH, WINDOW_HEIGHT));
-    //road.setFillColor(sf::Color(50, 50, 50));
-    //road.setPosition(ROAD_START, 0);
-    //window.draw(road);
+    dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
 
-    road.draw(sh_programID, MatriuVista, MatriuTG);
     player.draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar el jugador
     for (int i = 0; i < NUM_ROWS; i++) {
         roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar cada fila
@@ -332,8 +337,10 @@ bool Player::checkCollision(const Car& obstacle) const {
             glm::vec2 closest = aabb_center + clamped;
             difference = closest - center;
 
-            if (glm::length(difference) < playerCircle.m_radius)
-                return true;
+            if (glm::length(difference)<25)
+                cout << glm::length(difference) << endl;
+          /*  if (glm::length(difference) < playerCircle.m_radius)
+                return true;*/
         }
     }
     return false;
@@ -356,76 +363,16 @@ bool Player::checkCollision(const Circle& object) const {
 
 
 
-//ROAD
-Road::Road() { //Per defecte es genera amb aquestes dimensions
-    float w = ROAD_WIDTH;
-    float h = WINDOW_HEIGHT;
-    vertices = {
-        0.0f, 0.0f,  -h, 0.0f, 0.0f,    // Vèrtex inferior esquerre
-         w,  0.0f,  -h, 1.0f, 0.0f,    // Vèrtex inferior dret
-        0.0f, 0.0f, h, 0.0f, 1.0f,       // Vèrtex superior esquerre
-         w,  0.0f, h, 1.0f, 1.0f         // Vèrtex superior dret
-    };
+void GameLogic::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const {
+    
+    float length = 2* 63.8 * (20 + ROAD_WIDTH / 6.26);
 
-    indices = {
-        0, 1, 2, // Primer triángulo
-        2, 1, 3  // Segundo triángulo
-    };
-
-    setupMesh();
-}
-
-Road::~Road() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-}
-
-void Road::setRoadSize(const float& width, const float& length) {
-    vertices = {
-        -width / 2, 0.0f,  0.0f, 0.0f, 0.0f,  // Vértice inferior izquierdo
-         width / 2, 0.0f,  0.0f, 1.0f, 0.0f,  // Vértice inferior derecho
-        -width / 2, 0.0f, -length, 0.0f, 1.0f, // Vértice superior izquierdo
-         width / 2, 0.0f, -length, 1.0f, 1.0f  // Vértice superior derecho
-    };
-
-    indices = {
-        0, 1, 2, // Primer triángulo
-        2, 1, 3  // Segundo triángulo
-    };
-}
-
-void Road::setupMesh() {
-
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-}
-
-void Road::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
     glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
-
     TransMatrix = MatriuTG;
-    // Desplacem la carretera intentant deixar el cotxe en mig
-    TransMatrix = glm::translate(MatriuTG, glm::vec3(5.0f, 0.0f, 15.0f));
-    //ModelMatrix = glm::scale(TransMatrix, vec3(12 * 0.583f, 0.1f, 0.3f));
+
+    TransMatrix = glm::translate(TransMatrix, vec3(10 + ROAD_WIDTH / 2, -10, length/8 + fmod(m_roadY, length/8)));
+    TransMatrix = glm::scale(TransMatrix, vec3(20 + ROAD_WIDTH / 6.26, 20 + ROAD_WIDTH / 6.26, 20 + ROAD_WIDTH / 6.26));
+    TransMatrix = glm::rotate(TransMatrix, float(PI / 2), vec3(0, 1, 0));
     ModelMatrix = TransMatrix;
 
     // Pas ModelView Matrix a shader
@@ -434,7 +381,6 @@ void Road::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) 
     // Pas NormalMatrix a shader
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
+    m_road->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
 }
