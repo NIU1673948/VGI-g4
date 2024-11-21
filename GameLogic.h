@@ -22,7 +22,7 @@ const float LANE_WIDTH = 70;
 const float CAR_HEIGHT = 100;
 const float PLAYER_SPEED = 5;
 const int NUM_LANES = 4;
-const int NUM_ROWS = 4;
+const int NUM_ROWS = 15;
 const float ROW_SPACING = 300;
 const int VERTICAL_NOISE = ROW_SPACING / 2 - CAR_HEIGHT; // Hi ha lloc per a dos cotxes entre files
 const float OBSTACLE_SPEED = 3;
@@ -54,6 +54,9 @@ const float ROAD_END = ROAD_START + ROAD_WIDTH;
 //};
 //
 //sf::Color getRandomColor();
+
+void dibuixaPla(GLuint sh_programID, const glm::mat4& MatriuVista, const glm::mat4& MatriuTG, float width, float length);
+
 
 class Car {
 public:
@@ -96,21 +99,6 @@ public:
     Circle m_collisionCircles[NUM_CIRCLES];
 };
 
-class Road {
-public:
-    unsigned int VAO, VBO, EBO;
-    std::vector<float> vertices;
-    std::vector<unsigned int> indices;
-
-    Road();
-    ~Road();
-    void setRoadSize(const float& width, const float& length);
-    void setupMesh();
-    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
-
-
-};
-
 enum PickUp {
     NONE,
     COIN,
@@ -136,6 +124,9 @@ private:
     void UpdateRoadRows();
     void DoCollisions();
     void DoPickUps();
+    COBJModel* m_road;
+    float m_roadY;
+    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
 
 public:
     GameLogic();
@@ -147,5 +138,4 @@ public:
     int nextEmptyLane;
     Player player;
     RoadRow roadRows[NUM_ROWS];
-    Road road;
 };

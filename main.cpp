@@ -101,7 +101,7 @@ void InitGL()
 		}
 
 // LLum 0: Atenuació constant (c=1), sobre l'eix Z, no restringida.
-	llumGL[0].encesa = true;
+	llumGL[0].encesa = false;
 	llumGL[0].difusa[0] = 1.0f;			llumGL[0].difusa[1] = 1.0f;			llumGL[0].difusa[2] = 1.0f;		llumGL[0].difusa[3] = 1.0f;
 	llumGL[0].especular[0] = 1.0f;		llumGL[0].especular[1] = 1.0f;		llumGL[0].especular[2] = 1.0f;	llumGL[0].especular[3] = 1.0f;
 
@@ -765,7 +765,7 @@ void draw_inici(){
 
 	draw_skycube();
 
-	eixos = true;
+	eixos = false;
 }
 
 
@@ -4854,6 +4854,7 @@ int main(void)
 	float now;
 	float delta;
 	float logicTime = 0.0f;
+
 
 
 // glfw: initialize and configure
