@@ -5,21 +5,24 @@
 //}
 
 
+COBJModel* CAR_MODELS[1];
 
 // Implementació de Car
 Car::Car(float x, float y, float w, float h, float speed)
     : m_x(x), m_y(y), m_height(h), m_width(w), m_speed(speed), m_visible(true)
 {
 
-    int i = rand() % 8 + 1;
-    m_model = ::new COBJModel;
-    m_model->netejaVAOList_OBJ();
-    m_model->netejaTextures_OBJ();
-    const string rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 0"+to_string(i)+"\\Car"+to_string(i)+".obj";
-    char rutaCopia[1024];
-    std::strncpy(rutaCopia, rutaArxiu.c_str(), sizeof(rutaCopia) - 1);
-    rutaCopia[sizeof(rutaCopia) - 1] = '\0';
-    m_model->LoadModel(const_cast<char*>(rutaCopia));
+    //int i = rand() % 8 + 1;
+    //m_model = ::new COBJModel;
+    //m_model->netejaVAOList_OBJ();
+    //m_model->netejaTextures_OBJ();
+    //const string rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 0"+to_string(i)+"\\Car"+to_string(i)+".obj";
+    //char rutaCopia[1024];
+    //std::strncpy(rutaCopia, rutaArxiu.c_str(), sizeof(rutaCopia) - 1);
+    //rutaCopia[sizeof(rutaCopia) - 1] = '\0';
+    //m_model->LoadModel(const_cast<char*>(rutaCopia));
+
+    m_model = CAR_MODELS[0];
 }
 
 void Car::move(float dx, float dy) {

@@ -43,6 +43,10 @@ const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
 const float ROAD_START = 0;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
 
+extern COBJModel* CAR_MODELS[1];
+
+
+
 //const std::vector<sf::Color> carColors = {
 //    sf::Color(0, 95, 115),
 //    sf::Color(10, 147, 150),
@@ -93,7 +97,6 @@ public:
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
     bool checkCollision(const Car& obstacle) const;
     bool checkCollision(const Circle& object) const;
-
 
     float m_rotation;
     Circle m_collisionCircles[NUM_CIRCLES];

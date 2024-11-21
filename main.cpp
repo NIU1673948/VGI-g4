@@ -61,7 +61,7 @@ void InitGL()
 // Entorn VGI: Variables de control per les opcions de menú Projecció, Objecte
 	projeccio = CAP;	// projeccio = PERSPECT;
 	ProjectionMatrix = glm::mat4(1.0);	// Inicialitzar a identitat
-	objecte = CAP;		// objecte = TETERA;
+	objecte = OBJOBJ;		// objecte = TETERA;
 
 // Entorn VGI: Variables de control Skybox Cube
 	SkyBoxCube = false;		skC_programID = 0;
@@ -86,7 +86,7 @@ void InitGL()
 // Reflexions actives: Ambient [1], Difusa [2] i Especular [3]. No actives: Emission [0]. 
 	sw_material[0] = false;			sw_material[1] = true;			sw_material[2] = true;			sw_material[3] = true;	sw_material[4] = true;
 	sw_material_old[0] = false;		sw_material_old[1] = true;		sw_material_old[2] = true;		sw_material_old[3] = true;	sw_material_old[4] = true;
-	textura = false;				t_textura = CAP;				textura_map = true;
+	textura = true;				t_textura = FITXER;				textura_map = true;
 	for (i = 0; i < NUM_MAX_TEXTURES; i++) texturesID[i] = -1;
 	tFlag_invert_Y = false;
 
@@ -399,6 +399,18 @@ void OnSize(GLFWwindow* window, int width, int height)
 //	OnPaint();
 }
 
+// ALBERT
+void configModels()
+{
+	CAR_MODELS[0] = ::new COBJModel;
+	CAR_MODELS[0]->netejaVAOList_OBJ();
+	CAR_MODELS[0]->netejaTextures_OBJ();
+	const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj";
+	CAR_MODELS[0]->LoadModel(const_cast<char*>(rutaArxiu));
+
+	glUniform1i(glGetUniformLocation(shader_programID, "textur"), textura);
+	glUniform1i(glGetUniformLocation(shader_programID, "flag_invert_y"), tFlag_invert_Y);
+}
 
 // OnPaint: Funció de dibuix i visualització en frame buffer del frame
 void OnPaint(GLFWwindow* window, const GameLogic& game)
@@ -473,6 +485,8 @@ void OnPaint(GLFWwindow* window, const GameLogic& game)
 
 		// Entorn VGI: Crida a la funció Fons Blanc
 		FonsB();
+
+		// DEFAULT ONPAINT
 
 		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
 				//glfwSwapBuffers(window);
@@ -758,7 +772,7 @@ void draw_skycube() {
 
 void draw_inici(){
 	projeccio = PERSPECT;
-	draw_initial_car();
+	//draw_initial_car();
 
 	//necessari perquè l'objecte es vegi bé, es pot canviar iluminació però compte amb les altres variables
 	ilumina = SUAU;  oculta = true; //test_vis = true; 
@@ -2659,7 +2673,8 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);
 	}
-// Crida a OnPaint() per redibuixar l'escena
+// Crida a 
+// ) per redibuixar l'escena
 	//OnPaint(window);
 
 /*	if (key == GLFW_KEY_E && action == GLFW_PRESS)
@@ -5137,6 +5152,9 @@ int main(void)
 	ImFont* debugFont = io.Fonts->Fonts.back();  // Obtén la fuente cargada
 
 // Intent de posar el joc ALBERT
+
+	configModels();
+
 	GameLogic game;
 	Player& player = game.player;
 	RoadRow* roadRows = game.roadRows;
