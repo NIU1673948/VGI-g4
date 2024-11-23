@@ -4,8 +4,7 @@
 //    return carColors[rand() % carColors.size()];
 //}
 
-
-COBJModel* CAR_MODELS[1];
+vector<COBJModel*> CAR_MODELS;
 
 // Implementació de Car
 Car::Car(float x, float y, float w, float h, float speed)
@@ -15,14 +14,14 @@ Car::Car(float x, float y, float w, float h, float speed)
     //int i = rand() % 8 + 1;
     //m_model = ::new COBJModel;
     //m_model->netejaVAOList_OBJ();
-    //m_model->netejaTextures_OBJ();
     //const string rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 0"+to_string(i)+"\\Car"+to_string(i)+".obj";
     //char rutaCopia[1024];
     //std::strncpy(rutaCopia, rutaArxiu.c_str(), sizeof(rutaCopia) - 1);
     //rutaCopia[sizeof(rutaCopia) - 1] = '\0';
     //m_model->LoadModel(const_cast<char*>(rutaCopia));
 
-    m_model = CAR_MODELS[0];
+    int i = rand() % NUM_MODELS;
+    m_model = CAR_MODELS[i];
 }
 
 void Car::move(float dx, float dy) {
@@ -46,6 +45,7 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
         NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
         // Pas NormalMatrix a shader
         glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
 
         // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
         m_model->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
@@ -149,9 +149,7 @@ GameLogic::GameLogic() : gameRunning(true), m_roadY(0){
     srand(static_cast<unsigned int>(0));
 
 
-    m_road = ::new COBJModel;
-    m_road->netejaVAOList_OBJ();
-    m_road->netejaTextures_OBJ();
+    m_road = new COBJModel();
     const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Road\\road.obj";
     m_road->LoadModel(const_cast<char*>(rutaArxiu));
 
@@ -167,7 +165,7 @@ GameLogic::GameLogic() : gameRunning(true), m_roadY(0){
 void GameLogic::UpdateGameLogic() {
 
     UpdateRoadRows();
-    DoCollisions();
+    //DoCollisions();
     DoPickUps();
 
     player.m_speed += 0.002;
@@ -179,12 +177,12 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
     //// Dibuixar elements
     //window.clear(sf::Color::Black);
 
-    dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
 
-    player.draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar el jugador
     for (int i = 0; i < NUM_ROWS; i++) {
         roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar cada fila
     }
+    dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
+    player.draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar el jugador
 }
 
 void GameLogic::GetUserInput()
@@ -274,7 +272,7 @@ void GameLogic::DoPickUps()
 Player::Player() : Car::Car(ROAD_START + ROAD_WIDTH / 2, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN)
 {
     m_rotation = 0;
-
+    //m_model = CAR_MODELS[3];
     for (int i = 0; i < NUM_CIRCLES; i++)
     {
         m_collisionCircles[i] = Circle(m_x, m_y - m_height / 4 + m_height / 4 * i, m_width / 2, false);

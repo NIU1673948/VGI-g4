@@ -402,15 +402,15 @@ void OnSize(GLFWwindow* window, int width, int height)
 // ALBERT
 void configModels()
 {
-	CAR_MODELS[0] = ::new COBJModel;
-	CAR_MODELS[0]->netejaVAOList_OBJ();
-	CAR_MODELS[0]->netejaTextures_OBJ();
-	const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj";
-	CAR_MODELS[0]->LoadModel(const_cast<char*>(rutaArxiu));
-
-	glUniform1i(glGetUniformLocation(shader_programID, "textur"), textura);
-	glUniform1i(glGetUniformLocation(shader_programID, "flag_invert_y"), tFlag_invert_Y);
+	for (int i = 1; i <= NUM_MODELS; i++)
+	{
+		COBJModel* model = new COBJModel();
+		string path = "..\\x64\\Release\\OBJFiles\\Car 0" + to_string(i) + "\\Car" + to_string(i) + ".obj";
+		model->LoadModel(const_cast<char*>(path.c_str()));
+		CAR_MODELS.push_back(model);
+	}
 }
+
 
 // OnPaint: Funció de dibuix i visualització en frame buffer del frame
 void OnPaint(GLFWwindow* window, const GameLogic& game)
@@ -1056,8 +1056,11 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 		ImGui::PushFont(fontDebug);
 		if (ImGui::Button("Tornar a Inici")) {
 			iniciar = false;
-			ObOBJ->netejaVAOList_OBJ();
-			ObOBJ->netejaTextures_OBJ();
+			if (ObOBJ)
+			{
+				ObOBJ->netejaVAOList_OBJ();
+				ObOBJ->netejaTextures_OBJ();
+			}
 		}
 		ImGui::PopFont();
 		ImGui::End();

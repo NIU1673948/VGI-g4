@@ -43,7 +43,8 @@ const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
 const float ROAD_START = 0;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
 
-extern COBJModel* CAR_MODELS[1];
+extern vector<COBJModel*> CAR_MODELS;
+const int NUM_MODELS = 8;
 
 
 

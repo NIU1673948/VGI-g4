@@ -1690,11 +1690,33 @@ void _stdcall COBJModel::draw_TriVAO_Object_OBJ(GLint k)
 
 void _stdcall COBJModel::draw_TriVAO_OBJ(GLuint sh_programID)
 {
-	int i;
+	//int i;
 
-	for (i = 0; i <= numMaterials; i++)
-	{	UseMaterial_ShaderID(sh_programID, vMaterials[i]);	// Activació Material i-èssim
-		
-		draw_TriVAO_Object_OBJ(i);							// Dibuix objecte i-èssim
+	//for (i = 0; i <= numMaterials; i++)
+	//{	UseMaterial_ShaderID(sh_programID, vMaterials[i]);	// Activació Material i-èssim
+	//	
+	//	draw_TriVAO_Object_OBJ(i);							// Dibuix objecte i-èssim
+	//}
+
+	// Aplica textura per a cada material
+	for (int i = 0; i < numMaterials; ++i) {
+		Material& material = vMaterials[i];
+
+		if (material.iTextureID != 0) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, material.iTextureID);
+			glUniform1i(glGetUniformLocation(sh_programID, "texture0"), 0);
+		}
+		else {
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+
+		//glUniform3fv(glGetUniformLocation(sh_programID, "material.ambient"), 1, material.fAmbient);
+		//glUniform3fv(glGetUniformLocation(sh_programID, "material.diffuse"), 1, material.fDiffuse);
+		//glUniform3fv(glGetUniformLocation(sh_programID, "material.specular"), 1, material.fSpecular);
+		//glUniform1f(glGetUniformLocation(sh_programID, "material.shininess"), material.fShininess);
+
+	//	Dibuixa el VAO corresponent al material
+		draw_TriVAO_Object_OBJ(i);
 	}
 }
