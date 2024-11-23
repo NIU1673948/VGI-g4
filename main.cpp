@@ -4480,24 +4480,24 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 			m_EsfeEAvall = OPV;
 		}
 		// OnLButtonUp: Funció que es crida quan deixem d'apretar el botó esquerra del mouse.
-		else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-		{	// Entorn VGI: Desactivem flag m_ButoEAvall quan deixem d'apretar botó esquerra del mouse.
-			m_ButoEAvall = false;
+		//else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+		//{	// Entorn VGI: Desactivem flag m_ButoEAvall quan deixem d'apretar botó esquerra del mouse.
+		//	m_ButoEAvall = false;
 
-			// OPCIÓ VISTA-->SATÈLIT: Càlcul increment desplaçament del Punt de Vista
-			if ((satelit) && (projeccio != ORTO))
-			{	//m_EsfeIncEAvall.R = m_EsfeEAvall.R - OPV.R;
-				m_EsfeIncEAvall.alfa = 0.01f * (OPV.alfa - m_EsfeEAvall.alfa); //if (abs(m_EsfeIncEAvall.alfa)<0.01) { if ((m_EsfeIncEAvall.alfa)>0.0) m_EsfeIncEAvall.alfa = 0.01 else m_EsfeIncEAvall.alfa=0.01}
-				m_EsfeIncEAvall.beta = 0.01f * (OPV.beta - m_EsfeEAvall.beta);
-				if (abs(m_EsfeIncEAvall.beta) < 0.01)
-				{
-					if ((m_EsfeIncEAvall.beta) > 0.0) m_EsfeIncEAvall.beta = 0.01;
-					else m_EsfeIncEAvall.beta = 0.01;
-				}
-				//if ((m_EsfeIncEAvall.R == 0.0) && (m_EsfeIncEAvall.alfa == 0.0) && (m_EsfeIncEAvall.beta == 0.0)) KillTimer(WM_TIMER);
-				//else SetTimer(WM_TIMER, 10, NULL);
-			}
-		}
+		//	// OPCIÓ VISTA-->SATÈLIT: Càlcul increment desplaçament del Punt de Vista
+		//	if ((satelit) && (projeccio != ORTO))
+		//	{	//m_EsfeIncEAvall.R = m_EsfeEAvall.R - OPV.R;
+		//		m_EsfeIncEAvall.alfa = 0.01f * (OPV.alfa - m_EsfeEAvall.alfa); //if (abs(m_EsfeIncEAvall.alfa)<0.01) { if ((m_EsfeIncEAvall.alfa)>0.0) m_EsfeIncEAvall.alfa = 0.01 else m_EsfeIncEAvall.alfa=0.01}
+		//		m_EsfeIncEAvall.beta = 0.01f * (OPV.beta - m_EsfeEAvall.beta);
+		//		if (abs(m_EsfeIncEAvall.beta) < 0.01)
+		//		{
+		//			if ((m_EsfeIncEAvall.beta) > 0.0) m_EsfeIncEAvall.beta = 0.01;
+		//			else m_EsfeIncEAvall.beta = 0.01;
+		//		}
+		//		//if ((m_EsfeIncEAvall.R == 0.0) && (m_EsfeIncEAvall.alfa == 0.0) && (m_EsfeIncEAvall.beta == 0.0)) KillTimer(WM_TIMER);
+		//		//else SetTimer(WM_TIMER, 10, NULL);
+		//	}
+		//}
 		// OnRButtonDown
 		else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
 		{	// Entorn VGI: Detectem en quina posició s'ha apretat el botó esquerra del
@@ -4529,138 +4529,138 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	CSize gir = { 0,0 }, girn = { 0,0 }, girT = { 0,0 }, zoomincr = { 0,0 };
 
 	// TODO: Add your message handler code here and/or call default
-	if (m_ButoEAvall && mobil && projeccio != CAP)
-	{
-// Entorn VGI: Determinació dels angles (en graus) segons l'increment
-//				horitzontal i vertical de la posició del mouse.
-		gir.cx = m_PosEAvall.x - xpos;		gir.cy = m_PosEAvall.y - ypos;
-		m_PosEAvall.x = xpos;				m_PosEAvall.y = ypos;
-		if (camera == CAM_ESFERICA)
-		{	// Càmera Esfèrica
-			OPV.beta = OPV.beta - gir.cx / 2.0;
-			OPV.alfa = OPV.alfa + gir.cy / 2.0;
+//	if (m_ButoEAvall && mobil && projeccio != CAP)
+//	{
+//// Entorn VGI: Determinació dels angles (en graus) segons l'increment
+////				horitzontal i vertical de la posició del mouse.
+//		gir.cx = m_PosEAvall.x - xpos;		gir.cy = m_PosEAvall.y - ypos;
+//		m_PosEAvall.x = xpos;				m_PosEAvall.y = ypos;
+//		if (camera == CAM_ESFERICA)
+//		{	// Càmera Esfèrica
+//			OPV.beta = OPV.beta - gir.cx / 2.0;
+//			OPV.alfa = OPV.alfa + gir.cy / 2.0;
+//
+//			// Entorn VGI: Control per evitar el creixement desmesurat dels angles.
+//			if (OPV.alfa >= 360)	OPV.alfa = OPV.alfa - 360.0;
+//			if (OPV.alfa < 0)		OPV.alfa = OPV.alfa + 360.0;
+//			if (OPV.beta >= 360)	OPV.beta = OPV.beta - 360.0;
+//			if (OPV.beta < 0)		OPV.beta = OPV.beta + 360.0;
+//		}
+//		else { // Càmera Geode
+//			OPV_G.beta = OPV_G.beta + gir.cx / 2;
+//			OPV_G.alfa = OPV_G.alfa + gir.cy / 2;
+//			// Entorn VGI: Control per evitar el creixement desmesurat dels angles
+//			if (OPV_G.alfa >= 360.0f)	OPV_G.alfa = OPV_G.alfa - 360.0;
+//			if (OPV_G.alfa < 0.0f)		OPV_G.alfa = OPV_G.alfa + 360.0;
+//			if (OPV_G.beta >= 360.f)	OPV_G.beta = OPV_G.beta - 360.0;
+//			if (OPV_G.beta < 0.0f)		OPV_G.beta = OPV_G.beta + 360.0;
+//		}
+//		// Crida a OnPaint() per redibuixar l'escena
+//		//OnPaint(window);
+//	}
+//	else if (m_ButoEAvall && (camera == CAM_NAVEGA) && (projeccio != CAP && projeccio != ORTO)) // Opció Navegació
+//	{
+//		// Entorn VGI: Canviar orientació en opció de Navegació
+//		girn.cx = m_PosEAvall.x - xpos;		girn.cy = m_PosEAvall.y - ypos;
+//		angleZ = girn.cx / 2.0;
+//		// Entorn VGI: Control per evitar el creixement desmesurat dels angles.
+//		if (angleZ >= 360) angleZ = angleZ - 360;
+//		if (angleZ < 0)	angleZ = angleZ + 360;
+//
+//		// Entorn VGI: Segons orientació dels eixos Polars (Vis_Polar)
+//		if (Vis_Polar == POLARZ) { // (X,Y,Z)
+//			n[0] = n[0] - opvN.x;
+//			n[1] = n[1] - opvN.y;
+//			n[0] = n[0] * cos(angleZ * PI / 180) - n[1] * sin(angleZ * PI / 180);
+//			n[1] = n[0] * sin(angleZ * PI / 180) + n[1] * cos(angleZ * PI / 180);
+//			n[0] = n[0] + opvN.x;
+//			n[1] = n[1] + opvN.y;
+//		}
+//		else if (Vis_Polar == POLARY) { //(X,Y,Z) --> (Z,X,Y)
+//			n[2] = n[2] - opvN.z;
+//			n[0] = n[0] - opvN.x;
+//			n[2] = n[2] * cos(angleZ * PI / 180) - n[0] * sin(angleZ * PI / 180);
+//			n[0] = n[2] * sin(angleZ * PI / 180) + n[0] * cos(angleZ * PI / 180);
+//			n[2] = n[2] + opvN.z;
+//			n[0] = n[0] + opvN.x;
+//		}
+//		else if (Vis_Polar == POLARX) { //(X,Y,Z) --> (Y,Z,X)
+//			n[1] = n[1] - opvN.y;
+//			n[2] = n[2] - opvN.z;
+//			n[1] = n[1] * cos(angleZ * PI / 180) - n[2] * sin(angleZ * PI / 180);
+//			n[2] = n[1] * sin(angleZ * PI / 180) + n[2] * cos(angleZ * PI / 180);
+//			n[1] = n[1] + opvN.y;
+//			n[2] = n[2] + opvN.z;
+//		}
+//
+//		m_PosEAvall.x = xpos;		m_PosEAvall.y = ypos;
+//		// Crida a OnPaint() per redibuixar l'escena
+//		//OnPaint(window);
+//	}
 
-			// Entorn VGI: Control per evitar el creixement desmesurat dels angles.
-			if (OPV.alfa >= 360)	OPV.alfa = OPV.alfa - 360.0;
-			if (OPV.alfa < 0)		OPV.alfa = OPV.alfa + 360.0;
-			if (OPV.beta >= 360)	OPV.beta = OPV.beta - 360.0;
-			if (OPV.beta < 0)		OPV.beta = OPV.beta + 360.0;
-		}
-		else { // Càmera Geode
-			OPV_G.beta = OPV_G.beta + gir.cx / 2;
-			OPV_G.alfa = OPV_G.alfa + gir.cy / 2;
-			// Entorn VGI: Control per evitar el creixement desmesurat dels angles
-			if (OPV_G.alfa >= 360.0f)	OPV_G.alfa = OPV_G.alfa - 360.0;
-			if (OPV_G.alfa < 0.0f)		OPV_G.alfa = OPV_G.alfa + 360.0;
-			if (OPV_G.beta >= 360.f)	OPV_G.beta = OPV_G.beta - 360.0;
-			if (OPV_G.beta < 0.0f)		OPV_G.beta = OPV_G.beta + 360.0;
-		}
-		// Crida a OnPaint() per redibuixar l'escena
-		//OnPaint(window);
-	}
-	else if (m_ButoEAvall && (camera == CAM_NAVEGA) && (projeccio != CAP && projeccio != ORTO)) // Opció Navegació
-	{
-		// Entorn VGI: Canviar orientació en opció de Navegació
-		girn.cx = m_PosEAvall.x - xpos;		girn.cy = m_PosEAvall.y - ypos;
-		angleZ = girn.cx / 2.0;
-		// Entorn VGI: Control per evitar el creixement desmesurat dels angles.
-		if (angleZ >= 360) angleZ = angleZ - 360;
-		if (angleZ < 0)	angleZ = angleZ + 360;
-
-		// Entorn VGI: Segons orientació dels eixos Polars (Vis_Polar)
-		if (Vis_Polar == POLARZ) { // (X,Y,Z)
-			n[0] = n[0] - opvN.x;
-			n[1] = n[1] - opvN.y;
-			n[0] = n[0] * cos(angleZ * PI / 180) - n[1] * sin(angleZ * PI / 180);
-			n[1] = n[0] * sin(angleZ * PI / 180) + n[1] * cos(angleZ * PI / 180);
-			n[0] = n[0] + opvN.x;
-			n[1] = n[1] + opvN.y;
-		}
-		else if (Vis_Polar == POLARY) { //(X,Y,Z) --> (Z,X,Y)
-			n[2] = n[2] - opvN.z;
-			n[0] = n[0] - opvN.x;
-			n[2] = n[2] * cos(angleZ * PI / 180) - n[0] * sin(angleZ * PI / 180);
-			n[0] = n[2] * sin(angleZ * PI / 180) + n[0] * cos(angleZ * PI / 180);
-			n[2] = n[2] + opvN.z;
-			n[0] = n[0] + opvN.x;
-		}
-		else if (Vis_Polar == POLARX) { //(X,Y,Z) --> (Y,Z,X)
-			n[1] = n[1] - opvN.y;
-			n[2] = n[2] - opvN.z;
-			n[1] = n[1] * cos(angleZ * PI / 180) - n[2] * sin(angleZ * PI / 180);
-			n[2] = n[1] * sin(angleZ * PI / 180) + n[2] * cos(angleZ * PI / 180);
-			n[1] = n[1] + opvN.y;
-			n[2] = n[2] + opvN.z;
-		}
-
-		m_PosEAvall.x = xpos;		m_PosEAvall.y = ypos;
-		// Crida a OnPaint() per redibuixar l'escena
-		//OnPaint(window);
-	}
-
-	// Entorn VGI: Transformació Geomètrica interactiva pels eixos X,Y boto esquerra del mouse.
-	else {
-		bool transE = transX || transY;
-		if (m_ButoEAvall && transE && transf)
-		{
-			// Calcular increment
-			girT.cx = m_PosEAvall.x - xpos;		girT.cy = m_PosEAvall.y - ypos;
-			if (transX)
-			{
-				long int incrT = girT.cx;
-				if (trasl)
-				{
-					TG.VTras.x += incrT * fact_Tras;
-					if (TG.VTras.x < -100000) TG.VTras.x = 100000;
-					if (TG.VTras.x > 100000) TG.VTras.x = 100000;
-				}
-				else if (rota)
-				{
-					TG.VRota.x += incrT * fact_Rota;
-					while (TG.VRota.x >= 360) TG.VRota.x -= 360;
-					while (TG.VRota.x < 0) TG.VRota.x += 360;
-				}
-				else if (escal)
-				{
-					if (incrT < 0) incrT = -1 / incrT;
-					TG.VScal.x = TG.VScal.x * incrT;
-					if (TG.VScal.x < 0.25) TG.VScal.x = 0.25;
-					if (TG.VScal.x > 8192) TG.VScal.x = 8192;
-				}
-			}
-			if (transY)
-			{
-				long int incrT = girT.cy;
-				if (trasl)
-				{
-					TG.VTras.y += incrT * fact_Tras;
-					if (TG.VTras.y < -100000) TG.VTras.y = 100000;
-					if (TG.VTras.y > 100000) TG.VTras.y = 100000;
-				}
-				else if (rota)
-				{
-					TG.VRota.y += incrT * fact_Rota;
-					while (TG.VRota.y >= 360) TG.VRota.y -= 360;
-					while (TG.VRota.y < 0) TG.VRota.y += 360;
-				}
-				else if (escal)
-				{
-					if (incrT <= 0) {
-						if (incrT >= -2) incrT = -2;
-						incrT = 1 / Log2(-incrT);
-					}
-					else incrT = Log2(incrT);
-					TG.VScal.y = TG.VScal.y * incrT;
-					if (TG.VScal.y < 0.25) TG.VScal.y = 0.25;
-					if (TG.VScal.y > 8192) TG.VScal.y = 8192;
-				}
-			}
-			m_PosEAvall.x = xpos;	m_PosEAvall.y = ypos;
-			// Crida a OnPaint() per redibuixar l'escena
-			//InvalidateRect(NULL, false);
-			//OnPaint(windows);
-		}
-	}
+	//// Entorn VGI: Transformació Geomètrica interactiva pels eixos X,Y boto esquerra del mouse.
+	//else {
+	//	bool transE = transX || transY;
+	//	if (m_ButoEAvall && transE && transf)
+	//	{
+	//		// Calcular increment
+	//		girT.cx = m_PosEAvall.x - xpos;		girT.cy = m_PosEAvall.y - ypos;
+	//		if (transX)
+	//		{
+	//			long int incrT = girT.cx;
+	//			if (trasl)
+	//			{
+	//				TG.VTras.x += incrT * fact_Tras;
+	//				if (TG.VTras.x < -100000) TG.VTras.x = 100000;
+	//				if (TG.VTras.x > 100000) TG.VTras.x = 100000;
+	//			}
+	//			else if (rota)
+	//			{
+	//				TG.VRota.x += incrT * fact_Rota;
+	//				while (TG.VRota.x >= 360) TG.VRota.x -= 360;
+	//				while (TG.VRota.x < 0) TG.VRota.x += 360;
+	//			}
+	//			else if (escal)
+	//			{
+	//				if (incrT < 0) incrT = -1 / incrT;
+	//				TG.VScal.x = TG.VScal.x * incrT;
+	//				if (TG.VScal.x < 0.25) TG.VScal.x = 0.25;
+	//				if (TG.VScal.x > 8192) TG.VScal.x = 8192;
+	//			}
+	//		}
+	//		if (transY)
+	//		{
+	//			long int incrT = girT.cy;
+	//			if (trasl)
+	//			{
+	//				TG.VTras.y += incrT * fact_Tras;
+	//				if (TG.VTras.y < -100000) TG.VTras.y = 100000;
+	//				if (TG.VTras.y > 100000) TG.VTras.y = 100000;
+	//			}
+	//			else if (rota)
+	//			{
+	//				TG.VRota.y += incrT * fact_Rota;
+	//				while (TG.VRota.y >= 360) TG.VRota.y -= 360;
+	//				while (TG.VRota.y < 0) TG.VRota.y += 360;
+	//			}
+	//			else if (escal)
+	//			{
+	//				if (incrT <= 0) {
+	//					if (incrT >= -2) incrT = -2;
+	//					incrT = 1 / Log2(-incrT);
+	//				}
+	//				else incrT = Log2(incrT);
+	//				TG.VScal.y = TG.VScal.y * incrT;
+	//				if (TG.VScal.y < 0.25) TG.VScal.y = 0.25;
+	//				if (TG.VScal.y > 8192) TG.VScal.y = 8192;
+	//			}
+	//		}
+	//		m_PosEAvall.x = xpos;	m_PosEAvall.y = ypos;
+	//		// Crida a OnPaint() per redibuixar l'escena
+	//		//InvalidateRect(NULL, false);
+	//		//OnPaint(windows);
+	//	}
+	//}
 
 	// Entorn VGI: Determinació del desplaçament del pan segons l'increment
 	//				vertical de la posició del mouse (tecla dreta apretada).

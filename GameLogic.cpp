@@ -92,7 +92,7 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
 
     for (int i = 0; i < NUM_LANES; ++i)
     {
-        //m_obstacles[i].m_color = getRandomColor();
+        m_obstacles[i].m_model = CAR_MODELS[rand() % NUM_MODELS];
         m_obstacles[i].m_y = y + (rand() % 2 == 0 ? -1 : 1) * (rand() % VERTICAL_NOISE);
         m_obstacles[i].m_visible = true;
     }
@@ -187,7 +187,7 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
 
 void GameLogic::GetUserInput()
 {
-    if (GetKeyState('A') & 0x8000) { //Només per a Windows ALBERT
+    if (GetKeyState('A') & 0x8000 && player.m_rotation<=0) { //Només per a Windows 
         player.move(-STEP, 0);
 
         player.rotate(player.m_rotation > -ROTATION_ANGLE ? -ROTATION_SPEED : 0);
@@ -198,7 +198,7 @@ void GameLogic::GetUserInput()
             player.rotate(player.m_rotation < 0 ? ROTATION_SPEED : 0);
         }
     }
-    else if (GetKeyState('D') & 0x8000) {
+    else if (GetKeyState('D') & 0x8000 && player.m_rotation >= 0) {
         player.move(STEP, 0);
 
         player.rotate(player.m_rotation < ROTATION_ANGLE ? ROTATION_SPEED : 0);
