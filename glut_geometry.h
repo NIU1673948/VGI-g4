@@ -74,7 +74,7 @@
  *      draw_BSpline_Curve()	-- looks OK, VBO functions separated (*_VBO(), draw*(), deleteVBO(GL*)
  *      draw_Bezier_Curve()		-- looks OK, VBO functions separated (*_VBO(), draw*(), deleteVBO(GL*)
  */
-
+#pragma once
 #ifndef  GLET_GEOMETRY_H /* GLET_GEOMETRY_H */
 #define  GLET_GEOMETRY_H
 

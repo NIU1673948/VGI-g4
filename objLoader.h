@@ -5,7 +5,7 @@
 //
 //	  Versió 2.0:	- Adaptació funcions a crear un VAO per a cada material del fitxer
 //////////////////////////////////////////////////////////////////////////////////////
-
+#pragma once
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 

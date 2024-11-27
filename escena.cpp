@@ -77,7 +77,7 @@ void dibuixa_Skybox(GLuint sk_programID, GLuint cmTexture, char eix_Polar, glm::
 
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bool textur, GLuint texturID[NUM_MAX_TEXTURES],
-	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG, const GameLogic& game)
+	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG, GameLogic& game, bool& garage, int& actCar)
 {
 	float altfar = 0;
 	GLint npunts = 0, nvertexs = 0;
@@ -102,12 +102,16 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 
 // Parametrització i activació/desactivació de textures
 	if (texturID[0] != -1) SetTextureParameters(texturID[0], true, true, textur_map, false);
-	if (textur) {	glUniform1i(glGetUniformLocation(sh_programID, "textur"), GL_TRUE); //glEnable(GL_TEXTURE_2D);
-					glUniform1i(glGetUniformLocation(sh_programID, "modulate"), GL_TRUE); //glEnable(GL_MODULATE);
-				}
-		else {	glUniform1i(glGetUniformLocation(sh_programID, "textur"), GL_FALSE); //glDisable(GL_TEXTURE_2D);
-				glUniform1i(glGetUniformLocation(sh_programID, "modulate"), GL_FALSE); //glDisable(GL_MODULATE);
-			}
+	if (textur) 
+	{	glUniform1i(glGetUniformLocation(sh_programID, "textur"), GL_TRUE); //glEnable(GL_TEXTURE_2D);
+		glUniform1i(glGetUniformLocation(sh_programID, "modulate"), GL_TRUE); //glEnable(GL_MODULATE);
+	}
+	else 
+	{	
+		glUniform1i(glGetUniformLocation(sh_programID, "textur"), GL_FALSE); //glDisable(GL_TEXTURE_2D);
+		glUniform1i(glGetUniformLocation(sh_programID, "modulate"), GL_FALSE); //glDisable(GL_MODULATE);
+	}
+
 	glUniform1i(glGetUniformLocation(sh_programID, "flag_invert_y"), flagInvertY);
 
 // Attribute Locations must be setup before calling glLinkProgram()
@@ -121,13 +125,31 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 	//game.road.setRoadSize(50, 1000); LEVON mirar on posar les dimensions de la carretera
 	/*game.road.draw(sh_programID, MatriuVista, MatriuTG);
 	game.player.draw(sh_programID, MatriuVista, MatriuTG);*/ // ALBERT de moment només dibuixo el jugador, cal mirar coordenades i tal per a dibuixar tot bé
-	game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta línia enlloc de la de dalt
-		
+	float rotationAngle = 0;
+	game.player.m_model = CAR_MODELS[actCar];
+	if (!garage)
+	{
+		game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta línia enlloc de la de dalt
+	}
+	else
+		garageDraw(sh_programID, MatriuVista, MatriuTG, actCar, rotationAngle);
 
 // Enviar les comandes gràfiques a pantalla
 //	glFlush();
 }
 
+void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar, float& rotationAngle)
+{
+	Car* c= new Car();
+	c->assign(CAR_MODELS[actCar]);
+	rotationAngle += 0.25;
+	if (rotationAngle > 360.0f)
+		rotationAngle -= 360.0f;
+
+	MatriuTG = glm::rotate(MatriuTG, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	c->draw(sh_programID, MatriuVista, MatriuTG);
+}
 
 // dibuixa: Funció que dibuixa objectes simples de la llibreria GLUT segons obj
 void dibuixa(GLuint sh_programID, char obj, glm::mat4 MatriuVista, glm::mat4 MatriuTG)

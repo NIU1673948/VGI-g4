@@ -29,10 +29,13 @@ void dibuixa_EscenaGL(
     COBJModel* objecteOBJ,
     glm::mat4 MatriuVista,
     glm::mat4 MatriuTG,
-    const GameLogic& game
+    GameLogic& game,
+    bool& garage,
+    int& actCar
 );
 
 
+void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar, float& rotationAngle);
 
 // ALBERT
 void dibuixaCotxe(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista,

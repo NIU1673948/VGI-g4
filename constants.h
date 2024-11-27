@@ -4,7 +4,7 @@
 // constants.h : Definició de constants compartides
 //				 CENtornVGIView.cpp, visualitzacio.cpp i escena.cpp
 
-
+#pragma once
 #ifndef CONST_H
 #define CONST_H
 

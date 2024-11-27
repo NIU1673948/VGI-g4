@@ -3,6 +3,7 @@
 //******** Ferran Poveda, Marc Vivet, Carme Julià, Débora Gil, Enric Martí (Setembre 2024)
 // visualitzacio.h : Interface de visualitzacio.cpp
 //
+#pragma once
 
 #ifndef GLVIS_H
 #define GLVIS_H

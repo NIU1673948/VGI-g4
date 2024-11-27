@@ -44,9 +44,22 @@ const float ROAD_START = 0;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
 
 extern vector<COBJModel*> CAR_MODELS;
-const int NUM_MODELS = 8;
 
+enum CARS {
+    CAR1,
+    CAR2,
+    CAR3,
+    CAR4,
+    CAR5,
+    CAR5POLICE,
+    CAR5TAXI,
+    CAR6,
+    CAR7,
+    CAR8,
+    TOTALCARS
+};
 
+extern vector<string> OBJpaths;
 
 //const std::vector<sf::Color> carColors = {
 //    sf::Color(0, 95, 115),
@@ -67,8 +80,10 @@ class Car {
 public:
     Car(float x = CAR_WIDTH / 2, float y = CAR_HEIGHT / 2,
         float w = CAR_WIDTH, float h = CAR_HEIGHT, float speed = SPEED);
+
     void move(float dx, float dy);
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    void assign(COBJModel* model);
 
     float m_x, m_y;
     float m_height, m_width;
@@ -143,3 +158,6 @@ public:
     Player player;
     RoadRow roadRows[NUM_ROWS];
 };
+
+
+

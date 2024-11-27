@@ -6,6 +6,20 @@
 
 vector<COBJModel*> CAR_MODELS;
 
+vector<string> OBJpaths = {  
+    "..\\x64\\Release\\OBJFiles\\Car 01\\Car.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 02\\Car2.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 03\\Car3.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 05\\Car5.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 05\\Car5_Police.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 05\\Car5_Taxi.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 06\\Car6.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 07\\Car7.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 08\\Car8.obj",
+};
+
+
 // Implementació de Car
 Car::Car(float x, float y, float w, float h, float speed)
     : m_x(x), m_y(y), m_height(h), m_width(w), m_speed(speed), m_visible(true)
@@ -20,7 +34,7 @@ Car::Car(float x, float y, float w, float h, float speed)
     //rutaCopia[sizeof(rutaCopia) - 1] = '\0';
     //m_model->LoadModel(const_cast<char*>(rutaCopia));
 
-    int i = rand() % NUM_MODELS;
+    int i = rand() % TOTALCARS;
     m_model = CAR_MODELS[i];
 }
 
@@ -50,6 +64,11 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
         // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
         m_model->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
     }
+}
+
+void Car::assign(COBJModel* model)
+{
+    m_model = model;
 }
 
 // Implementació de RoadRow

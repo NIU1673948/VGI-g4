@@ -3,6 +3,7 @@
 //******** Ferran Poveda, Marc Vivet, Carme Julià, Débora Gil, Enric Martí (Setembre 2024)
 // material.h : interface de material.cpp
 //
+#pragma once
 
 #ifndef GLMATERIAL_H
 #define GLMATERIAL_H
