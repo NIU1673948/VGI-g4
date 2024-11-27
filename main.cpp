@@ -402,13 +402,27 @@ void OnSize(GLFWwindow* window, int width, int height)
 // ALBERT
 void configModels()
 {
-	for (int i = 1; i <= NUM_MODELS; i++)
+	string path;
+
+	for (int i = 1; i <= NUM_CAR_MODELS; i++)
 	{
 		COBJModel* model = new COBJModel();
-		string path = "..\\x64\\Release\\OBJFiles\\Car 0" + to_string(i) + "\\Car" + to_string(i) + ".obj";
+		path = "..\\x64\\Release\\OBJFiles\\Car 0" + to_string(i) + "\\Car" + to_string(i) + ".obj";
 		model->LoadModel(const_cast<char*>(path.c_str()));
 		CAR_MODELS.push_back(model);
 	}
+
+	OBJECT_MODELS[0] = new COBJModel();
+	path = "..\\x64\\Release\\OBJFiles\\Coin\\Coin.obj";
+	OBJECT_MODELS[0]->LoadModel(const_cast<char*>(path.c_str()));
+
+	OBJECT_MODELS[1] = new COBJModel();
+	path = "..\\x64\\Release\\OBJFiles\\Fuel\\Fuel.obj";
+	OBJECT_MODELS[1]->LoadModel(const_cast<char*>(path.c_str()));
+
+	OBJECT_MODELS[2] = new COBJModel();
+	path = "..\\x64\\Release\\OBJFiles\\Shield\\Shield.obj";
+	OBJECT_MODELS[2]->LoadModel(const_cast<char*>(path.c_str()));
 }
 
 
@@ -5202,7 +5216,6 @@ int main(void)
 		logicTime += delta;
 
 		// Executa la lògica del joc amb el pas de temps fix
-		
 
 		if (iniciar)
 		{
@@ -5219,9 +5232,10 @@ int main(void)
 		else
 			FonsB();
 
-
 		OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT
 		dibuixa_Escena(game);
+
+
 // Entorn VGI.ImGui: Capta dades del menú InGui
 
 //Tancar frame --MAURI
