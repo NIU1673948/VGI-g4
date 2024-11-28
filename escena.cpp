@@ -74,6 +74,7 @@ void dibuixa_Skybox(GLuint sk_programID, GLuint cmTexture, char eix_Polar, glm::
 }
 
 
+float rotationAngle = 0;
 
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bool textur, GLuint texturID[NUM_MAX_TEXTURES],
@@ -125,20 +126,19 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 	//game.road.setRoadSize(50, 1000); LEVON mirar on posar les dimensions de la carretera
 	/*game.road.draw(sh_programID, MatriuVista, MatriuTG);
 	game.player.draw(sh_programID, MatriuVista, MatriuTG);*/ // ALBERT de moment només dibuixo el jugador, cal mirar coordenades i tal per a dibuixar tot bé
-	float rotationAngle = 0;
 	game.player.m_model = CAR_MODELS[actCar];
 	if (!garage)
 	{
 		game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta línia enlloc de la de dalt
 	}
 	else
-		garageDraw(sh_programID, MatriuVista, MatriuTG, actCar, rotationAngle);
+		garageDraw(sh_programID, MatriuVista, MatriuTG, actCar);
 
 // Enviar les comandes gràfiques a pantalla
 //	glFlush();
 }
 
-void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar, float& rotationAngle)
+void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar)
 {
 	Car* c= new Car();
 	c->assign(CAR_MODELS[actCar]);

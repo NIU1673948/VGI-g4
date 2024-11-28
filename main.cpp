@@ -873,7 +873,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				ImGui::SameLine(0.0f, buttonSpacing);
 				if (ImGui::Button("SIGUIENTE", buttonSize)) 
 				{
-					act = (act == TOTALCARS) ? 0 : act + 1;
+					act = (act == TOTALCARS - 1) ? 0 : act + 1;
 				}
 			}
 			else
