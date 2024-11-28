@@ -785,7 +785,8 @@ void draw_inici(){
 
 void draw_inici_garage() {
 	projeccio = PERSPECT;
-	camera = CAM_NAVEGA;
+	camera = CAM_ESFERICA;
+	c = 4;
 	//draw_initial_car();
 
 	//necessari perquè l'objecte es vegi bé, es pot canviar iluminació però compte amb les altres variables
@@ -2720,8 +2721,8 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 			else if (escal) Teclat_TransEscala(key, action);
 		}
 		//JAN Canviar la camera al pulsar 'R'
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 2) c = (c < 2) ? (c + 1) : 0, camera = CAM_ESFERICA;
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 2) camera = CAM_NAVEGA, c++;
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 2 && garatge == false) c = (c < 2) ? (c + 1) : 0, camera = CAM_ESFERICA;
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 2 && garatge == false) camera = CAM_NAVEGA, c++;
 		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);

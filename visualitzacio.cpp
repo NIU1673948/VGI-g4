@@ -532,9 +532,9 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
 		break;
 	default:
 		MatriuVista = glm::lookAt(
-			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) + 300), // Camera is here
-			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
-			glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
+			glm::vec3(150, 30, 0), // Camera is here
+			glm::vec3(0, 0, 0), // and looks here
+			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 		break;
 	}
