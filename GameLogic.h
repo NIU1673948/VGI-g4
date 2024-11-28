@@ -47,13 +47,14 @@ extern vector<COBJModel*> CAR_MODELS;
 
 enum CARS {
     CAR1,
+    CAR1BLUE,
     CAR2,
     CAR3,
     CAR4,
     CAR5,
     CAR5POLICE,
     CAR5TAXI,
-    CAR6,
+    //CAR6,
     CAR7,
     CAR8,
     TOTALCARS

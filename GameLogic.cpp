@@ -8,13 +8,14 @@ vector<COBJModel*> CAR_MODELS;
 
 vector<string> OBJpaths = {  
     "..\\x64\\Release\\OBJFiles\\Car 01\\Car.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 01\\Car_blue.obj",
     "..\\x64\\Release\\OBJFiles\\Car 02\\Car2.obj",
     "..\\x64\\Release\\OBJFiles\\Car 03\\Car3.obj",
     "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj",
     "..\\x64\\Release\\OBJFiles\\Car 05\\Car5.obj",
     "..\\x64\\Release\\OBJFiles\\Car 05\\Car5_Police.obj",
     "..\\x64\\Release\\OBJFiles\\Car 05\\Car5_Taxi.obj",
-    "..\\x64\\Release\\OBJFiles\\Car 06\\Car6.obj",
+    //"..\\x64\\Release\\OBJFiles\\Car 06\\Car6.obj",
     "..\\x64\\Release\\OBJFiles\\Car 07\\Car7.obj",
     "..\\x64\\Release\\OBJFiles\\Car 08\\Car8.obj",
 };
@@ -59,7 +60,6 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
         NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
         // Pas NormalMatrix a shader
         glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
-
 
         // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
         m_model->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla

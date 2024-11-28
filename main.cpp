@@ -783,6 +783,19 @@ void draw_inici(){
 }
 
 
+void draw_inici_garage() {
+	projeccio = PERSPECT;
+	camera = CAM_NAVEGA;
+	//draw_initial_car();
+
+	//necessari perquè l'objecte es vegi bé, es pot canviar iluminació però compte amb les altres variables
+	ilumina = SUAU;  oculta = true; test_vis = true;
+
+	draw_skycube();
+
+	eixos = true;
+}
+
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
 
 void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
@@ -832,6 +845,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
 			if (ImGui::Button("INICIAR", buttonSize)) {
 				inici = true;
+				camera = CAM_ESFERICA;
 				draw_inici();
 			}
 
@@ -839,7 +853,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			if (ImGui::Button("GARATGE", buttonSize)) {
 				// Acció boto garatge
 				garage = true;
-				draw_inici();
+				draw_inici_garage();
 			}
 
 			ImGui::SameLine();
@@ -867,7 +881,6 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				if (ImGui::Button("SELECCIONAR", buttonSize)) 
 				{
 					garage = false;
-
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);

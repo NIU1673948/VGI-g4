@@ -62,4 +62,6 @@ void Cabina(GLint shaderId, glm::mat4 MatriuVista, glm::mat4 MatriuTG, bool sw_m
 // CString2char: Funció de conversió de variable CString a char * per a noms de fitxers 
 //char* CString2Char(CString entrada);
 
+static float rotationAngle = 0;
+
 #endif

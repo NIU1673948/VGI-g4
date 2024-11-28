@@ -73,9 +73,6 @@ void dibuixa_Skybox(GLuint sk_programID, GLuint cmTexture, char eix_Polar, glm::
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
-
-float rotationAngle = 0;
-
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bool textur, GLuint texturID[NUM_MAX_TEXTURES],
 	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG, GameLogic& game, bool& garage, int& actCar)
@@ -126,6 +123,7 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 	//game.road.setRoadSize(50, 1000); LEVON mirar on posar les dimensions de la carretera
 	/*game.road.draw(sh_programID, MatriuVista, MatriuTG);
 	game.player.draw(sh_programID, MatriuVista, MatriuTG);*/ // ALBERT de moment només dibuixo el jugador, cal mirar coordenades i tal per a dibuixar tot bé
+	
 	game.player.m_model = CAR_MODELS[actCar];
 	if (!garage)
 	{
@@ -140,12 +138,22 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 
 void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar)
 {
-	Car* c= new Car();
+	Car* c = new Car();
 	c->assign(CAR_MODELS[actCar]);
-	rotationAngle += 0.25;
+	c->m_x = 0;
+	c->m_y = 0;
+
+	rotationAngle += 0.5;
 	if (rotationAngle > 360.0f)
 		rotationAngle -= 360.0f;
 
+	float amplitude = 10.0f; 
+	float frequency = 2.0f; 
+
+	float deltaY = amplitude * sin(glm::radians(rotationAngle) * frequency);
+
+	MatriuTG = glm::mat4(1.0f);
+	MatriuTG = glm::translate(MatriuTG, glm::vec3(0.0f, deltaY, 0.0f));
 	MatriuTG = glm::rotate(MatriuTG, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	c->draw(sh_programID, MatriuVista, MatriuTG);
