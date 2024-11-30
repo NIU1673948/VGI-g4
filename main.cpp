@@ -4912,23 +4912,24 @@ void OnFull_Screen(GLFWmonitor* monitor, GLFWwindow *window)
 	//int winPosX, winPosY;
 	//winPosX = 0;	winPosY = 0;
 
-	fullscreen = !fullscreen;
+	if (fullscreen)
+	{	// backup window position and window size
+					//glfwGetWindowPos(window, &winPosX, &winPosY);
+					//glfwGetWindowSize(window, &width_old, &height_old);
 
-	if (fullscreen) {	// backup window position and window size
-						//glfwGetWindowPos(window, &winPosX, &winPosY);
-						//glfwGetWindowSize(window, &width_old, &height_old);
+					// Get resolution of monitor
+		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-						// Get resolution of monitor
-						const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-						w = mode->width;	h = mode->height;
-						// Switch to full screen
-						glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-					}
-	else {	// Restore last window size and position
-			glfwSetWindowMonitor(window, nullptr, 216, 239, 640, 480, mode->refreshRate);
-		}
+		w = mode->width;	h = mode->height;
+		// Switch to full screen
+		glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 	}
+	else 
+	{	// Restore last window size and position
+			glfwSetWindowMonitor(window, nullptr, 216, 239, 640, 480, mode->refreshRate);
+	}
+	fullscreen = !fullscreen;
+}
 
 // -------------------- TRACTAMENT ERRORS
 // error_callback: Displaia error que es pugui produir
