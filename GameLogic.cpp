@@ -149,11 +149,11 @@ GameLogic::GameLogic() : gameRunning(true), m_roadY(0)
     srand(static_cast<unsigned int>(time(nullptr)));
 
     modelCoin = new COBJModel();
-    string path = "..\\x64\\Release\\OBJFiles\\Final_Coin\\Final_Coin.obj";
+    string path = ".\\OBJFiles\\Final_Coin\\Final_Coin.obj";
     modelCoin->LoadModel(const_cast<char*>(path.c_str()));
 
     m_road = new COBJModel();
-    const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Road\\Road.obj";
+    const char* rutaArxiu = ".\\OBJFiles\\Road\\Road.obj";
     m_road->LoadModel(const_cast<char*>(rutaArxiu));
 
     remainingFuel = FUEL_DURATION;
@@ -200,13 +200,10 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
         roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);    }
 
     dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
-    cout << "Fuel: " << remainingFuel << "   Shield: " << remainingShield << endl;
 
     glUniform1f(glGetUniformLocation(sh_programID, "transparency"), remainingShield <= 0? 1:0.5f);
 
     player.draw(sh_programID, MatriuVista, MatriuTG);
-
-    //glUniform1f(glGetUniformLocation(sh_programID, "transparency"), 1.0f);
 
 }
 

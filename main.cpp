@@ -196,7 +196,7 @@ void InitGL()
 	fprintf(stderr, "Gouraud_shdrML: \n");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders("..\\x64\\Release\\shaders\\gouraud_shdrML_transparency.vert", "..\\x64\\Release\\shaders\\gouraud_shdrML_transparency.frag");
+	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\gouraud_shdrML_transparency.vert", ".\\shaders\\gouraud_shdrML_transparency.frag");
 	shader = GOURAUD_SHADER;
 
 // Càrrega SHADERS
@@ -409,21 +409,21 @@ void configModels()
 	for (int i = 1; i <= NUM_CAR_MODELS; i++)
 	{
 		COBJModel* model = new COBJModel();
-		path = "..\\x64\\Release\\OBJFiles\\Car 0" + to_string(i) + "\\Car" + to_string(i) + ".obj";
+		path = ".\\OBJFiles\\Car 0" + to_string(i) + "\\Car" + to_string(i) + ".obj";
 		model->LoadModel(const_cast<char*>(path.c_str()));
 		CAR_MODELS.push_back(model);
 	}
 
 	OBJECT_MODELS[0] = new COBJModel();
-	path = "..\\x64\\Release\\OBJFiles\\Coin\\Coin.obj";
+	path = ".\\OBJFiles\\Coin\\Coin.obj";
 	OBJECT_MODELS[0]->LoadModel(const_cast<char*>(path.c_str()));
 
 	OBJECT_MODELS[1] = new COBJModel();
-	path = "..\\x64\\Release\\OBJFiles\\Fuel\\Fuel.obj";
+	path = ".\\OBJFiles\\Fuel\\Fuel.obj";
 	OBJECT_MODELS[1]->LoadModel(const_cast<char*>(path.c_str()));
 
 	OBJECT_MODELS[2] = new COBJModel();
-	path = "..\\x64\\Release\\OBJFiles\\Shield\\Shield.obj";
+	path = ".\\OBJFiles\\Shield\\Shield.obj";
 	OBJECT_MODELS[2]->LoadModel(const_cast<char*>(path.c_str()));
 
 
@@ -998,7 +998,7 @@ GLuint background = 0; // Variable global per a la textura del fons
 void carregarFons() {
 	// Cargar la textura una sola vez
 	if (background == 0) {
-		background = loadIMA_SOIL("..\\x64\\Release\\textures\\Menu.png");
+		background = loadIMA_SOIL(".\\textures\\Menu.png");
 	}
 }
 
@@ -5154,11 +5154,11 @@ int main(void)
 
 // Cargar la fuente principal- Mauri
 // Intentamos cargar la primera fuente
-	io.Fonts->AddFontFromFileTTF("..\\x64\\Release\\Fonts\\Fifties Movies.ttf", 24.0f);
+	io.Fonts->AddFontFromFileTTF(".\\Fonts\\Fifties Movies.ttf", 24.0f);
 	ImFont* largeFont = io.Fonts->Fonts.back(); // Obtén la fuente cargada
 
 	// Intentamos cargar la segunda fuente
-	io.Fonts->AddFontFromFileTTF("..\\x64\\Release\\Fonts\\ConsolaMono-Book.ttf", 16.0f);
+	io.Fonts->AddFontFromFileTTF(".\\Fonts\\ConsolaMono-Book.ttf", 16.0f);
 	ImFont* debugFont = io.Fonts->Fonts.back();  // Obtén la fuente cargada
 
 // Intent de posar el joc ALBERT
