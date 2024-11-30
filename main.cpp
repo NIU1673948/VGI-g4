@@ -194,7 +194,9 @@ void InitGL()
 	// Càrrega Shader de Gouraud
 	shader_programID = 0;
 	fprintf(stderr, "Gouraud_shdrML: \n");
-	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\gouraud_shdrML.vert", ".\\shaders\\gouraud_shdrML.frag");
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders("..\\x64\\Release\\shaders\\gouraud_shdrML_transparency.vert", "..\\x64\\Release\\shaders\\gouraud_shdrML_transparency.frag");
 	shader = GOURAUD_SHADER;
 
 // Càrrega SHADERS
@@ -431,6 +433,7 @@ void configModels()
 	mat[0] = true; mat[1] = true; mat[2] = true; mat[3] = true; mat[4] = true;
 
 	SeleccionaColorMaterial(shader_programID, white, mat);
+
 }
 
 

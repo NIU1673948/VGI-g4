@@ -193,15 +193,23 @@ void GameLogic::UpdateGameLogic() {
 
 void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
+    glUniform1f(glGetUniformLocation(sh_programID, "transparency"), 1.0f);
+
 
     for (int i = 0; i < NUM_ROWS; i++) {
         roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);    }
 
     dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
-    player.draw(sh_programID, MatriuVista, MatriuTG);
     cout << "Fuel: " << remainingFuel << "   Shield: " << remainingShield << endl;
 
+    glUniform1f(glGetUniformLocation(sh_programID, "transparency"), remainingShield <= 0? 1:0.5f);
+
+    player.draw(sh_programID, MatriuVista, MatriuTG);
+
+    //glUniform1f(glGetUniformLocation(sh_programID, "transparency"), 1.0f);
+
 }
+
 
 void GameLogic::GetUserInput()
 {
