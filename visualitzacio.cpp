@@ -29,9 +29,11 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	GLdouble angv, angh;
 
 	// Configuració de la font de llum LIGHT0
-	GLfloat position[] = { 0.0,0.0,200.0,1.0 };
+	GLfloat position[] = { 0.0,0.0,-1.0,0.0 };
 	GLfloat especular[] = { 0.0,0.0,0.0,1.0 };
-	GLfloat ambientg[] = { .5,.5,.5,1.0 };
+	//GLfloat ambientg[] = { .5,.5,.5,1.0 };
+	GLfloat ambientg[] = { 1,1,1,1.0 };
+
 
 // Definició de llum ambient segons booleana ll_amb
 //	if (ll_amb) glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientg);
@@ -47,11 +49,6 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	angv = lumin[0].posicio.alfa * PI / 180;
 	angh = lumin[0].posicio.beta * PI / 180;
 
-// Conversió Coord. esfèriques -> Coord. cartesianes per a la posició de la llum
-	position[0] = lumin[0].posicio.R * cos(angh) * cos(angv);
-	position[1] = lumin[0].posicio.R * sin(angh) * cos(angv);
-	position[2] = lumin[0].posicio.R * sin(angv);
-	position[3]=1.0;
 	//	glLightfv(GL_LIGHT0, GL_POSITION, position);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[0].position"), position[0], position[1], position[2], position[3]);
 
@@ -83,10 +80,10 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	angh = lumin[1].posicio.beta*PI / 180;
 
 // Conversió Coord. esfèriques -> Coord. cartesianes per a la posició de la llum
-	position[0] = lumin[1].posicio.R*cos(angh)*cos(angv);
-	position[1] = lumin[1].posicio.R*sin(angh)*cos(angv);
-	position[2] = lumin[1].posicio.R*sin(angv);
-	position[3] = 1.0;
+	position[0] = 0;
+	position[1] = -1;
+	position[2] = 0;
+	position[3] = 0;
 	//glLightfv(GL_LIGHT1, GL_POSITION, position);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[1].position"), position[0], position[1], position[2], position[3]);
 

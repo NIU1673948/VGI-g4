@@ -4,9 +4,15 @@ vector<COBJModel*> CAR_MODELS;
 COBJModel* OBJECT_MODELS[3];
 
 
-// Implementació de Car
-Car::Car(float x, float y, float speed, float w, float h)
-    : m_x(x), m_y(y), m_height(h), m_width(w), m_speed(speed), m_visible(true), m_model(NULL) {}
+Car::Car() {
+    m_x = 0;
+    m_y = 0;
+    m_height = CAR_HEIGHT;
+    m_width = CAR_WIDTH;
+    m_speed = OBSTACLE_SPEED;
+    m_visible = true;
+    m_model = NULL;
+}
 
 void Car::move(float dx, float dy) {
     m_x += dx;
@@ -15,7 +21,8 @@ void Car::move(float dx, float dy) {
 
 void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
-    if (m_visible) {
+    if (m_visible)
+    {
         glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
         TransMatrix = MatriuTG;
 
@@ -25,19 +32,14 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
         TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
         ModelMatrix = TransMatrix;
 
-        // Pas ModelView Matrix a shader
         glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
         NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
-        // Pas NormalMatrix a shader
         glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-
-        // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
-        m_model->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
+        m_model->draw_TriVAO_OBJ(sh_programID);
     }
 }
 
-// Implementació de RoadRow
 RoadRow::RoadRow()
 {
     for (int i = 0; i < NUM_LANES; i++) {
@@ -142,49 +144,69 @@ float RoadRow::getY() const {
     return m_obstacles[0].m_y;
 }
 
-// Implementació de GameLogic
-GameLogic::GameLogic() : gameRunning(true), m_roadY(0){
+GameLogic::GameLogic() : gameRunning(true), m_roadY(0)
+{
     srand(static_cast<unsigned int>(time(nullptr)));
 
+    modelCoin = new COBJModel();
+    string path = "..\\x64\\Release\\OBJFiles\\Final_Coin\\Final_Coin.obj";
+    modelCoin->LoadModel(const_cast<char*>(path.c_str()));
 
     m_road = new COBJModel();
-    const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Road\\road.obj";
+    const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Road\\Road.obj";
     m_road->LoadModel(const_cast<char*>(rutaArxiu));
+
+    remainingFuel = FUEL_DURATION;
+    remainingShield = -SHIELD_DURATION;
+    shieldEquipped = false;
 
     nextEmptyLane = rand() % NUM_LANES;
     float y = -(CAR_HEIGHT / 2 + VERTICAL_NOISE);
 
     for (int i = 0; i < NUM_ROWS; ++i) {
         roadRows[i].initRow(y, nextEmptyLane);
-        y += -CAR_HEIGHT - ROW_SPACING;
+        y -= CAR_HEIGHT + ROW_SPACING;
     }
 }
 
 void GameLogic::UpdateGameLogic() {
 
     UpdateRoadRows();
-    DoCollisions();
+
+    if (remainingShield <= 0)
+        DoCollisions();
+    else
+        remainingShield -= FRAME_TIME;
+    
     DoPickUps();
 
+    remainingFuel -= FRAME_TIME;
+
+    if (remainingFuel <= 0)
+        gameRunning = false;
+
     player.m_speed += 0.002;
+    player.m_move_step += 0.00000002;
+
     m_roadY += player.m_speed;
 }
 
 void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
-    dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
 
     for (int i = 0; i < NUM_ROWS; i++) {
-        roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar cada fila
-    }
+        roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);    }
 
-    player.draw(sh_programID, MatriuVista, MatriuTG);  // Dibuixar el jugador
+    dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
+    player.draw(sh_programID, MatriuVista, MatriuTG);
+    cout << "Fuel: " << remainingFuel << "   Shield: " << remainingShield << endl;
+
 }
 
 void GameLogic::GetUserInput()
 {
-    if (GetKeyState('A') & 0x8000 && player.m_rotation<=0) { //Només per a Windows 
-        player.move(-STEP, 0);
+    if (GetKeyState('A') & 0x8000 && player.m_rotation<=0) {        
+        player.move(-player.m_move_step, 0);
 
         player.rotate(player.m_rotation > -ROTATION_ANGLE ? -ROTATION_SPEED : 0);
 
@@ -195,7 +217,7 @@ void GameLogic::GetUserInput()
         }
     }
     else if (GetKeyState('D') & 0x8000 && player.m_rotation >= 0) {
-        player.move(STEP, 0);
+        player.move(player.m_move_step, 0);
 
         player.rotate(player.m_rotation < ROTATION_ANGLE ? ROTATION_SPEED : 0);
         if (player.m_x > ROAD_END - player.m_width / 2)
@@ -203,6 +225,10 @@ void GameLogic::GetUserInput()
             player.move(-(player.m_x - ROAD_END + player.m_width / 2), 0);
             player.rotate(player.m_rotation > 0 ? -ROTATION_SPEED : 0);
         }
+    }
+    else if (GetKeyState(VK_SPACE) & 0x8000 && shieldEquipped) {
+        shieldEquipped = false;
+        remainingShield = SHIELD_DURATION;
     }
     else
     {
@@ -245,7 +271,14 @@ void GameLogic::DoPickUps()
             PickUp& p = roadRows[i].m_object.m_type;
             switch (p)
             {
-                // TODO
+            case COIN:
+                break;
+            case FUEL:
+                remainingFuel = FUEL_DURATION;
+                break;
+            case SHIELD:
+                shieldEquipped = true;
+                break;
             default:
                 break;
             }
@@ -253,13 +286,18 @@ void GameLogic::DoPickUps()
     }
 }
 
-// Implementació Player
-Player::Player() : Car::Car(ROAD_START + ROAD_WIDTH / 2, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN, PLAYER_SPEED)
+Player::Player()
 {
-    m_rotation = 0;
     m_model = CAR_MODELS[3];
+
+    m_x = ROAD_START + ROAD_WIDTH / 2;
+    m_y = WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN;
+    m_height = (CAR_WIDTH / m_model->m_width) * m_model->m_depth;
     m_width = CAR_WIDTH;
-    m_height = (CAR_WIDTH / m_model->m_width)* m_model->m_depth;
+    m_speed = PLAYER_SPEED;
+    m_rotation = 0;
+    m_move_step = STEP;
+    m_rotation_speed = ROTATION_SPEED;
 
     for (int i = 0; i < 3; i++)
     {
@@ -283,7 +321,6 @@ void Player::rotate(float dAngle)
     {
         m_collisionCircles[i].m_x = m_x - sin(m_rotation) * m_height / 4 * i;
         m_collisionCircles[i].m_y = m_y - m_height / 4 + cos(abs(m_rotation)) * m_height / 4 * i;
-
     }
 }
 
@@ -291,7 +328,6 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
 {
     glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
     TransMatrix = MatriuTG;
-
 
     TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4));
     TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0));
@@ -301,15 +337,11 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
     TransMatrix = glm::scale(TransMatrix, vec3(scaleFactor, scaleFactor, scaleFactor));
     ModelMatrix = TransMatrix;
 
-    // Pas ModelView Matrix a shader
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
     NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
-    // Pas NormalMatrix a shader
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-    // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
-    m_model->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
-}
+    m_model->draw_TriVAO_OBJ(sh_programID);}
 
 bool Player::checkCollision(const Car& obstacle) const {
     if (obstacle.m_visible)
@@ -350,9 +382,6 @@ bool Player::checkCollision(const Object& object) const
     return false;
 }
 
-
-
-
 void GameLogic::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const {
     
     float length = 2* 63.8 * (20 + ROAD_WIDTH / 6.26);
@@ -365,15 +394,11 @@ void GameLogic::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, co
     TransMatrix = glm::rotate(TransMatrix, float(PI / 2), vec3(0, 1, 0));
     ModelMatrix = TransMatrix;
 
-    // Pas ModelView Matrix a shader
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
     NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
-    // Pas NormalMatrix a shader
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-    // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
-    m_road->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
-}
+    m_road->draw_TriVAO_OBJ(sh_programID);}
 
 void Object::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
@@ -387,14 +412,25 @@ void Object::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
         TransMatrix = scale(TransMatrix, vec3(scaleFactor, scaleFactor, scaleFactor));
         ModelMatrix = TransMatrix;
 
-        // Pas ModelView Matrix a shader
         glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
         NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
-        // Pas NormalMatrix a shader
         glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-
-        // Objecte OBJ: Dibuix de l'objecte OBJ amb textures amb varis VAO's, un per a cada material.
-        m_model->draw_TriVAO_OBJ(sh_programID);	// Dibuixar VAO a pantalla
-    }
+        m_model->draw_TriVAO_OBJ(sh_programID);    }
 }
+
+void GameLogic::finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
+{
+    glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
+    TransMatrix = MatriuTG;
+
+    TransMatrix = translate(TransMatrix, vec3(0,0,-10));
+    TransMatrix = scale(TransMatrix, vec3(100, 100, 100));
+
+    ModelMatrix = MatriuVista * TransMatrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+    modelCoin->draw_TriVAO_OBJ(sh_programID);}

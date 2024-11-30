@@ -82,7 +82,7 @@ void InitGL()
 	front_faces = true;	test_vis = false;	oculta = false;		back_line = false;
 
 // Entorn VGI: Variables de control del menú Iluminació		
-	ilumina = FILFERROS;			ifixe = false;					ilum2sides = false;
+	ilumina = FILFERROS;			ifixe = true;					ilum2sides = false;
 // Reflexions actives: Ambient [1], Difusa [2] i Especular [3]. No actives: Emission [0]. 
 	sw_material[0] = false;			sw_material[1] = true;			sw_material[2] = true;			sw_material[3] = true;	sw_material[4] = true;
 	sw_material_old[0] = false;		sw_material_old[1] = true;		sw_material_old[2] = true;		sw_material_old[3] = true;	sw_material_old[4] = true;
@@ -105,8 +105,8 @@ void InitGL()
 	llumGL[0].difusa[0] = 1.0f;			llumGL[0].difusa[1] = 1.0f;			llumGL[0].difusa[2] = 1.0f;		llumGL[0].difusa[3] = 1.0f;
 	llumGL[0].especular[0] = 1.0f;		llumGL[0].especular[1] = 1.0f;		llumGL[0].especular[2] = 1.0f;	llumGL[0].especular[3] = 1.0f;
 
-	llumGL[0].posicio.R = 200.0;		llumGL[0].posicio.alfa = 90.0;		llumGL[0].posicio.beta = 0.0;		// Posició llum (x,y,z)=(0,0,200)
-	llumGL[0].atenuacio.a = 0.0;		llumGL[0].atenuacio.b = 0.0;		llumGL[0].atenuacio.c = 1.0;		// Llum sense atenuació per distància (a,b,c)=(0,0,1)
+	//llumGL[0].posicio.R = 1000.0;		llumGL[0].posicio.alfa = 90.0;		llumGL[0].posicio.beta = 90.0;		// Posició llum (x,y,z)=(0,200,0)
+	llumGL[0].atenuacio.a = 0.0;		llumGL[0].atenuacio.b = 0.0;		llumGL[0].atenuacio.c = 0.0;		// Llum sense atenuació per distància (a,b,c)=(0,0,1)
 	llumGL[0].restringida = false;
 	llumGL[0].spotdirection[0] = 0.0;	llumGL[0].spotdirection[1] = 0.0;	llumGL[0].spotdirection[2] = 0.0;
 	llumGL[0].spotcoscutoff = 0.0;		llumGL[0].spotexponent = 0.0;
@@ -116,7 +116,7 @@ void InitGL()
 	llumGL[1].difusa[0] = 1.0f;			llumGL[1].difusa[1] = 1.0f;			llumGL[1].difusa[2] = 1.0f;		llumGL[1].difusa[3] = 1.0f;
 	llumGL[1].especular[0] = 1.0f;		llumGL[1].especular[1] = 1.0f;		llumGL[1].especular[2] = 1.0f;	llumGL[1].especular[3] = 1;
 
-	llumGL[1].posicio.R = 75.0;			llumGL[1].posicio.alfa = 0.0;		llumGL[1].posicio.beta = 0.0;// (x,y,z)=(75,0,0)
+	//llumGL[1].posicio.R = 75.0;			llumGL[1].posicio.alfa = 0.0;		llumGL[1].posicio.beta = 0.0;// (x,y,z)=(75,0,0)
 	llumGL[1].atenuacio.a = 0.0;		llumGL[1].atenuacio.b = 0.0;		llumGL[1].atenuacio.c = 1.0;
 	llumGL[1].restringida = false;
 	llumGL[1].spotdirection[0] = 0.0;	llumGL[1].spotdirection[1] = 0.0;	llumGL[1].spotdirection[2] = 0.0;
@@ -423,6 +423,14 @@ void configModels()
 	OBJECT_MODELS[2] = new COBJModel();
 	path = "..\\x64\\Release\\OBJFiles\\Shield\\Shield.obj";
 	OBJECT_MODELS[2]->LoadModel(const_cast<char*>(path.c_str()));
+
+
+	CColor white;
+	white.r = 1; white.g = 1; white.b = 1;
+	bool* mat = new bool[5];
+	mat[0] = true; mat[1] = true; mat[2] = true; mat[3] = true; mat[4] = true;
+
+	SeleccionaColorMaterial(shader_programID, white, mat);
 }
 
 
@@ -743,23 +751,6 @@ void Barra_Estat()
 		}
 }
 
-//CODI BY LEVON - PRIMERA ESCENA AL DONAR-LI A JUGAR
-void draw_initial_car() {
-	if (ObOBJ == NULL) ObOBJ = ::new COBJModel;
-	else {
-		ObOBJ->netejaVAOList_OBJ();
-		ObOBJ->netejaTextures_OBJ();
-	}
-	const char* rutaArxiu = "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj"; //IMPORTANTE MIRAR QUE LA RUTA ESTE BIEN (ESPACIOS)
-	//EJEMPLO BIEN:
-	//L"C:\\Universidad\\3r curs\\VGI\\Entorn VGI-MFC-VS2022 - GL4.3\\x64\\Release\\OBJ Files\\Car 07\\Car7.obj"
-	ObOBJ->LoadModel(const_cast<char*>(rutaArxiu));
-	objecte = OBJOBJ;	textura = true;		tFlag_invert_Y = false;
-
-	if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "textur"), textura);
-	if (!shader_programID) glUniform1i(glGetUniformLocation(shader_programID, "flag_invert_y"), tFlag_invert_Y);
-}
-
 void draw_skycube() {
 	SkyBoxCube = true;
 	Vis_Polar = POLARY;
@@ -786,7 +777,6 @@ void draw_skycube() {
 
 void draw_inici(){
 	projeccio = PERSPECT;
-	//draw_initial_car();
 
 	//necessari perquè l'objecte es vegi bé, es pot canviar iluminació però compte amb les altres variables
 	ilumina = SUAU;  oculta = true; //test_vis = true; 
@@ -5075,7 +5065,6 @@ int main(void)
 
 // Make the window's context current
     glfwMakeContextCurrent(window);
-
 // Llegir resolució actual de pantalla
 	glfwGetWindowSize(window, &width_old, &height_old);
 
@@ -5181,6 +5170,8 @@ int main(void)
     {  
 // Poll for and process events */
 //        glfwPollEvents();
+
+
 
 // Entorn VGI. Timer: common part, do this only once
 		now = glfwGetTime();
