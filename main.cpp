@@ -785,7 +785,6 @@ void draw_inici(){
 
 void draw_inici_garage() {
 	projeccio = PERSPECT;
-	camera = CAM_ESFERICA;
 	c = 4;
 	//draw_initial_car();
 
@@ -798,6 +797,8 @@ void draw_inici_garage() {
 }
 
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
+
+int currentModel = 0;
 
 void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 	// Obtener el tamaño de la pantalla o ventana principal
@@ -846,7 +847,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
 			if (ImGui::Button("INICIAR", buttonSize)) {
 				inici = true;
-				camera = CAM_ESFERICA;
+				c = 0;
 				draw_inici();
 			}
 
@@ -871,11 +872,11 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			if (garage)
 			{
 				float centerY = (totalHeight - buttonSize.y) / 2.0f;
-
 				ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
-				if (ImGui::Button("ANTERIOR", buttonSize)) 
+				if (ImGui::Button("ANTERIOR MODELO", buttonSize)) 
 				{
-					act = (act == 0) ? TOTALCARS - 1 : act - 1;
+					currentModel = (currentModel == 0) ? carColorMap.size() - 1 : currentModel - 1;
+					act = carColorMap[currentModel][0];
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);
@@ -885,10 +886,12 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("SIGUIENTE", buttonSize)) 
+				if (ImGui::Button("SIGUIENTE MODELO", buttonSize)) 
 				{
-					act = (act == TOTALCARS - 1) ? 0 : act + 1;
+					currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
+					act = carColorMap[currentModel][0];
 				}
+
 			}
 			else
 			{
@@ -5261,7 +5264,6 @@ int main(void)
 		if (iniciar)
 		{
 			movi = game.player.m_x;
-
 			if (logicTime >= FRAME_TIME) {
 				
 				game.GetUserInput();

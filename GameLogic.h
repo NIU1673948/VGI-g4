@@ -8,6 +8,7 @@
 #include "material.h"
 #include "visualitzacio.h"
 #include "objLoader.h"	
+#include "unordered_map"
 
 using namespace std;
 using namespace glm;
@@ -48,19 +49,36 @@ extern vector<COBJModel*> CAR_MODELS;
 enum CARS {
     CAR1,
     CAR1BLUE,
+    CAR1RED,
+    CAR1GRAY,
     CAR2,
+    CAR2BLACK,
+    CAR2RED,
     CAR3,
+    CAR3RED,
+    CAR3YELLOW,
     CAR4,
+    CAR4GREY,
+    CAR4LIGHTGREY,
+    CAR4LIGHTORANGE,
     CAR5,
     CAR5POLICE,
     CAR5TAXI,
-    //CAR6,
     CAR7,
+    CAR7RED,
+    CAR7GREY,
+    CAR7GREEN,
+    CAR7BROWN,
+    CAR7BLACK,
     CAR8,
+    CAR8GREY,
+    CAR8MAIL,
+    CAR8PURPLE,
     TOTALCARS
 };
 
 extern vector<string> OBJpaths;
+extern vector<vector<int>> carColorMap;
 
 //const std::vector<sf::Color> carColors = {
 //    sf::Color(0, 95, 115),

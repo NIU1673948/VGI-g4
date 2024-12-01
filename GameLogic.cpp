@@ -6,20 +6,55 @@
 
 vector<COBJModel*> CAR_MODELS;
 
-vector<string> OBJpaths = {  
+vector<string> OBJpaths = {
     "..\\x64\\Release\\OBJFiles\\Car 01\\Car.obj",
     "..\\x64\\Release\\OBJFiles\\Car 01\\Car_blue.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 01\\Car_red.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 01\\Car_gray.obj",
     "..\\x64\\Release\\OBJFiles\\Car 02\\Car2.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 02\\Car2_black.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 02\\Car2_red.obj",
     "..\\x64\\Release\\OBJFiles\\Car 03\\Car3.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 03\\Car3_red.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 03\\Car3_yellow.obj",
     "..\\x64\\Release\\OBJFiles\\Car 04\\Car4.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 04\\Car4_grey.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 04\\Car4_lightgrey.obj",   
+    "..\\x64\\Release\\OBJFiles\\Car 04\\Car4_lightorange.obj",
     "..\\x64\\Release\\OBJFiles\\Car 05\\Car5.obj",
     "..\\x64\\Release\\OBJFiles\\Car 05\\Car5_Police.obj",
     "..\\x64\\Release\\OBJFiles\\Car 05\\Car5_Taxi.obj",
-    //"..\\x64\\Release\\OBJFiles\\Car 06\\Car6.obj",
     "..\\x64\\Release\\OBJFiles\\Car 07\\Car7.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 07\\Car7_red.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 07\\Car7_grey.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 07\\Car7_green.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 07\\Car7_brown.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 07\\Car7_black.obj",
     "..\\x64\\Release\\OBJFiles\\Car 08\\Car8.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 08\\Car8_grey.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 08\\Car8_mail.obj",
+    "..\\x64\\Release\\OBJFiles\\Car 08\\Car8_purple.obj",
 };
 
+//unordered_map<int, vector<int>> carColorMap = {
+//    {CAR1, {CAR1, CAR1BLUE, CAR1RED, CAR1GRAY}},
+//    {CAR2, {CAR2, CAR2BLACK, CAR2RED}},
+//    {CAR3, {CAR3, CAR3RED, CAR3YELLOW}},
+//    {CAR4, {CAR4, CAR4GREY, CAR4LIGHTGREY, CAR4LIGHTORANGE}},
+//    {CAR5, {CAR5, CAR5POLICE, CAR5TAXI}},
+//    {CAR7, {CAR7, CAR7RED, CAR7GREY, CAR7GREEN, CAR7BROWN, CAR7BLACK}},
+//    {CAR8, {CAR8, CAR8GREY, CAR8MAIL, CAR8PURPLE}}
+//};
+
+vector<vector<int>> carColorMap = {
+    {CAR1, CAR1BLUE, CAR1RED, CAR1GRAY},
+    {CAR2, CAR2BLACK, CAR2RED},
+    {CAR3, CAR3RED, CAR3YELLOW},
+    {CAR4, CAR4GREY, CAR4LIGHTGREY, CAR4LIGHTORANGE},
+    {CAR5, CAR5POLICE, CAR5TAXI},
+    {CAR7, CAR7RED, CAR7GREY, CAR7GREEN, CAR7BROWN, CAR7BLACK},
+    {CAR8, CAR8GREY, CAR8MAIL, CAR8PURPLE}
+};
 
 // Implementació de Car
 Car::Car(float x, float y, float w, float h, float speed)
