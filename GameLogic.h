@@ -47,8 +47,8 @@ const float COLLISION_TOLERANCE = 5;
 
 // Constants d'objectes
 const int PROB_OBJECT = 40; //%
-const int PROB_FUEL = 50; //%
-const int PROB_SHIELD = 10; //%
+const int PROB_FUEL = 40; //%
+const int PROB_SHIELD = 30; //%
 const float FUEL_DURATION = 30;
 const float SHIELD_DURATION = 5;
 const float COIN_SPEED_DOWN = 0.5;

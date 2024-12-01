@@ -5126,7 +5126,7 @@ void drawShield(bool shieldEquipped) {
 	ImVec2 fullSize = ImVec2(54, 54);
 
 	ImGui::SetNextWindowPos(ImVec2(750, 10), ImGuiCond_Always);
-	ImGui::Begin("Shield", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+	ImGui::Begin("Shield", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 
 	ImGui::Image((ImTextureID)(intptr_t)escut, fullSize);
 	//ImGui::Image((ImTextureID)(intptr_t)rodona, fullSize);
@@ -5345,15 +5345,16 @@ int main(void)
 				logicTime -= FRAME_TIME;
 				if (!game.gameRunning && !debug)
 				{
+					cout << game.score / 100 << endl;
 					iniciar = false;
 					game = GameLogic();
 				}
 			}
 
 			// Dibuixar puntuació en la interfície -NIL
-			ImGui::Begin("Score", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Begin("Score", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 			ImGui::SetWindowPos(ImVec2(10, 10));
-			ImGui::Text("Score: %d", (int)game.score);
+			ImGui::Text("Score: %d", (int)game.score/100);
 			ImGui::End();
 
 			float percentatgeFuel = game.remainingFuel / FUEL_DURATION;
