@@ -28,6 +28,7 @@ const float ROTATION_ANGLE = 30 * (PI / 180.f);
 const float ROTATION_SPEED = 5 * (PI / 180.f);
 const float ROTATION_VEL = 0.05;
 
+
 // Constants cotxes obstacle
 const float CAR_WIDTH = 40;
 const float CAR_HEIGHT = 100;
@@ -55,44 +56,11 @@ const int PROB_SHIELD = 40; //%
 const float FUEL_DURATION = 30;
 const float SHIELD_DURATION = 5;
 extern COBJModel* OBJECT_MODELS[3];
+const float REDUCCIO_VELOCITAT = 0.5;
 
 // Constants de visualització
 const float TARGET_FPS = 60.0f;      // Freqüència de la lògica
 const float FRAME_TIME = 1.0f / TARGET_FPS;
-
-enum CARS {
-    CAR1,
-    CAR1BLUE,
-    CAR1RED,
-    CAR1GRAY,
-    CAR2,
-    CAR2BLACK,
-    CAR2RED,
-    CAR3,
-    CAR3RED,
-    CAR3YELLOW,
-    CAR4,
-    CAR4GREY,
-    CAR4LIGHTGREY,
-    CAR4LIGHTORANGE,
-    CAR5,
-    CAR5POLICE,
-    CAR5TAXI,
-    CAR7,
-    CAR7RED,
-    CAR7GREY,
-    CAR7GREEN,
-    CAR7BROWN,
-    CAR7BLACK,
-    CAR8,
-    CAR8GREY,
-    CAR8MAIL,
-    CAR8PURPLE,
-    TOTALCARS
-};
-
-extern vector<string> OBJpaths;
-extern vector<vector<int>> carColorMap;
 
 
 class Car {
@@ -100,7 +68,6 @@ public:
     Car();
     void move(float dx, float dy);
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
-    void assign(COBJModel* model);
 
     float m_x;
     float m_y;
@@ -185,8 +152,10 @@ public:
     void GetUserInput();
     void UpdateGameLogic();
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
-
+    float getFuel() { return remainingFuel; }
+    bool getShield() { return shieldEquipped; }
     bool gameRunning;
     Player player;
     RoadRow roadRows[NUM_ROWS];
+    int score;
 };

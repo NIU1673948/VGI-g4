@@ -210,7 +210,7 @@
 
 	void OnPaint(GLFWwindow* window, const GameLogic& game);
 	void configura_Escena();
-	void dibuixa_Escena(GameLogic& game);
+	void dibuixa_Escena(const GameLogic& game);
 	void Barra_Estat();
 
 // EntornVGI: Funcions de mostrar Finestres ImGui
@@ -271,17 +271,12 @@
 	bool debug = false;
 	bool pantallaCompleta = true;
 	bool pantallaInici = true;
-	bool garatge = false;
 
 
-	// MAURI: Funcions del joc
-	void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit);
+// MAURI: Funcions del joc
+	void draw_ProgramButtons(bool& inici, bool& config, bool& exit);
+	//void carregarImatgeFons()
 
 //LEVON
 	void draw_inici();
-
-
-	void dibuixa_Escena(GameLogic& game, bool& garage, float time);
-	float delta;
-	float logicTime = 0.0f;
-	int act = 0;
+	void draw_initial_car();

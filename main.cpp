@@ -406,10 +406,11 @@ void configModels()
 {
 	string path;
 
-	for (int i = 0; i < TOTALCARS; i++)
+	for (int i = 1; i <= NUM_CAR_MODELS; i++)
 	{
 		COBJModel* model = new COBJModel();
-		model->LoadModel(const_cast<char*>(OBJpaths[i].c_str()));
+		path = ".\\OBJFiles\\Car 0" + to_string(i) + "\\Car" + to_string(i) + ".obj";
+		model->LoadModel(const_cast<char*>(path.c_str()));
 		CAR_MODELS.push_back(model);
 	}
 
@@ -536,7 +537,7 @@ void configura_Escena() {
 }
 
 // dibuixa_Escena: Funcio que crida al dibuix dels diferents elements de l'escana
-void dibuixa_Escena(GameLogic& game, bool& garage, float delta) {
+void dibuixa_Escena(const GameLogic& game) {
 
 	//glUseProgram(shader_programID);
 
@@ -551,7 +552,7 @@ void dibuixa_Escena(GameLogic& game, bool& garage, float delta) {
 
 //	Dibuix geometria de l'escena amb comandes GL.
 	dibuixa_EscenaGL(shader_programID, col_obj, &sw_material[5], textura, &texturesID[NUM_MAX_TEXTURES],
-		textura_map, tFlag_invert_Y, ObOBJ, ViewMatrix, GTMatrix, game, garage, act, delta);
+		textura_map, tFlag_invert_Y, ObOBJ, ViewMatrix, GTMatrix, game);
 }
 
 // Barra_Estat: Actualitza la barra d'estat (Status Bar) de l'aplicació amb els
@@ -788,27 +789,10 @@ void draw_inici(){
 	eixos = false;
 }
 
-void draw_inici_garage() {
-	projeccio = PERSPECT;
-	c = 4;
-	//draw_initial_car();
-
-	//necessari perqu? l'objecte es vegi b?, es pot canviar iluminaci? per? compte amb les altres variables
-	ilumina = SUAU;  oculta = true; test_vis = true;
-
-	draw_skycube();
-
-	eixos = false;
-}
 
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
 
-int currentModel = 0;
-
-
-//CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
-
-void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
+void draw_ProgramButtons(bool& inici, bool& config, bool& exit) {
 	// Obtener el tamaño de la pantalla o ventana principal
 	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
 
@@ -851,19 +835,16 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 		}
 	}
 	else {
-		if (!config && !garage) {
+		if (!config) {
 			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
 			if (ImGui::Button("INICIAR", buttonSize)) {
 				inici = true;
-				c = 0;
 				draw_inici();
 			}
 
 			ImGui::SameLine();
 			if (ImGui::Button("GARATGE", buttonSize)) {
-				// Acci? boto garatge
-				garage = true;
-				draw_inici_garage();
+				// Acció boto garatge
 			}
 
 			ImGui::SameLine();
@@ -877,51 +858,24 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			}
 		}
 		else {
-			if (garage)
-			{
-				float centerY = (totalHeight - buttonSize.y) / 2.0f;
-				ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
-				if (ImGui::Button("ANTERIOR MODELO", buttonSize))
-				{
-					currentModel = (currentModel == 0) ? carColorMap.size() - 1 : currentModel - 1;
-					act = carColorMap[currentModel][0];
-				}
-
-				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("SELECCIONAR", buttonSize))
-				{
-					garage = false;
-				}
-
-				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("SIGUIENTE MODELO", buttonSize))
-				{
-					currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
-					act = carColorMap[currentModel][0];
-				}
-
+			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+			if (ImGui::Button("FULLSCREEN", buttonSize)) {
+				OnFull_Screen(primary, window);
 			}
-			else
-			{
-				ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
-				if (ImGui::Button("FULLSCREEN", buttonSize)) {
-					OnFull_Screen(primary, window);
-				}
 
-				ImGui::SameLine();
-				if (ImGui::Button("DIFICULTAD", buttonSize)) {
-					// Acci? boto dificultat
-				}
+			ImGui::SameLine();
+			if (ImGui::Button("DIFICULTAT", buttonSize)) {
+				// Acció boto dificultat
+			}
 
-				ImGui::SameLine();
-				if (ImGui::Button("AUDIO", buttonSize)) {
-					// Acci? boto audio
-				}
+			ImGui::SameLine();
+			if (ImGui::Button("AUDIO", buttonSize)) {
+				// Acció boto audio
+			}
 
-				ImGui::SameLine();
-				if (ImGui::Button("BACK", buttonSize)) {
-					config = false;
-				}
+			ImGui::SameLine();
+			if (ImGui::Button("BACK", buttonSize)) {
+				config = false;
 			}
 		}
 	}
@@ -1087,45 +1041,36 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 
 		També hi ha implementada una funcio que converteix la finestra de la configuracio de l'entorn en un boto petit anomenat debug.
 		Aquest boto hauria d'apareixer sempre (i si mes endavant no el volem el podem borrar) pero de moment funciona be fins que cliquem al boto
-		per tornar a la pantalla inicial <--FALTA REVISAR.
+		per tornar a la pantalla inicial <--FALTA REVISAR.aa
 
 		Per a que el menu funcioni correctament s'ha de crear una carpeta anomenada "Fonts" (amb 2 tipografies que utilitzarem pel joc)
 		a la mateixa carpeta on es troben les textures, obj etc.. i s'ha de tenir la imatge de fons a la carpeta de Textures.
 
 	*/
-	if (!iniciar && !garatge)
+	if (!iniciar)
 	{
 		fonsMenu();
 		ImGui::PushFont(fontJoc);
-		draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
+		draw_ProgramButtons(iniciar, configuracio, sortir);
 		ImGui::PopFont();
 	}
 	else
 	{
-		if (garatge)
-		{
-			ImGui::PushFont(fontJoc);
-			draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
-			ImGui::PopFont();
-		}
-		else
-		{
-			int screenHeight = ImGui::GetIO().DisplaySize.y;
-			ImVec2 button2position = ImVec2(150, screenHeight - 50);
-			ImGui::SetNextWindowPos(button2position, ImGuiCond_Always);
-			ImGui::Begin("PantallaInicial", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
-			ImGui::PushFont(fontDebug);
-			if (ImGui::Button("Tornar a Inici")) {
-				iniciar = false;
-				if (ObOBJ)
-				{
-					ObOBJ->netejaVAOList_OBJ();
-					ObOBJ->netejaTextures_OBJ();
-				}
+		int screenHeight = ImGui::GetIO().DisplaySize.y;
+		ImVec2 button2position = ImVec2(150, screenHeight - 50);
+		ImGui::SetNextWindowPos(button2position, ImGuiCond_Always);
+		ImGui::Begin("PantallaInicial", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		ImGui::PushFont(fontDebug);
+		if (ImGui::Button("Tornar a Inici")) {
+			iniciar = false;
+			if (ObOBJ)
+			{
+				ObOBJ->netejaVAOList_OBJ();
+				ObOBJ->netejaTextures_OBJ();
 			}
-			ImGui::PopFont();
-			ImGui::End();
 		}
+		ImGui::PopFont();
+		ImGui::End();
 	}
 
 	ImGui::PushFont(fontDebug);
@@ -1133,6 +1078,80 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 	ImGui::PopFont();
 
 }
+
+GLuint fuelBar = 0;
+
+void carregarFuelBar() {
+	if (fuelBar == 0) {
+		fuelBar = loadIMA_SOIL(".\\textures\\fuel.png");
+	}
+}
+
+
+void netejarFuelBar() {
+	if (fuelBar != 0) {
+		glDeleteTextures(1, &fuelBar);
+		fuelBar = 0;
+	}
+}
+
+
+void drawFuelBar(float percentatgeFuel) {
+	carregarFuelBar();
+
+	if (percentatgeFuel < 0.0f) {
+		percentatgeFuel = 0.0f;
+	}
+	else if (percentatgeFuel > 1.0f) {
+		percentatgeFuel = 1.0f;
+	}
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+	ImVec2 fullSize = ImVec2(300, 49);
+	ImVec2 visibleSize = ImVec2(fullSize.x * percentatgeFuel, fullSize.y);
+	// Coordenades textura
+	ImVec2 uv0 = ImVec2(0.0f, 0.0f);
+	ImVec2 uv1 = ImVec2(percentatgeFuel, 1.0f);
+
+	ImGui::SetNextWindowPos(ImVec2(350, 10), ImGuiCond_Always); 
+	ImGui::Begin("Fuel Bar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+
+	// Dibujar la imagen con el porcentaje visible
+	ImGui::Image((ImTextureID)(intptr_t)fuelBar, visibleSize, uv0, uv1);
+
+	ImGui::End();
+	ImGui::PopStyleVar(2);
+}
+
+GLuint escut = 0;
+
+
+void carregarShield() {
+	if (escut == 0) {
+		escut = loadIMA_SOIL(".\\textures\\shield.png");
+	}
+}
+
+void drawShield(bool shieldEquipped) {
+	if (!shieldEquipped) { return; }
+	carregarShield();
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+	ImVec2 fullSize = ImVec2(49, 54);
+
+	ImGui::SetNextWindowPos(ImVec2(750, 10), ImGuiCond_Always);
+	ImGui::Begin("Shield", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+
+	// Dibujar la imagen con el porcentaje visible
+	ImGui::Image((ImTextureID)(intptr_t)escut, fullSize);
+
+	ImGui::End();
+	ImGui::PopStyleVar(2);
+}
+
 
 
 void MostraEntornVGIWindow(bool* p_open)
@@ -1163,7 +1182,7 @@ void MostraEntornVGIWindow(bool* p_open)
 
 // Most "big" widgets share a common width settings by default. See 'Demo->Layout->Widgets Width' for details.
 // e.g. Use 2/3 of the space for widgets and 1/3 for labels (right align)
-//ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.35f);
+// ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.35f);
 // e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
 	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
@@ -2732,8 +2751,8 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 			else if (escal) Teclat_TransEscala(key, action);
 		}
 		//JAN Canviar la camera al pulsar 'R'
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 2 && garatge == false) c = (c < 2) ? (c + 1) : 0, camera = CAM_ESFERICA;
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 2 && garatge == false) camera = CAM_NAVEGA, c++;
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 2) c = (c < 2) ? (c + 1) : 0, camera = CAM_ESFERICA;
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 2) camera = CAM_NAVEGA, c++;
 		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);
@@ -5082,6 +5101,8 @@ int main(void)
 // Entorn VGI. Timer: Variables
 	float time = elapsedTime;
 	float now;
+	float delta;
+	float logicTime = 0.0f;
 
 
 
@@ -5276,12 +5297,24 @@ int main(void)
 				if (!game.gameRunning)
 					sortir = true;
 			}
+			// Increment de la puntuació en el joc  - NIL
+			game.score += game.player.m_speed * delta * 100;
+
+			// Dibuixar puntuació en la interfície -NIL
+			ImGui::Begin("Score", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::SetWindowPos(ImVec2(10, 10));
+			ImGui::Text("Score: %d", (int)game.score);
+			ImGui::End();
+
+			float percentatgeFuel = game.getFuel() / FUEL_DURATION;
+			drawFuelBar(percentatgeFuel);
+			drawShield(game.getShield());
 		}
 		else
 			FonsB();
 
 		OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT
-		dibuixa_Escena(game, garatge, delta);
+		dibuixa_Escena(game);
 
 
 // Entorn VGI.ImGui: Capta dades del menú InGui

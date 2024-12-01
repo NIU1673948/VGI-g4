@@ -11,7 +11,6 @@
 #include "objLoader.h"	
 #include "GameLogic.h"
 
-
 /* ------------------------------------------------------------------------- */
 /*                            Funcions de les escenes                        */
 /* ------------------------------------------------------------------------- */
@@ -30,13 +29,10 @@ void dibuixa_EscenaGL(
     COBJModel* objecteOBJ,
     glm::mat4 MatriuVista,
     glm::mat4 MatriuTG,
-    GameLogic& game,
-    bool& garage,
-    int& actCar,
-    float time
+    const GameLogic& game
 );
 
-void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar, float logicTime);
+
 
 // ALBERT
 void dibuixaCotxe(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista,
@@ -62,7 +58,5 @@ void Cabina(GLint shaderId, glm::mat4 MatriuVista, glm::mat4 MatriuTG, bool sw_m
 // Entorn VGI: Funcions locals a escena.cpp
 // CString2char: Funció de conversió de variable CString a char * per a noms de fitxers 
 //char* CString2Char(CString entrada);
-
-static float rotationAngle = 0;
 
 #endif
