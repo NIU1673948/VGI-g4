@@ -77,7 +77,7 @@ void dibuixa_Skybox(GLuint sk_programID, GLuint cmTexture, char eix_Polar, glm::
 
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bool textur, GLuint texturID[NUM_MAX_TEXTURES],
-	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG, GameLogic& game, bool& garage, int& actCar)
+	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG, GameLogic& game, bool& garage, int& actCar, float time)
 {
 	float altfar = 0;
 	GLint npunts = 0, nvertexs = 0;
@@ -128,23 +128,30 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 		game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta l?nia enlloc de la de dalt
 	}
 	else
-		garageDraw(sh_programID, MatriuVista, MatriuTG, actCar);
+		garageDraw(sh_programID, MatriuVista, MatriuTG, actCar, time);
 		
 
 // Enviar les comandes gràfiques a pantalla
 //	glFlush();
 }
 
-void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar)
+float Ptime = 0.0f;
+
+void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar, float delta)
 {
 	Car* c = new Car();
 	c->assign(CAR_MODELS[actCar]);
 	c->m_x = 0;
 	c->m_y = 0;
-
-	rotationAngle += 0.1;
-	if (rotationAngle > 360.0f)
-		rotationAngle -= 360.0f;
+	
+	Ptime += delta;
+	if (Ptime > FRAME_TIME)
+	{
+		rotationAngle += 0.5;
+		if (rotationAngle > 360.0f)
+			rotationAngle -= 360.0f;
+		Ptime -= FRAME_TIME;
+	}
 
 	float amplitude = 10.0f;
 	float frequency = 2.0f;

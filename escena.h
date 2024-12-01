@@ -11,6 +11,7 @@
 #include "objLoader.h"	
 #include "GameLogic.h"
 
+
 /* ------------------------------------------------------------------------- */
 /*                            Funcions de les escenes                        */
 /* ------------------------------------------------------------------------- */
@@ -31,10 +32,11 @@ void dibuixa_EscenaGL(
     glm::mat4 MatriuTG,
     GameLogic& game,
     bool& garage,
-    int& actCar
+    int& actCar,
+    float time
 );
 
-void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar);
+void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar, float logicTime);
 
 // ALBERT
 void dibuixaCotxe(GLuint sh_programID, bool sw_mat[5], glm::mat4 MatriuVista,

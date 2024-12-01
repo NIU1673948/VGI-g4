@@ -536,7 +536,7 @@ void configura_Escena() {
 }
 
 // dibuixa_Escena: Funcio que crida al dibuix dels diferents elements de l'escana
-void dibuixa_Escena(GameLogic& game, bool& garage) {
+void dibuixa_Escena(GameLogic& game, bool& garage, float delta) {
 
 	//glUseProgram(shader_programID);
 
@@ -551,7 +551,7 @@ void dibuixa_Escena(GameLogic& game, bool& garage) {
 
 //	Dibuix geometria de l'escena amb comandes GL.
 	dibuixa_EscenaGL(shader_programID, col_obj, &sw_material[5], textura, &texturesID[NUM_MAX_TEXTURES],
-		textura_map, tFlag_invert_Y, ObOBJ, ViewMatrix, GTMatrix, game, garage, act);
+		textura_map, tFlag_invert_Y, ObOBJ, ViewMatrix, GTMatrix, game, garage, act, delta);
 }
 
 // Barra_Estat: Actualitza la barra d'estat (Status Bar) de l'aplicació amb els
@@ -5082,8 +5082,6 @@ int main(void)
 // Entorn VGI. Timer: Variables
 	float time = elapsedTime;
 	float now;
-	float delta;
-	float logicTime = 0.0f;
 
 
 
@@ -5283,7 +5281,7 @@ int main(void)
 			FonsB();
 
 		OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT
-		dibuixa_Escena(game, garatge);
+		dibuixa_Escena(game, garatge, delta);
 
 
 // Entorn VGI.ImGui: Capta dades del menú InGui

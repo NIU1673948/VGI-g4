@@ -281,5 +281,7 @@
 	void draw_inici();
 
 
-	void dibuixa_Escena(GameLogic& game, bool& garage);
+	void dibuixa_Escena(GameLogic& game, bool& garage, float time);
+	float delta;
+	float logicTime = 0.0f;
 	int act = 0;
