@@ -3605,35 +3605,35 @@ void Teclat_ColorObjecte(int key, int action)
 				if (col_obj.b > 1.0) col_obj.b = 1.0;
 			}
 		}
-		else if (key == GLFW_KEY_SPACE)
-		{
-			if ((fonsR) && (fonsG) && (fonsB)) {
-				fonsG = false;
-				fonsB = false;
-			}
-			else if ((fonsR) && (fonsG)) {
-				fonsG = false;
-				fonsB = true;
-			}
-			else if ((fonsR) && (fonsB)) {
-				fonsR = false;
-				fonsG = true;
-			}
-			else if ((fonsG) && (fonsB)) fonsR = true;
-			else if (fonsR) {
-				fonsR = false;
-				fonsG = true;
-			}
-			else if (fonsG) {
-				fonsG = false;
-				fonsB = true;
-			}
-			else if (fonsB) {
-				fonsR = true;
-				fonsG = true;
-				fonsB = false;
-			}
-		}
+		//else if (key == GLFW_KEY_SPACE)
+		//{
+		//	if ((fonsR) && (fonsG) && (fonsB)) {
+		//		fonsG = false;
+		//		fonsB = false;
+		//	}
+		//	else if ((fonsR) && (fonsG)) {
+		//		fonsG = false;
+		//		fonsB = true;
+		//	}
+		//	else if ((fonsR) && (fonsB)) {
+		//		fonsR = false;
+		//		fonsG = true;
+		//	}
+		//	else if ((fonsG) && (fonsB)) fonsR = true;
+		//	else if (fonsR) {
+		//		fonsR = false;
+		//		fonsG = true;
+		//	}
+		//	else if (fonsG) {
+		//		fonsG = false;
+		//		fonsB = true;
+		//	}
+		//	else if (fonsB) {
+		//		fonsR = true;
+		//		fonsG = true;
+		//		fonsB = false;
+		//	}
+		//}
 		else if (key == GLFW_KEY_O) sw_color = true;
 		else if (key == GLFW_KEY_F) sw_color = false;
 	}
@@ -3691,7 +3691,7 @@ void Teclat_ColorObjecte(int key, int action)
 					if (c_fons.b > 1.0) c_fons.b = 1.0;
 				}
 			}
-			else if (key == GLFW_KEY_SPACE) {
+			/*else if (key == GLFW_KEY_SPACE) {
 				if ((fonsR) && (fonsG) && (fonsB)) {
 					fonsG = false;
 					fonsB = false;
@@ -3718,7 +3718,7 @@ void Teclat_ColorObjecte(int key, int action)
 					fonsG = true;
 					fonsB = false;
 				}
-			}
+			}*/
 			else if (key == GLFW_KEY_O) sw_color = true;
 			else if (key == GLFW_KEY_F) sw_color = false;
 		}
@@ -4171,10 +4171,10 @@ void Teclat_TransRota(int key, int action)
 			break;
 
 			// Tecla Espaiador
-		case GLFW_KEY_SPACE:
-			rota = !rota;
-			trasl = !trasl;
-			break;
+		//case GLFW_KEY_SPACE:
+		//	rota = !rota;
+		//	trasl = !trasl;
+		//	break;
 
 		default:
 			break;
@@ -4294,10 +4294,10 @@ void Teclat_TransTraslada(int key, int action)
 			break;
 
 			// Tecla Espaiador
-		case GLFW_KEY_SPACE:
-			rota = !rota;
-			trasl = !trasl;
-			break;
+		//case GLFW_KEY_SPACE:
+		//	rota = !rota;
+		//	trasl = !trasl;
+		//	break;
 
 		default:
 			break;
