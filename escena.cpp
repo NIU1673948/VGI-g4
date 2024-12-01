@@ -77,7 +77,7 @@ void dibuixa_Skybox(GLuint sk_programID, GLuint cmTexture, char eix_Polar, glm::
 
 // dibuixa_EscenaGL: Dibuix de l'escena amb comandes GL
 void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bool textur, GLuint texturID[NUM_MAX_TEXTURES],
-	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG, const GameLogic& game)
+	bool textur_map, bool flagInvertY, COBJModel* objecteOBJ,	glm::mat4 MatriuVista, glm::mat4 MatriuTG, GameLogic& game, bool& garage, int& actCar)
 {
 	float altfar = 0;
 	GLint npunts = 0, nvertexs = 0;
@@ -121,13 +121,42 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 	//game.road.setRoadSize(50, 1000); LEVON mirar on posar les dimensions de la carretera
 	/*game.road.draw(sh_programID, MatriuVista, MatriuTG);
 	game.player.draw(sh_programID, MatriuVista, MatriuTG);*/ // ALBERT de moment només dibuixo el jugador, cal mirar coordenades i tal per a dibuixar tot bé
-	game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta línia enlloc de la de dalt
+
+	game.player.m_model = CAR_MODELS[actCar];
+	if (!garage)
+	{
+		game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta l?nia enlloc de la de dalt
+	}
+	else
+		garageDraw(sh_programID, MatriuVista, MatriuTG, actCar);
 		
 
 // Enviar les comandes gràfiques a pantalla
 //	glFlush();
 }
 
+void garageDraw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, int& actCar)
+{
+	Car* c = new Car();
+	c->assign(CAR_MODELS[actCar]);
+	c->m_x = 0;
+	c->m_y = 0;
+
+	rotationAngle += 0.1;
+	if (rotationAngle > 360.0f)
+		rotationAngle -= 360.0f;
+
+	float amplitude = 10.0f;
+	float frequency = 2.0f;
+
+	float deltaY = amplitude * sin(glm::radians(rotationAngle) * frequency);
+
+	MatriuTG = glm::mat4(1.0f);
+	MatriuTG = glm::translate(MatriuTG, glm::vec3(0.0f, deltaY, 0.0f));
+	MatriuTG = glm::rotate(MatriuTG, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	c->draw(sh_programID, MatriuVista, MatriuTG);
+}
 
 // dibuixa: Funció que dibuixa objectes simples de la llibreria GLUT segons obj
 void dibuixa(GLuint sh_programID, char obj, glm::mat4 MatriuVista, glm::mat4 MatriuTG)

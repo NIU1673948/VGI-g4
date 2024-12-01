@@ -3,6 +3,45 @@
 vector<COBJModel*> CAR_MODELS;
 COBJModel* OBJECT_MODELS[3];
 
+vector<string> OBJpaths = {
+    ".\\OBJFiles\\Car 01\\Car.obj",
+    ".\\OBJFiles\\Car 01\\Car_blue.obj",
+    ".\\OBJFiles\\Car 01\\Car_red.obj",
+    ".\\OBJFiles\\Car 01\\Car_gray.obj",
+    ".\\OBJFiles\\Car 02\\Car2.obj",
+    ".\\OBJFiles\\Car 02\\Car2_black.obj",
+    ".\\OBJFiles\\Car 02\\Car2_red.obj",
+    ".\\OBJFiles\\Car 03\\Car3.obj",
+    ".\\OBJFiles\\Car 03\\Car3_red.obj",
+    ".\\OBJFiles\\Car 03\\Car3_yellow.obj",
+    ".\\OBJFiles\\Car 04\\Car4.obj",
+    ".\\OBJFiles\\Car 04\\Car4_grey.obj",
+    ".\\OBJFiles\\Car 04\\Car4_lightgrey.obj",
+    ".\\OBJFiles\\Car 04\\Car4_lightorange.obj",
+    ".\\OBJFiles\\Car 05\\Car5.obj",
+    ".\\OBJFiles\\Car 05\\Car5_Police.obj",
+    ".\\OBJFiles\\Car 05\\Car5_Taxi.obj",
+    ".\\OBJFiles\\Car 07\\Car7.obj",
+    ".\\OBJFiles\\Car 07\\Car7_red.obj",
+    ".\\OBJFiles\\Car 07\\Car7_grey.obj",
+    ".\\OBJFiles\\Car 07\\Car7_green.obj",
+    ".\\OBJFiles\\Car 07\\Car7_brown.obj",
+    ".\\OBJFiles\\Car 07\\Car7_black.obj",
+    ".\\OBJFiles\\Car 08\\Car8.obj",
+    ".\\OBJFiles\\Car 08\\Car8_grey.obj",
+    ".\\OBJFiles\\Car 08\\Car8_mail.obj",
+    ".\\OBJFiles\\Car 08\\Car8_purple.obj",
+};
+
+vector<vector<int>> carColorMap = {
+    {CAR1, CAR1BLUE, CAR1RED, CAR1GRAY},
+    {CAR2, CAR2BLACK, CAR2RED},
+    {CAR3, CAR3RED, CAR3YELLOW},
+    {CAR4, CAR4GREY, CAR4LIGHTGREY, CAR4LIGHTORANGE},
+    {CAR5, CAR5POLICE, CAR5TAXI},
+    {CAR7, CAR7RED, CAR7GREY, CAR7GREEN, CAR7BROWN, CAR7BLACK},
+    {CAR8, CAR8GREY, CAR8MAIL, CAR8PURPLE}
+};
 
 Car::Car() {
     m_x = 0;
@@ -38,6 +77,11 @@ void Car::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) c
 
         m_model->draw_TriVAO_OBJ(sh_programID);
     }
+}
+
+void Car::assign(COBJModel* model)
+{
+    m_model = model;
 }
 
 RoadRow::RoadRow()

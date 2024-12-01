@@ -60,12 +60,47 @@ extern COBJModel* OBJECT_MODELS[3];
 const float TARGET_FPS = 60.0f;      // Freqüència de la lògica
 const float FRAME_TIME = 1.0f / TARGET_FPS;
 
+enum CARS {
+    CAR1,
+    CAR1BLUE,
+    CAR1RED,
+    CAR1GRAY,
+    CAR2,
+    CAR2BLACK,
+    CAR2RED,
+    CAR3,
+    CAR3RED,
+    CAR3YELLOW,
+    CAR4,
+    CAR4GREY,
+    CAR4LIGHTGREY,
+    CAR4LIGHTORANGE,
+    CAR5,
+    CAR5POLICE,
+    CAR5TAXI,
+    CAR7,
+    CAR7RED,
+    CAR7GREY,
+    CAR7GREEN,
+    CAR7BROWN,
+    CAR7BLACK,
+    CAR8,
+    CAR8GREY,
+    CAR8MAIL,
+    CAR8PURPLE,
+    TOTALCARS
+};
+
+extern vector<string> OBJpaths;
+extern vector<vector<int>> carColorMap;
+
 
 class Car {
 public:
     Car();
     void move(float dx, float dy);
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    void assign(COBJModel* model);
 
     float m_x;
     float m_y;
