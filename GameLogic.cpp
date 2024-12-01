@@ -124,7 +124,7 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
 
     for (int i = 0; i < NUM_LANES; ++i)
     {
-        m_obstacles[i].m_model = CAR_MODELS[rand() % NUM_CAR_MODELS];
+        m_obstacles[i].m_model = CAR_MODELS[rand() % TOTALCARS];
         m_obstacles[i].m_width = CAR_WIDTH;
         m_obstacles[i].m_height = (CAR_WIDTH / m_obstacles[i].m_model->m_width) * m_obstacles[i].m_model->m_depth;
 
