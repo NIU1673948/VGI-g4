@@ -766,7 +766,6 @@ void draw_skycube() {
 	{	
 		std::vector<std::string> faces =
 		{ ".\\textures\\skybox\\right.jpg",
-			".\\textures\\skybox\\right.jpg",
 			".\\textures\\skybox\\left.jpg",
 			".\\textures\\skybox\\top.jpg",
 			".\\textures\\skybox\\bottom.jpg",
@@ -788,6 +787,27 @@ void draw_inici(){
 	eixos = false;
 }
 
+void draw_skycube_garage() {
+	SkyBoxCube = true;
+	Vis_Polar = POLARY;
+
+	if (!skC_programID) skC_programID = shader_SkyBoxC.loadFileShaders(".\\shaders\\skybox.VERT", ".\\shaders\\skybox.FRAG");
+
+	if (skC_VAOID.vaoId == 0) skC_VAOID = loadCubeSkybox_VAO();
+	Set_VAOList(CUBE_SKYBOX, skC_VAOID);
+
+	std::vector<std::string> faces =
+	{
+		".\\textures\\garage\\px.png",  // Right
+		".\\textures\\garage\\nx.png",  // Left
+		".\\textures\\garage\\py.png",  // Top
+		".\\textures\\garage\\ny.png",  // Bottom
+		".\\textures\\garage\\pz.png",  // Front
+		".\\textures\\garage\\nz.png"   // Back
+	};
+	cubemapTexture = loadCubemap(faces);
+}
+
 void draw_inici_garage() {
 	projeccio = PERSPECT;
 	c = 4;
@@ -796,7 +816,7 @@ void draw_inici_garage() {
 	//necessari perqu? l'objecte es vegi b?, es pot canviar iluminaci? per? compte amb les altres variables
 	ilumina = SUAU;  oculta = true; test_vis = true;
 
-	draw_skycube();
+	draw_skycube_garage();
 
 	eixos = false;
 }
@@ -804,7 +824,7 @@ void draw_inici_garage() {
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
 
 int currentModel = 0;
-
+int currentColor = 0;
 
 //CODI BY MAURI - PER CREAR BOTONS DE LA PANTALLA
 
@@ -861,7 +881,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 
 			ImGui::SameLine();
 			if (ImGui::Button("GARATGE", buttonSize)) {
-				// Acci? boto garatge
+				// Acció boto garatge
 				garage = true;
 				draw_inici_garage();
 			}
@@ -880,6 +900,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			if (garage)
 			{
 				float centerY = (totalHeight - buttonSize.y) / 2.0f;
+
 				ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
 				if (ImGui::Button("<--", buttonSize))
 				{
@@ -888,9 +909,10 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("SELECCIONAR", buttonSize))
+				if (ImGui::Button("COLOR", buttonSize))
 				{
-					garage = false;
+					currentColor = (currentColor == carColorMap[currentModel].size() - 1) ? 0 : currentColor + 1;
+					act = carColorMap[currentModel][currentColor];
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);
@@ -899,6 +921,38 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 					currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
 					act = carColorMap[currentModel][0];
 				}
+
+				ImVec2 buttonSize = ImVec2(screenSize.x * 0.12f, screenSize.y * 0.2f);
+				float lowerWindowWidth = 700.0f; 
+				float lowerWindowHeight = 200.0f;
+				float lowerPosX = (screenSize.x - lowerWindowWidth) / 2.0f;
+				float lowerPosY = screenSize.y * 0.8f; 
+
+				ImGui::SetNextWindowPos(ImVec2(lowerPosX, lowerPosY), ImGuiCond_Always);
+				ImGui::SetNextWindowSize(ImVec2(lowerWindowWidth, lowerWindowHeight), ImGuiCond_Always);
+
+				ImGui::Begin("Ventana COLOR", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+				ImVec2 lowerButtonSize = ImVec2(lowerWindowWidth * 0.6, lowerWindowHeight * 0.6f); 
+				
+				ImGui::SetCursorPos(ImVec2((lowerWindowWidth - lowerButtonSize.x) / 2.0f, (lowerWindowHeight - lowerButtonSize.y) / 2.0f)); 
+
+				ImGuiIO& io = ImGui::GetIO();
+				ImFont* bigFont = io.Fonts->Fonts.back();
+				ImGui::PushFont(bigFont);
+				
+				if (ImGui::Button("SELECCIONAR", lowerButtonSize)) 
+				{
+					cubemapTexture = NULL;
+					skC_VAOID.vaoId = 0;
+					skC_programID = NULL;
+					garage = false;
+				}
+
+				ImGui::PopStyleVar();
+				ImGui::PopStyleColor(3);
+
+				ImGui::End();
 
 			}
 			else
@@ -5284,7 +5338,9 @@ int main(void)
 	io.Fonts->AddFontFromFileTTF(".\\Fonts\\ConsolaMono-Book.ttf", 16.0f);
 	ImFont* debugFont = io.Fonts->Fonts.back();  // Obtén la fuente cargada
 
-// Intent de posar el joc ALBERT
+	io.Fonts->AddFontFromFileTTF(".\\Fonts\\Fifties Movies.ttf", 42.0f);
+
+	// Intent de posar el joc ALBERT
 
 	configModels();
 
