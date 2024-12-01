@@ -25,7 +25,7 @@ const float MARGIN = 30;
 const float STEP = 5;
 const float PLAYER_SPEED = 5;
 const float ROTATION_ANGLE = 30 * (PI / 180.f);
-const float ROTATION_SPEED = 5 * (PI / 180.f);
+const float ROTATION_SPEED = 4 * (PI / 180.f);
 const float ROTATION_VEL = 0.05;
 
 // Constants cotxes obstacle
@@ -46,15 +46,15 @@ const float COLLISION_START = WINDOW_HEIGHT / 5;
 const float COLLISION_TOLERANCE = 5;
 
 // Constants d'objectes
-//const int PROB_OBJECT = 30; //%
-//const int PROB_FUEL = 30; //%
-//const int PROB_SHIELD = 10; //%
-const int PROB_OBJECT = 100; //%
-const int PROB_FUEL = 30; //%
-const int PROB_SHIELD = 40; //%
+const int PROB_OBJECT = 40; //%
+const int PROB_FUEL = 50; //%
+const int PROB_SHIELD = 10; //%
 const float FUEL_DURATION = 30;
 const float SHIELD_DURATION = 5;
+const float COIN_SPEED_DOWN = 0.5;
+const float COIN_SCORE = 100;
 extern COBJModel* OBJECT_MODELS[3];
+
 
 // Constants de visualització
 const float TARGET_FPS = 60.0f;      // Freqüència de la lògica
@@ -174,11 +174,8 @@ private:
     float m_roadY;
     void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
     void finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
-    float remainingFuel;
-    float remainingShield;
     int nextEmptyLane;
     COBJModel* modelCoin;
-    bool shieldEquipped;
 
 public:
     GameLogic();
@@ -186,6 +183,10 @@ public:
     void UpdateGameLogic();
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 
+    float remainingFuel;
+    float remainingShield;
+    int score;
+    bool shieldEquipped;
     bool gameRunning;
     Player player;
     RoadRow roadRows[NUM_ROWS];

@@ -881,7 +881,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			{
 				float centerY = (totalHeight - buttonSize.y) / 2.0f;
 				ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
-				if (ImGui::Button("ANTERIOR MODELO", buttonSize))
+				if (ImGui::Button("<--", buttonSize))
 				{
 					currentModel = (currentModel == 0) ? carColorMap.size() - 1 : currentModel - 1;
 					act = carColorMap[currentModel][0];
@@ -894,7 +894,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("SIGUIENTE MODELO", buttonSize))
+				if (ImGui::Button("-->", buttonSize))
 				{
 					currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
 					act = carColorMap[currentModel][0];
@@ -5066,6 +5066,76 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 	fprintf(stderr, "\n");
 }
 
+GLuint fuelBar = 0;
+
+void carregarFuelBar() {
+	if (fuelBar == 0) {
+		fuelBar = loadIMA_SOIL(".\\textures\\fuel.png");
+	}
+}
+
+
+void drawFuelBar(float percentatgeFuel) {
+	carregarFuelBar();
+
+	if (percentatgeFuel < 0.0f) {
+		percentatgeFuel = 0.0f;
+	}
+	else if (percentatgeFuel > 1.0f) {
+		percentatgeFuel = 1.0f;
+	}
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+	ImVec2 fullSize = ImVec2(300, 49);
+	ImVec2 visibleSize = ImVec2(fullSize.x * percentatgeFuel, fullSize.y);
+	// Coordenades textura
+	ImVec2 uv0 = ImVec2(0.0f, 0.0f);
+	ImVec2 uv1 = ImVec2(percentatgeFuel, 1.0f);
+
+	ImGui::SetNextWindowPos(ImVec2(350, 10), ImGuiCond_Always);
+	ImGui::Begin("Fuel Bar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
+
+	// Dibujar la imagen con el porcentaje visible
+	ImGui::Image((ImTextureID)(intptr_t)fuelBar, visibleSize, uv0, uv1);
+
+	ImGui::End();
+	ImGui::PopStyleVar(2);
+}
+
+GLuint escut = 0;
+
+void carregarShield() {
+	if (escut == 0) {
+		escut = loadIMA_SOIL(".\\textures\\shield.png");
+	}
+	/*
+	if (rodona == 0) {
+		rodona = loadIMA_SOIL(".\\textures\\cercleescut.png");
+	}
+	*/
+}
+
+void drawShield(bool shieldEquipped) {
+	if (!shieldEquipped) { return; }
+	carregarShield();
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+	ImVec2 fullSize = ImVec2(54, 54);
+
+	ImGui::SetNextWindowPos(ImVec2(750, 10), ImGuiCond_Always);
+	ImGui::Begin("Shield", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+
+	ImGui::Image((ImTextureID)(intptr_t)escut, fullSize);
+	//ImGui::Image((ImTextureID)(intptr_t)rodona, fullSize);
+
+	ImGui::End();
+
+	ImGui::PopStyleVar(2);
+}
+
 
 /*
 MAURI: FALTA ACABAR DE REVISAR PQ NO DETECTA LA FUNCIO LOAD TEXTURE (preguntar al profe)
@@ -5273,9 +5343,22 @@ int main(void)
 				game.GetUserInput();
 				game.UpdateGameLogic();
 				logicTime -= FRAME_TIME;
-				if (!game.gameRunning)
-					sortir = true;
+				if (!game.gameRunning && !debug)
+				{
+					iniciar = false;
+					game = GameLogic();
+				}
 			}
+
+			// Dibuixar puntuació en la interfície -NIL
+			ImGui::Begin("Score", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::SetWindowPos(ImVec2(10, 10));
+			ImGui::Text("Score: %d", (int)game.score);
+			ImGui::End();
+
+			float percentatgeFuel = game.remainingFuel / FUEL_DURATION;
+			drawFuelBar(percentatgeFuel);
+			drawShield(game.shieldEquipped);
 		}
 		else
 			FonsB();

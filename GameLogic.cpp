@@ -188,7 +188,7 @@ float RoadRow::getY() const {
     return m_obstacles[0].m_y;
 }
 
-GameLogic::GameLogic() : gameRunning(true), m_roadY(0)
+GameLogic::GameLogic() : gameRunning(true), m_roadY(0), score(0)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 
@@ -232,6 +232,7 @@ void GameLogic::UpdateGameLogic() {
     player.m_speed += 0.002;
     player.m_move_step += 0.00000002;
 
+    score += player.m_speed;
     m_roadY += player.m_speed;
 }
 
@@ -281,8 +282,11 @@ void GameLogic::GetUserInput()
     }
     else
     {
-        player.rotate(player.m_rotation > 0 ? -ROTATION_SPEED : 0);
-        player.rotate(player.m_rotation < 0 ? ROTATION_SPEED : 0);
+        if (player.m_rotation > 0)
+            player.rotate(player.m_rotation > ROTATION_SPEED ? -ROTATION_SPEED : -player.m_rotation);
+        else if (player.m_rotation < 0)
+            player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
+
     }
 }
 
@@ -321,6 +325,8 @@ void GameLogic::DoPickUps()
             switch (p)
             {
             case COIN:
+                score += COIN_SCORE;
+                player.m_speed = std::max(player.m_speed - COIN_SPEED_DOWN, 0.0f);
                 break;
             case FUEL:
                 remainingFuel = FUEL_DURATION;

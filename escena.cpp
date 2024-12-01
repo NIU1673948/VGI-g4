@@ -123,6 +123,12 @@ void dibuixa_EscenaGL(GLuint sh_programID, CColor col_object, bool sw_mat[5], bo
 	game.player.draw(sh_programID, MatriuVista, MatriuTG);*/ // ALBERT de moment només dibuixo el jugador, cal mirar coordenades i tal per a dibuixar tot bé
 
 	game.player.m_model = CAR_MODELS[actCar];
+	game.player.m_height = (CAR_WIDTH / game.player.m_model->m_width) * game.player.m_model->m_depth;
+	for (int i = 0; i < 3; i++)
+	{
+		game.player.m_collisionCircles[i] = Circle(game.player.m_x, game.player.m_y - game.player.m_height / 4 + game.player.m_height / 4 * i, game.player.m_width / 2);
+	}
+
 	if (!garage)
 	{
 		game.draw(sh_programID, MatriuVista, MatriuTG); // ALBERT a la llarga haurem de fer aquesta l?nia enlloc de la de dalt
