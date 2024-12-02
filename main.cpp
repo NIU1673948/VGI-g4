@@ -906,6 +906,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				{
 					currentModel = (currentModel == 0) ? carColorMap.size() - 1 : currentModel - 1;
 					act = carColorMap[currentModel][0];
+					currentColor = 0;
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);
@@ -920,6 +921,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				{
 					currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
 					act = carColorMap[currentModel][0];
+					currentColor = 0;
 				}
 
 				ImVec2 buttonSize = ImVec2(screenSize.x * 0.12f, screenSize.y * 0.2f);

@@ -25,7 +25,7 @@ const float MARGIN = 30;
 const float STEP = 5;
 const float PLAYER_SPEED = 5;
 const float ROTATION_ANGLE = 30 * (PI / 180.f);
-const float ROTATION_SPEED = 4 * (PI / 180.f);
+const float ROTATION_SPEED = 3 * (PI / 180.f);
 const float ROTATION_VEL = 0.05;
 
 // Constants cotxes obstacle
