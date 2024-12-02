@@ -5128,7 +5128,7 @@ void carregarFuelBar() {
 	}
 }
 
-
+// DEMO 
 void drawFuelBar(float percentatgeFuel) {
 	carregarFuelBar();
 
@@ -5141,19 +5141,19 @@ void drawFuelBar(float percentatgeFuel) {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-	ImVec2 fullSize = ImVec2(300, 49);
-	ImVec2 visibleSize = ImVec2(fullSize.x * percentatgeFuel, fullSize.y);
-	// Coordenades textura
-	ImVec2 uv0 = ImVec2(0.0f, 0.0f);
-	ImVec2 uv1 = ImVec2(percentatgeFuel, 1.0f);
+	ImVec2 fullSize = ImVec2(35, 210);
+	ImVec2 visibleSize = ImVec2(fullSize.x, fullSize.y * percentatgeFuel);
+	ImVec2 uv0 = ImVec2(0.0f, 1.0f - percentatgeFuel);
+	ImVec2 uv1 = ImVec2(1.0f, 1.0f);
 
-	ImGui::SetNextWindowPos(ImVec2(350, 10), ImGuiCond_Always);
+	ImVec2 windowPos = ImVec2(20, ImGui::GetIO().DisplaySize.y - fullSize.y - 70 + (fullSize.y * (1.0f - percentatgeFuel)));
+
+	ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always);
 	ImGui::Begin("Fuel Bar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
-
-	// Dibujar la imagen con el porcentaje visible
 	ImGui::Image((ImTextureID)(intptr_t)fuelBar, visibleSize, uv0, uv1);
 
 	ImGui::End();
+
 	ImGui::PopStyleVar(2);
 }
 
@@ -5177,9 +5177,9 @@ void drawShield(bool shieldEquipped) {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-	ImVec2 fullSize = ImVec2(54, 54);
+	ImVec2 fullSize = ImVec2(45, 45);
 
-	ImGui::SetNextWindowPos(ImVec2(750, 10), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 70, ImGui::GetIO().DisplaySize.y-70), ImGuiCond_Always);
 	ImGui::Begin("Shield", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 
 	ImGui::Image((ImTextureID)(intptr_t)escut, fullSize);

@@ -14,7 +14,7 @@ using namespace glm;
 
 // Constants carretera
 const int WINDOW_HEIGHT = 600;
-const float LANE_WIDTH = 70;
+const float LANE_WIDTH = 60;
 const int NUM_LANES = 4;
 const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
 const float ROAD_START = 0;
@@ -48,7 +48,7 @@ const float COLLISION_TOLERANCE = 5;
 // Constants d'objectes
 const int PROB_OBJECT = 40; //%
 const int PROB_FUEL = 40; //%
-const int PROB_SHIELD = 30; //%
+const int PROB_SHIELD = 20; //%
 const float FUEL_DURATION = 30;
 const float SHIELD_DURATION = 5;
 const float COIN_SPEED_DOWN = 0.5;
