@@ -943,8 +943,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				ImFont* bigFont = io.Fonts->Fonts.back();
 				ImGui::PushFont(bigFont);
 				
-				if (ImGui::Button("SELECCIONAR", lowerButtonSize)) 
-				{
+				if (ImGui::Button("SELECCIONAR", lowerButtonSize)) {
 					cubemapTexture = NULL;
 					skC_VAOID.vaoId = 0;
 					skC_programID = NULL;
@@ -1149,39 +1148,15 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 		a la mateixa carpeta on es troben les textures, obj etc.. i s'ha de tenir la imatge de fons a la carpeta de Textures.
 
 	*/
-	if (!iniciar && !garatge)
+	if (!iniciar /*&& !garatge*/)
 	{
-		fonsMenu();
+		if (!garatge)
+		{
+			fonsMenu();
+		}
 		ImGui::PushFont(fontJoc);
 		draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
 		ImGui::PopFont();
-	}
-	else
-	{
-		if (garatge)
-		{
-			ImGui::PushFont(fontJoc);
-			draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
-			ImGui::PopFont();
-		}
-		else
-		{
-			int screenHeight = ImGui::GetIO().DisplaySize.y;
-			ImVec2 button2position = ImVec2(150, screenHeight - 50);
-			ImGui::SetNextWindowPos(button2position, ImGuiCond_Always);
-			ImGui::Begin("PantallaInicial", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
-			ImGui::PushFont(fontDebug);
-			if (ImGui::Button("Tornar a Inici")) {
-				iniciar = false;
-				if (ObOBJ)
-				{
-					ObOBJ->netejaVAOList_OBJ();
-					ObOBJ->netejaTextures_OBJ();
-				}
-			}
-			ImGui::PopFont();
-			ImGui::End();
-		}
 	}
 
 	ImGui::PushFont(fontDebug);
