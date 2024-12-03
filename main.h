@@ -272,6 +272,7 @@
 	bool pantallaCompleta = true;
 	bool pantallaInici = true;
 	bool garatge = false;
+	bool pause = false;
 
 
 	// MAURI: Funcions del joc

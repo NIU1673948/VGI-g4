@@ -954,7 +954,6 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				ImGui::PopStyleColor(3);
 
 				ImGui::End();
-
 			}
 			else
 			{
@@ -1128,6 +1127,43 @@ void fonsMenu()
 	ImGui::End();
 }
 
+void pauseButton()
+{
+	int screenWidth = ImGui::GetIO().DisplaySize.x;
+	ImVec2 buttonPosition = ImVec2(screenWidth - 100, 10); //Establir posicio del boto debug
+	
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
+	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
+	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f); // Bordes redondeados
+
+	if (!pause) {
+		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
+		ImGui::Begin("pauseButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
+
+		if (ImGui::Button("Pause")) {
+			pause = true;
+		}
+		ImGui::End();
+	}
+	else {
+
+		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
+		ImGui::Begin("Pause Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
+
+		if (ImGui::Button("Reiniciar")) {
+			pause = false;
+		}
+		ImGui::End();
+	}
+}
 
 void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 {
@@ -1158,10 +1194,17 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 		draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
 		ImGui::PopFont();
 	}
+	else
+	{
+		ImGui::PushFont(fontJoc);
+		pauseButton();
+		ImGui::PopFont();
+	}
 
 	ImGui::PushFont(fontDebug);
 	debugButton(debug); //MAURI: El menu debug desapareix quan inicies i despres surts de la partida ns pq
 	ImGui::PopFont();
+
 
 }
 
@@ -5148,6 +5191,7 @@ void carregarShield() {
 }
 
 void drawShield(bool shieldEquipped) {
+	
 	if (!shieldEquipped) { return; }
 	carregarShield();
 
@@ -5168,15 +5212,6 @@ void drawShield(bool shieldEquipped) {
 }
 
 
-/*
-MAURI: FALTA ACABAR DE REVISAR PQ NO DETECTA LA FUNCIO LOAD TEXTURE (preguntar al profe)
-void carregarPantallaInicial() {
-	GLuint backgroundTexture = LoadTexture2
-	if (backgroundTexture == 0) {
-		std::cerr << "Error al cargar la textura de fondo." << std::endl;
-	}
-}
-*/
 int main(void)
 {
 //    GLFWwindow* window;
@@ -5331,8 +5366,6 @@ int main(void)
 // Poll for and process events */
 //        glfwPollEvents();
 
-
-
 // Entorn VGI. Timer: common part, do this only once
 		now = glfwGetTime();
 		delta = now - previous;
@@ -5354,22 +5387,16 @@ int main(void)
 //AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
 		draw_menuInicial(largeFont, debugFont);
 
-
-//AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
 		if (iniciar == false) {
 			//draw_ProgramButtons(iniciar, configuracio, sortir);
 			logicTime = 0.0f;
 		}
 
-// Crida a OnPaint() per redibuixar l'escena
-		//assert(ObOBJ);
-
-		logicTime += delta;
-
 		// Executa la lògica del joc amb el pas de temps fix
 
-		if (iniciar)
+		if (iniciar && !pause)
 		{
+			logicTime += delta;
 			movi = game.player.m_x;
 
 			if (logicTime >= FRAME_TIME) {
