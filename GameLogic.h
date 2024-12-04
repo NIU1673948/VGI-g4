@@ -12,13 +12,16 @@
 using namespace std;
 using namespace glm;
 
-// Constants carretera
+// Constants de l'entorn (carretera i cases)
 const int WINDOW_HEIGHT = 600;
 const float LANE_WIDTH = 60;
 const int NUM_LANES = 4;
 const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
 const float ROAD_START = 0;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
+extern vector<COBJModel*> ENVIRONMENT_MODELS;
+const float HOUSE_WIDTH = 325;
+const float HOUSE_HEIGHT = 1000;
 
 // Constants del jugador
 const float MARGIN = 30;
@@ -34,7 +37,7 @@ const float CAR_HEIGHT = 100;
 const int MIN_CARS = 1;
 const float OBSTACLE_SPEED = PLAYER_SPEED/4;
 extern vector<COBJModel*> CAR_MODELS;
-const int NUM_CAR_MODELS = 8;
+//const int NUM_CAR_MODELS = 8;
 
 // Constants de files de cotxes
 const float ROW_SPACING = 300;
@@ -59,6 +62,9 @@ extern COBJModel* OBJECT_MODELS[3];
 // Constants de visualització
 const float TARGET_FPS = 60.0f;      // Freqüència de la lògica
 const float FRAME_TIME = 1.0f / TARGET_FPS;
+
+
+
 
 enum CARS {
     CAR1,
@@ -93,7 +99,7 @@ enum CARS {
 
 extern vector<string> OBJpaths;
 extern vector<vector<int>> carColorMap;
-
+extern vector<string> environmentPaths;
 
 class Car {
 public:
@@ -165,14 +171,24 @@ public:
     Object m_object;
 };
 
+class Environment {
+public:
+    Environment();
+
+    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    float m_roadY;
+private:
+    COBJModel* m_environmentObjects;
+    COBJModel* m_road;
+};
+
 class GameLogic {
 private:
     void UpdateRoadRows();
     void DoCollisions();
     void DoPickUps();
-    COBJModel* m_road;
-    float m_roadY;
-    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
+
     void finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
     int nextEmptyLane;
     COBJModel* modelCoin;
@@ -190,4 +206,5 @@ public:
     bool gameRunning;
     Player player;
     RoadRow roadRows[NUM_ROWS];
+    Environment environment;
 };

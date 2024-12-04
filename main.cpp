@@ -425,6 +425,12 @@ void configModels()
 	path = ".\\OBJFiles\\Shield\\Shield.obj";
 	OBJECT_MODELS[2]->LoadModel(const_cast<char*>(path.c_str()));
 
+	for (int i = 0; i < environmentPaths.size(); i++)
+	{
+		COBJModel* model = new COBJModel();
+		model->LoadModel(const_cast<char*>(environmentPaths[i].c_str()));
+		ENVIRONMENT_MODELS.push_back(model);
+	}
 
 	CColor white;
 	white.r = 1; white.g = 1; white.b = 1;
