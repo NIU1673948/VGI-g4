@@ -206,6 +206,26 @@ Environment::Environment() : m_roadY(0), m_environmentObjects(nullptr), m_road(n
     m_environmentObjects = new COBJModel[ENVIRONMENT_MODELS.size()];
 }
 
+void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const
+{
+    float length = 2 * 63.8 * (20 + ROAD_WIDTH / 6.26);
+
+    glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
+    TransMatrix = MatriuTG;
+
+    TransMatrix = glm::translate(TransMatrix, vec3(10 + ROAD_WIDTH / 2, -10, length / 8 + fmod(m_roadY, length / 8)));
+    TransMatrix = glm::scale(TransMatrix, vec3(20 + ROAD_WIDTH / 6.26, 20 + ROAD_WIDTH / 6.26, 20 + ROAD_WIDTH / 6.26));
+    TransMatrix = glm::rotate(TransMatrix, float(PI / 2), vec3(0, 1, 0));
+    ModelMatrix = TransMatrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+    m_road->draw_TriVAO_OBJ(sh_programID);
+}
+
+
 void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
     float length = 2 * 63.8 * (20 + ROAD_WIDTH / 6.26);
     int n = ENVIRONMENT_MODELS.size();
