@@ -30,6 +30,7 @@ void InitGL()
 
 //Jan Moneda
 	moneda = 0;
+	bestScore = 0;
 
 //------ Entorn VGI: Inicialització de les variables globals de CEntornVGIView
 	int i;
@@ -5401,6 +5402,10 @@ int main(void)
 					{
 						c = 0; //Reseteja camera
 						cout << game.score / 100 << endl;
+						if (game.score > bestScore)
+						{
+							bestScore = game.score;
+						}
 						iniciar = false;
 						game = GameLogic();
 					}
@@ -5409,8 +5414,13 @@ int main(void)
 
 			// Dibuixar puntuació en la interfície -NIL
 			ImGui::Begin("Score", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-			ImGui::SetWindowPos(ImVec2(10, 10));
+			ImGui::SetWindowPos(ImVec2(10, 50));
 			ImGui::Text("Score: %d", (int)game.score/100);
+			ImGui::End();
+
+			ImGui::Begin("BestScore", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+			ImGui::SetWindowPos(ImVec2(10, 10));
+			ImGui::Text("BestScore: %d", bestScore/ 100);
 			ImGui::End();
 
 			float percentatgeFuel = game.remainingFuel / FUEL_DURATION;

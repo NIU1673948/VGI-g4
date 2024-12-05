@@ -23,6 +23,7 @@
 //Jan Variable moneda
 	int moneda;
 
+	int bestScore;
 // Retrieving main monitor
 	GLFWmonitor* primary;
 
