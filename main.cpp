@@ -1068,10 +1068,10 @@ void draw_Menu_ImGui()
 void debugButton(bool& debug) {
 	int screenHeight = ImGui::GetIO().DisplaySize.y;
 	ImVec2 buttonPosition = ImVec2(10, screenHeight - 50); //Establir posicio del boto debug
-
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Grosor del borde
 	if (!debug) {
 		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
-		ImGui::Begin("DebugButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		ImGui::Begin("DebugButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 
 		if (ImGui::Button("Debug")) {
 			debug = true; // Activar el modo debug cuando se presiona el botón
@@ -1083,7 +1083,7 @@ void debugButton(bool& debug) {
 		draw_Menu_ImGui();
 
 		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
-		ImGui::Begin("Debug Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		ImGui::Begin("Debug Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 
 		if (ImGui::Button("Cerrar Debug")) {
 			debug = false; // Desactivar el modo debug
@@ -1091,6 +1091,7 @@ void debugButton(bool& debug) {
 		}
 		ImGui::End();
 	}
+	ImGui::PopStyleVar(1);
 }
 
 GLuint background = 0; // Variable global per a la textura del fons
@@ -1153,19 +1154,110 @@ void pauseButton()
 		}
 		ImGui::End();
 	}
-	else {
-
-		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
-		ImGui::Begin("Pause Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
-
-		if (ImGui::Button("Reiniciar")) {
-			pause = false;
-		}
-		ImGui::End();
-	}
 }
 
-void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
+void menuPause(GameLogic& game, ImFont* scoreFont)
+{
+
+	// Obtener el tamaño de la pantalla o ventana principal
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	// Calcular tamaño y márgenes dinámicos para los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f);
+	float buttonSpacing = screenSize.y * 0.02f; // Espaciado vertical entre botones
+	float totalWidth = buttonSize.x + 20.0f;   // Ancho de la ventana considerando el botón
+	float totalHeight = buttonSize.y * 4 + buttonSpacing * 3; // Altura total para los 4 botones
+
+	// Ajustar la posición para centrar los botones verticalmente en la pantalla
+	float posX = (screenSize.x - totalWidth) / 2.0f;
+	float posY = (screenSize.y - totalHeight) / 2.0f;
+	ImGui::Begin("SCORE", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+	ImGui::PushFont(scoreFont);
+
+	std::string scoreStr = "Score: " + std::to_string(game.score/100);
+
+	// Calcula el ancho del texto usando la cadena
+	float textWidth = ImGui::CalcTextSize(scoreStr.c_str()).x;
+
+	// Centrar el texto correctamente
+	ImGui::SetWindowPos(ImVec2((screenSize.x - textWidth) / 2.0f, 150));
+
+	// Muestra el texto
+	ImGui::Text("%s", scoreStr.c_str());
+
+	ImGui::PopFont();
+	ImGui::End();
+
+
+	// Configurar la ventana de ImGui para los botones
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowSize(ImVec2(totalWidth, totalHeight + 50), ImGuiCond_Always);
+	ImGui::Begin("Botones Centrales", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+	// Estilos de botones
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f);
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f);
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f);
+	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f);
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
+	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor);
+
+
+	ImGui::SetCursorPos(ImVec2(10.0f, 10.0f)); // Margen superior
+	if (ImGui::Button("REINICIAR", buttonSize)) {
+		pause = false;
+	}
+
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+	if (ImGui::Button("AUDIO", buttonSize)) {
+
+	}
+
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+	if (ImGui::Button("CONFIGURACIO", buttonSize)) {
+
+	}
+
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+	if (ImGui::Button("PANTALLA INICI", buttonSize)) {
+		iniciar = false;
+		pause = false;
+		game = GameLogic();		
+	}
+
+	// Restaurar estilos
+	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(4);
+
+	ImGui::End();
+	
+
+}
+
+void fonsMenuPause()
+{
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	// Configura la posición y tamaño de la ventana
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(screenSize);
+
+	// Estilo de la ventana sin bordes ni interactiva
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));  // Color blanco con transparencia 50%
+	ImGui::Begin("Pause Background", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+	// Aquí puedes añadir elementos si lo necesitas
+
+	ImGui::End();
+	ImGui::PopStyleColor();
+}
+
+void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, GameLogic& game)
 {
 	/*
 		Aquesta es la funcio principal del menu inicial del joc i es la funcio que genera tots els btotons que tinguin
@@ -1199,6 +1291,11 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 		ImGui::PushFont(fontJoc);
 		pauseButton();
 		ImGui::PopFont();
+		if (pause)
+		{
+			fonsMenuPause();
+			menuPause(game, scoreFont);
+		}
 	}
 
 	ImGui::PushFont(fontDebug);
@@ -2809,8 +2906,14 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 2 && garatge == false) c = (c < 2) ? (c + 1) : 0, camera = CAM_ESFERICA;
 		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 2 && garatge == false) camera = CAM_NAVEGA, c++;
 		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
+
+
+		//MAURI: Menu Pause
+		else if ((key == GLFW_KEY_P) && action == GLFW_PRESS && !pause && iniciar) pause = true;
+		else if ((key == GLFW_KEY_P) && action == GLFW_PRESS && pause && iniciar) pause = false;
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);
+
 	}
 // Crida a 
 // ) per redibuixar l'escena
@@ -5345,6 +5448,9 @@ int main(void)
 // Intentamos cargar la primera fuente
 	io.Fonts->AddFontFromFileTTF(".\\Fonts\\Fifties Movies.ttf", 24.0f);
 	ImFont* largeFont = io.Fonts->Fonts.back(); // Obtén la fuente cargada
+	
+	io.Fonts->AddFontFromFileTTF(".\\Fonts\\Fifties Movies.ttf", 80.0f);
+	ImFont* scoreFont = io.Fonts->Fonts.back(); // Obtén la fuente cargada
 
 	// Intentamos cargar la segunda fuente
 	io.Fonts->AddFontFromFileTTF(".\\Fonts\\ConsolaMono-Book.ttf", 16.0f);
@@ -5385,7 +5491,7 @@ int main(void)
 
 
 //AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
-		draw_menuInicial(largeFont, debugFont);
+		draw_menuInicial(largeFont, debugFont, scoreFont, game);
 
 		if (iniciar == false) {
 			//draw_ProgramButtons(iniciar, configuracio, sortir);
