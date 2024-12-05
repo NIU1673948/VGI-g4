@@ -527,6 +527,13 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
 			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 		break;
+	case 10:
+		MatriuVista = glm::lookAt(
+			glm::vec3(100, 400, 100), // Camera is here
+			glm::vec3(-100, 500, -100), // and looks here
+			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+		break;
 	default:
 		MatriuVista = glm::lookAt(
 			glm::vec3(150, 30, 0), // Camera is here

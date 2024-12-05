@@ -20,6 +20,9 @@
 	int c;
 	float movi;
 
+//Jan Variable moneda
+	int moneda;
+
 // Retrieving main monitor
 	GLFWmonitor* primary;
 

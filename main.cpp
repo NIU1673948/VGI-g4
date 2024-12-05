@@ -27,6 +27,10 @@ void InitGL()
 //JAN camera
 	c = 0;
 	movi = 0;
+
+//Jan Moneda
+	moneda = 0;
+
 //------ Entorn VGI: Inicialització de les variables globals de CEntornVGIView
 	int i;
 
@@ -499,7 +503,7 @@ void OnPaint(GLFWwindow* window, const GameLogic& game)
 	default:
 		// Entorn VGI: Càrrega SHADERS
 		// Entorn VGI: Càrrega Shader Eixos
-		if (!eixos_programID) eixos_programID = shaderEixos.loadFileShaders(".\\shaders\\eixos.VERT", ".\\shaders\\eixos.FRAG");
+		if (!eixos_programID) eixos_programID = shaderEixos.loadFileShaders(".\\shaders\\eixos.VERT", ".\\shaders\\eixos.FRAG"); //Carregar shaders
 
 		// Entorn VGI: Càrrega Shader de Gouraud
 		if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\gouraud_shdrML.vert", ".\\shaders\\gouraud_shdrML.frag");
@@ -5177,6 +5181,7 @@ void carregarPantallaInicial() {
 	}
 }
 */
+
 int main(void)
 {
 //    GLFWwindow* window;
@@ -5378,9 +5383,27 @@ int main(void)
 				logicTime -= FRAME_TIME;
 				if (!game.gameRunning && !debug)
 				{
-					cout << game.score / 100 << endl;
-					iniciar = false;
-					game = GameLogic();
+					c = 10; //posicio on ha dapareixa la moneda
+					// Falta determiar la posició
+					//He posat que la camera miri a 500,700,500 de moment (cap a dalt)
+					// moneda = animacioMoneda();
+					// La funcion de lanimacio retorna moneda com a 0 si es true sino qualsevol valor mes gran
+					if (moneda == 0)
+					{
+						c = 0; //Resetejar camera
+		
+						int score = game.score; //Guardar puntuació
+						game = GameLogic(); //Tornar a iniciar pero no es modifica l'score
+						game.score = score;
+						moneda++;
+					}
+					else
+					{
+						c = 0; //Reseteja camera
+						cout << game.score / 100 << endl;
+						iniciar = false;
+						game = GameLogic();
+					}
 				}
 			}
 
