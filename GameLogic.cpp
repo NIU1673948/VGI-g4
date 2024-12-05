@@ -7,8 +7,8 @@ vector<COBJModel*> ENVIRONMENT_MODELS;
 vector<string> environmentPaths = {
     //".\\OBJFiles\\Casa1\\house.obj"
     //".\\OBJFiles\\Casa2\\OldHouse.obj"
-    ".\\OBJFiles\\Casa3\\new_house.obj",
     //".\\OBJFiles\\Edifici\\building.obj",
+    ".\\OBJFiles\\Casa3\\new_house.obj",
     ".\\OBJFiles\\Cottage\\cottage.obj"
 };
 
@@ -229,11 +229,10 @@ void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, 
 void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
     float length = 2 * 63.8 * (20 + ROAD_WIDTH / 6.26);
     int n = ENVIRONMENT_MODELS.size();
-    int side = 1;
+    bool esquerra = true;
 
-    int num_repeats = 8;
+    int num_repeats = 6;
     float z_spacing = length / 8;
-
     for (int z_index = 0; z_index < num_repeats; z_index++) {
         for (int i = 0; i < n; i++) { 
             m_environmentObjects[i] = *ENVIRONMENT_MODELS[i];
@@ -243,13 +242,13 @@ void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Mat
 
             float scaleFactor = HOUSE_WIDTH / m_environmentObjects[i].m_width;
 
-            if (side == 1) {
-                TransMatrix = glm::translate(TransMatrix, glm::vec3(-50.0f * scaleFactor, 0.0f, z_index * z_spacing + fmod(m_roadY, z_spacing)));
-                side = 2; 
+            if (esquerra) {
+                TransMatrix = glm::translate(TransMatrix, glm::vec3(-50.0f * scaleFactor, 0.0f, -(z_index * z_spacing - fmod(m_roadY, z_spacing))));
+                esquerra = false; 
             }
             else {
-                TransMatrix = glm::translate(TransMatrix, glm::vec3(20.0f * scaleFactor, 0.0f, z_index * z_spacing + fmod(m_roadY, z_spacing)));
-                side = 1;
+                TransMatrix = glm::translate(TransMatrix, glm::vec3(20.0f * scaleFactor, 0.0f, -(z_index * z_spacing - fmod(m_roadY, z_spacing))));
+                esquerra = true;
             }
 
             TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
