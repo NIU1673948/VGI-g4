@@ -881,7 +881,6 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 
 			ImGui::SameLine();
 			if (ImGui::Button("GARATGE", buttonSize)) {
-				// Acció boto garatge
 				garage = true;
 				draw_inici_garage();
 			}
@@ -897,86 +896,27 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			}
 		}
 		else {
-			if (garage)
-			{
-				float centerY = (totalHeight - buttonSize.y) / 2.0f;
 
-				ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
-				if (ImGui::Button("<--", buttonSize))
-				{
-					currentModel = (currentModel == 0) ? carColorMap.size() - 1 : currentModel - 1;
-					act = carColorMap[currentModel][0];
-					currentColor = 0;
-				}
-
-				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("COLOR", buttonSize))
-				{
-					currentColor = (currentColor == carColorMap[currentModel].size() - 1) ? 0 : currentColor + 1;
-					act = carColorMap[currentModel][currentColor];
-				}
-
-				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("-->", buttonSize))
-				{
-					currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
-					act = carColorMap[currentModel][0];
-					currentColor = 0;
-				}
-
-				ImVec2 buttonSize = ImVec2(screenSize.x * 0.12f, screenSize.y * 0.2f);
-				float lowerWindowWidth = 700.0f; 
-				float lowerWindowHeight = 200.0f;
-				float lowerPosX = (screenSize.x - lowerWindowWidth) / 2.0f;
-				float lowerPosY = screenSize.y * 0.8f; 
-
-				ImGui::SetNextWindowPos(ImVec2(lowerPosX, lowerPosY), ImGuiCond_Always);
-				ImGui::SetNextWindowSize(ImVec2(lowerWindowWidth, lowerWindowHeight), ImGuiCond_Always);
-
-				ImGui::Begin("Ventana COLOR", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
-
-				ImVec2 lowerButtonSize = ImVec2(lowerWindowWidth * 0.6, lowerWindowHeight * 0.6f); 
-				
-				ImGui::SetCursorPos(ImVec2((lowerWindowWidth - lowerButtonSize.x) / 2.0f, (lowerWindowHeight - lowerButtonSize.y) / 2.0f)); 
-
-				ImGuiIO& io = ImGui::GetIO();
-				ImFont* bigFont = io.Fonts->Fonts.back();
-				ImGui::PushFont(bigFont);
-				
-				if (ImGui::Button("SELECCIONAR", lowerButtonSize)) {
-					cubemapTexture = NULL;
-					skC_VAOID.vaoId = 0;
-					skC_programID = NULL;
-					garage = false;
-				}
-
-				ImGui::PopStyleVar();
-				ImGui::PopStyleColor(3);
-
-				ImGui::End();
+			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+			if (ImGui::Button("FULLSCREEN", buttonSize)) {
+				OnFull_Screen(primary, window);
 			}
-			else
-			{
-				ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
-				if (ImGui::Button("FULLSCREEN", buttonSize)) {
-					OnFull_Screen(primary, window);
-				}
 
-				ImGui::SameLine();
-				if (ImGui::Button("DIFICULTAD", buttonSize)) {
-					// Acci? boto dificultat
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("AUDIO", buttonSize)) {
-					// Acci? boto audio
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("BACK", buttonSize)) {
-					config = false;
-				}
+			ImGui::SameLine();
+			if (ImGui::Button("DIFICULTAD", buttonSize)) {
+				// Acci? boto dificultat
 			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("AUDIO", buttonSize)) {
+				// Acci? boto audio
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("BACK", buttonSize)) {
+				config = false;
+			}
+			
 		}
 	}
 
@@ -1243,18 +1183,107 @@ void fonsMenuPause()
 {
 	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
 
-	// Configura la posición y tamaño de la ventana
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(screenSize);
 
-	// Estilo de la ventana sin bordes ni interactiva
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));  // Color blanco con transparencia 50%
 	ImGui::Begin("Pause Background", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
-	// Aquí puedes añadir elementos si lo necesitas
 
 	ImGui::End();
 	ImGui::PopStyleColor();
+}
+
+void draw_garageButtons(bool& inici, bool& garage, bool& config, bool& exit)
+{
+	c = 4;
+	// Obtener el tamaño de la pantalla o ventana principal
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	// Calcular tamaño y márgenes dinámicos para los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f); // Botones ocupan 20% de ancho y 10% de alto de la pantalla
+	float buttonSpacing = screenSize.x * 0.02f; // Espaciado entre botones (2% del ancho)
+	float totalWidth = buttonSize.x * 4 + buttonSpacing * 3; // Ancho total considerando los márgenes
+	float totalHeight = buttonSize.y + 20.0f; // Altura total con margen adicional
+
+	// Ajustar la posición para centrar los botones en la pantalla
+	float windowWidth = totalWidth + 20;
+	float windowHeight = totalHeight + 20;
+	float posX = (screenSize.x - windowWidth) / 2.0f;
+	float posY = screenSize.y - windowHeight - 200.0f;
+
+	// Configurar la ventana de ImGui para los botones
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowSize(ImVec2(totalWidth + 20, totalHeight + 20), ImGuiCond_Always);
+	ImGui::Begin("Botons Garatge", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
+	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
+	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f); // Bordes redondeados
+
+	float centerY = (totalHeight - buttonSize.y) / 2.0f;
+
+	ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
+	if (ImGui::Button("<--", buttonSize))
+	{
+		currentModel = (currentModel == 0) ? carColorMap.size() - 1 : currentModel - 1;
+		act = carColorMap[currentModel][0];
+		currentColor = 0;
+	}
+
+	ImGui::SameLine(0.0f, buttonSpacing);
+	if (ImGui::Button("COLOR", buttonSize))
+	{
+		currentColor = (currentColor == carColorMap[currentModel].size() - 1) ? 0 : currentColor + 1;
+		act = carColorMap[currentModel][currentColor];
+	}
+
+	ImGui::SameLine(0.0f, buttonSpacing);
+	if (ImGui::Button("-->", buttonSize))
+	{
+		currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
+		act = carColorMap[currentModel][0];
+		currentColor = 0;
+	}
+
+	float lowerWindowWidth = 700.0f;
+	float lowerWindowHeight = 200.0f;
+	float lowerPosX = (screenSize.x - lowerWindowWidth) / 2.0f;
+	float lowerPosY = screenSize.y * 0.8f;
+
+	ImGui::SetNextWindowPos(ImVec2(lowerPosX, lowerPosY), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(lowerWindowWidth, lowerWindowHeight), ImGuiCond_Always);
+
+	ImGui::Begin("Ventana COLOR", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+	ImVec2 lowerButtonSize = ImVec2(lowerWindowWidth * 0.6, lowerWindowHeight * 0.6f);
+
+	ImGui::SetCursorPos(ImVec2((lowerWindowWidth - lowerButtonSize.x) / 2.0f, (lowerWindowHeight - lowerButtonSize.y) / 2.0f));
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImFont* bigFont = io.Fonts->Fonts.back();
+	ImGui::PushFont(bigFont);
+
+	if (ImGui::Button("SELECCIONAR", lowerButtonSize)) {
+		cubemapTexture = NULL;
+		skC_VAOID.vaoId = 0;
+		skC_programID = NULL;
+		garage = false;
+	}
+
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor(3);
+
+	ImGui::End();
+
 }
 
 void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, GameLogic& game)
@@ -1278,12 +1307,19 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 	*/
 	if (!iniciar /*&& !garatge*/)
 	{
+		ImGui::PushFont(fontJoc);
 		if (!garatge)
 		{
 			fonsMenu();
+			draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
 		}
-		ImGui::PushFont(fontJoc);
-		draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
+		else
+		{
+			draw_garageButtons(iniciar, garatge, configuracio, sortir);
+		}
+		ImGui::PopFont();
+		ImGui::PushFont(fontDebug);
+		debugButton(debug);
 		ImGui::PopFont();
 	}
 	else
@@ -1296,13 +1332,10 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 			fonsMenuPause();
 			menuPause(game, scoreFont);
 		}
+		ImGui::PushFont(fontDebug);
+		debugButton(debug);
+		ImGui::PopFont();
 	}
-
-	ImGui::PushFont(fontDebug);
-	debugButton(debug); //MAURI: El menu debug desapareix quan inicies i despres surts de la partida ns pq
-	ImGui::PopFont();
-
-
 }
 
 
@@ -5010,36 +5043,36 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 //							 (coord. pantalla) quan el botó s'ha apretat.
 void OnMouseWheel(GLFWwindow* window, double xoffset, double yoffset)
 {
-	// TODO: Agregue aquí su código de controlador de mensajes o llame al valor predeterminado
-	double modul = 0;
-	GLdouble vdir[3] = { 0, 0, 0 };
-
-// EntornVGI.ImGui: Test si events de mouse han sigut filtrats per ImGui (io.WantCaptureMouse)
-// (1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
-	ImGuiIO& io = ImGui::GetIO();
-	//io.AddMouseButtonEvent(button, true);
-
-// (2) ONLY forward mouse data to your underlying app/game.
-	if (!io.WantCaptureMouse) { // <Tractament mouse de l'aplicació>}
-		// Funció de zoom quan està activada la funció pan o les T. Geomètriques
-		if ((zzoom) || (transX) || (transY) || (transZ))
-		{	OPV.R = OPV.R + yoffset / 4;
-			if (OPV.R < 1) OPV.R = 1;
-		}
-		else if (camera == CAM_NAVEGA && !io.WantCaptureMouse)
-		{	vdir[0] = n[0] - opvN.x;
-			vdir[1] = n[1] - opvN.y;
-			vdir[2] = n[2] - opvN.z;
-			modul = sqrt(vdir[0] * vdir[0] + vdir[1] * vdir[1] + vdir[2] * vdir[2]);
-			vdir[0] = vdir[0] / modul;
-			vdir[1] = vdir[1] / modul;
-			vdir[2] = vdir[2] / modul;
-			opvN.x += (yoffset / 4) * vdir[0];		//opvN.x += (zDelta / 4) * vdir[0];
-			opvN.y += (yoffset / 4) * vdir[1];		//opvN.y += (zDelta / 4) * vdir[1];
-			n[0] += (yoffset / 4) * vdir[0];		//n[0] += (zDelta / 4) * vdir[0];
-			n[1] += (yoffset / 4) * vdir[1];		//n[1] += (zDelta / 4) * vdir[1];
-		}
-	}
+//	// TODO: Agregue aquí su código de controlador de mensajes o llame al valor predeterminado
+//	double modul = 0;
+//	GLdouble vdir[3] = { 0, 0, 0 };
+//
+//// EntornVGI.ImGui: Test si events de mouse han sigut filtrats per ImGui (io.WantCaptureMouse)
+//// (1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
+//	ImGuiIO& io = ImGui::GetIO();
+//	//io.AddMouseButtonEvent(button, true);
+//
+//// (2) ONLY forward mouse data to your underlying app/game.
+//	if (!io.WantCaptureMouse) { // <Tractament mouse de l'aplicació>}
+//		// Funció de zoom quan està activada la funció pan o les T. Geomètriques
+//		if ((zzoom) || (transX) || (transY) || (transZ))
+//		{	OPV.R = OPV.R + yoffset / 4;
+//			if (OPV.R < 1) OPV.R = 1;
+//		}
+//		else if (camera == CAM_NAVEGA && !io.WantCaptureMouse)
+//		{	vdir[0] = n[0] - opvN.x;
+//			vdir[1] = n[1] - opvN.y;
+//			vdir[2] = n[2] - opvN.z;
+//			modul = sqrt(vdir[0] * vdir[0] + vdir[1] * vdir[1] + vdir[2] * vdir[2]);
+//			vdir[0] = vdir[0] / modul;
+//			vdir[1] = vdir[1] / modul;
+//			vdir[2] = vdir[2] / modul;
+//			opvN.x += (yoffset / 4) * vdir[0];		//opvN.x += (zDelta / 4) * vdir[0];
+//			opvN.y += (yoffset / 4) * vdir[1];		//opvN.y += (zDelta / 4) * vdir[1];
+//			n[0] += (yoffset / 4) * vdir[0];		//n[0] += (zDelta / 4) * vdir[0];
+//			n[1] += (yoffset / 4) * vdir[1];		//n[1] += (zDelta / 4) * vdir[1];
+//		}
+//	}
 }
 
 
