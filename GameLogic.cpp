@@ -188,7 +188,7 @@ float RoadRow::getY() const {
     return m_obstacles[0].m_y;
 }
 
-GameLogic::GameLogic() : gameRunning(true), m_roadY(0), score(0)
+GameLogic::GameLogic() : gameRunning(true), m_roadY(0), score(0), t(0), animationRunning(false)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 
@@ -211,6 +211,8 @@ GameLogic::GameLogic() : gameRunning(true), m_roadY(0), score(0)
         roadRows[i].initRow(y, nextEmptyLane);
         y -= CAR_HEIGHT + ROW_SPACING;
     }
+
+    extraLife = rand() % 2 == 0;
 }
 
 void GameLogic::UpdateGameLogic() {
@@ -236,6 +238,14 @@ void GameLogic::UpdateGameLogic() {
     m_roadY += player.m_speed;
 }
 
+bool GameLogic::CoinFlip()
+{
+    animationRunning = t <= ANIMATION_DURATION + 1;
+    t += FRAME_TIME;
+
+    return extraLife;
+}
+
 void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
     glUniform1f(glGetUniformLocation(sh_programID, "transparency"), 1.0f);
@@ -245,6 +255,8 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
         roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);    }
 
     dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
+
+    if(animationRunning) finalCoinAnimation(sh_programID, MatriuVista, MatriuTG, t);
 
     glUniform1f(glGetUniformLocation(sh_programID, "transparency"), remainingShield <= 0? 1:0.5f);
 
@@ -471,18 +483,31 @@ void Object::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
         NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
         glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-        m_model->draw_TriVAO_OBJ(sh_programID);    }
+        m_model->draw_TriVAO_OBJ(sh_programID);
+    }
 }
 
-void GameLogic::finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
+void GameLogic::finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, float t) const
 {
-    glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
-    TransMatrix = MatriuTG;
+    int finalTime = ANIMATION_DURATION;
 
-    TransMatrix = translate(TransMatrix, vec3(0,0,-10));
+    t = t>finalTime ? finalTime : t;
+
+    int x = 200 / finalTime * t;
+    int y = (200 - x) * 0.05* x;
+    float alpha = TWOPI * 5 / finalTime * t;
+    float beta = std::sin(TWOPI *4/ finalTime * t)*0.2;
+
+    glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
+
+    TransMatrix = translate(TransMatrix, vec3(-x*2,0,-y));
+    TransMatrix = translate(TransMatrix, vec3(300, 1100, 3000));
+    TransMatrix = rotate(TransMatrix, float(beta), vec3(1, 0, 0));
+    TransMatrix = rotate(TransMatrix, float(alpha), vec3(0, 1, 0));
+    TransMatrix = rotate(TransMatrix, float(PI*!extraLife), vec3(0, 1, 0));
     TransMatrix = scale(TransMatrix, vec3(100, 100, 100));
 
-    ModelMatrix = MatriuVista * TransMatrix;
+    ModelMatrix = TransMatrix;
 
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
     NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));

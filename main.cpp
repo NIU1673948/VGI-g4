@@ -5330,6 +5330,7 @@ int main(void)
 	GameLogic game;
 	Player& player = game.player;
 	RoadRow* roadRows = game.roadRows;
+	bool animationViewed = false;
 
 // Loop until the user closes the window -- MAURI: BUCLE PRINCIPAL
     while (!glfwWindowShouldClose(window) && !sortir)
@@ -5379,36 +5380,57 @@ int main(void)
 			movi = game.player.m_x;
 
 			if (logicTime >= FRAME_TIME) {
-				game.GetUserInput();
-				game.UpdateGameLogic();
 				logicTime -= FRAME_TIME;
-				if (!game.gameRunning && !debug)
+				if (game.gameRunning)
+				{
+					game.GetUserInput();
+					game.UpdateGameLogic();
+				} 
+				else if (!game.gameRunning && !debug && !animationViewed)
 				{
 					c = 10; //posicio on ha dapareixa la moneda
+					moneda = game.CoinFlip();
+
 					// Falta determiar la posició
 					//He posat que la camera miri a 500,700,500 de moment (cap a dalt)
 					// moneda = animacioMoneda();
 					// La funcion de lanimacio retorna moneda com a 0 si es true sino qualsevol valor mes gran
-					if (moneda == 0)
+					
+					if (!game.animationRunning)
 					{
-						c = 0; //Resetejar camera
-		
-						int score = game.score; //Guardar puntuació
-						game = GameLogic(); //Tornar a iniciar pero no es modifica l'score
-						game.score = score;
-						moneda++;
-					}
-					else
-					{
-						c = 0; //Reseteja camera
-						cout << game.score / 100 << endl;
-						if (game.score > bestScore)
+						animationViewed = true;
+						if (moneda)
 						{
-							bestScore = game.score;
+							c = 0; //Resetejar camera
+							int score = game.score; //Guardar puntuació
+							game = GameLogic(); //Tornar a iniciar pero no es modifica l'score
+							game.score = score;
 						}
-						iniciar = false;
-						game = GameLogic();
+						else
+						{
+							c = 0; //Reseteja camera
+							cout << game.score / 100 << endl;
+							if (game.score > bestScore)
+							{
+								bestScore = game.score;
+							}
+							iniciar = false;
+							animationViewed = false;
+							game = GameLogic();
+						}
 					}
+				}
+				else if (!game.gameRunning && !debug)
+				{
+					c = 0; //Reseteja camera
+					cout << game.score / 100 << endl;
+					if (game.score > bestScore)
+					{
+						bestScore = game.score;
+					}
+					iniciar = false;
+					animationViewed = false;
+					game = GameLogic();
 				}
 			}
 

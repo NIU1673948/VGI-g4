@@ -55,6 +55,8 @@ const float COIN_SPEED_DOWN = 0.5;
 const float COIN_SCORE = 100;
 extern COBJModel* OBJECT_MODELS[3];
 
+// Constants de la moneda final
+const float ANIMATION_DURATION = 2; //segons
 
 // Constants de visualització
 const float TARGET_FPS = 60.0f;      // Freqüència de la lògica
@@ -173,21 +175,26 @@ private:
     COBJModel* m_road;
     float m_roadY;
     void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
-    void finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    void finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, float t) const;
     int nextEmptyLane;
     COBJModel* modelCoin;
+    float t;
+
 
 public:
     GameLogic();
     void GetUserInput();
     void UpdateGameLogic();
+    bool CoinFlip();
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 
     float remainingFuel;
     float remainingShield;
     int score;
+    bool animationRunning;
     bool shieldEquipped;
     bool gameRunning;
+    bool extraLife;
     Player player;
     RoadRow roadRows[NUM_ROWS];
 };
