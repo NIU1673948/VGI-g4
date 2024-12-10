@@ -5,11 +5,20 @@ COBJModel* OBJECT_MODELS[3];
 vector<COBJModel*> ENVIRONMENT_MODELS;
 
 vector<string> environmentPaths = {
-    //".\\OBJFiles\\Casa1\\house.obj"
-    //".\\OBJFiles\\Casa2\\OldHouse.obj"
-    //".\\OBJFiles\\Edifici\\building.obj",
-    ".\\OBJFiles\\Casa3\\new_house.obj",
-    ".\\OBJFiles\\Cottage\\cottage.obj"
+    //".\\OBJFiles\\Casa3\\new_house.obj",
+    //".\\OBJFiles\\Cottage\\cottage.obj",
+    //".\\OBJFiles\\cottage2\\cottage2.obj"
+    ".\\OBJFiles\\low_poly_houses_pack\\house_01.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_02.obj",
+    //".\\OBJFiles\\low_poly_houses_pack\\house_03.obj",
+    //".\\OBJFiles\\low_poly_houses_pack\\house_04.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_05.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_06.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_07.obj",
+    //".\\OBJFiles\\low_poly_houses_pack\\house_08.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_09.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_10.obj"
+
 };
 
 vector<string> OBJpaths = {
@@ -61,6 +70,8 @@ Car::Car() {
     m_visible = true;
     m_model = NULL;
 }
+
+std::vector<std::pair<int, int>> Environment::segmentModels;
 
 void Car::move(float dx, float dy) {
     m_x += dx;
@@ -204,6 +215,12 @@ Environment::Environment() : m_roadY(0), m_environmentObjects(nullptr), m_road(n
     m_road->LoadModel(const_cast<char*>(rutaArxiu));
 
     m_environmentObjects = new COBJModel[ENVIRONMENT_MODELS.size()];
+
+    segmentModels.resize(NUM_REPEATS, { -1, -1 });
+
+        for (int z_index = 0; z_index < NUM_REPEATS; z_index++) {
+            segmentModels[z_index] = { rand() % ENVIRONMENT_MODELS.size(), rand() % ENVIRONMENT_MODELS.size() };
+        }
 }
 
 void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const
@@ -231,28 +248,34 @@ void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Mat
     int n = ENVIRONMENT_MODELS.size();
     bool esquerra = true;
 
-    int num_repeats = 6;
-    float z_spacing = length / 8;
-    for (int z_index = 0; z_index < num_repeats; z_index++) {
-        for (int i = 0; i < n; i++) { 
-            m_environmentObjects[i] = *ENVIRONMENT_MODELS[i];
+    float z_spacing = length / NUM_REPEATS;
+
+
+
+    for (int z_index = 0; z_index < NUM_REPEATS; z_index++) {
+        float segmentPosition = z_index * z_spacing - fmod(m_roadY, z_spacing);
+        if (segmentPosition < -length) { // redibuixar en el següent fragment
+            segmentModels[z_index] = segmentModels[(z_index + 1) % NUM_REPEATS];
+            segmentPosition += length;
+        }
+
+        for (int i = 0; i < 2; i++) {
+            m_environmentObjects[i] = *ENVIRONMENT_MODELS[(i == 0) ? segmentModels[z_index].first : segmentModels[z_index].second];
 
             glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
             TransMatrix = MatriuTG;
 
             float scaleFactor = HOUSE_WIDTH / m_environmentObjects[i].m_width;
 
-            if (esquerra) {
-                TransMatrix = glm::translate(TransMatrix, glm::vec3(-50.0f * scaleFactor, 0.0f, -(z_index * z_spacing - fmod(m_roadY, z_spacing))));
-                esquerra = false; 
+            if (i == 0) {
+                TransMatrix = glm::translate(TransMatrix, glm::vec3(-9.0f * scaleFactor, 0.0f, -segmentPosition));
             }
             else {
-                TransMatrix = glm::translate(TransMatrix, glm::vec3(20.0f * scaleFactor, 0.0f, -(z_index * z_spacing - fmod(m_roadY, z_spacing))));
-                esquerra = true;
+                TransMatrix = glm::translate(TransMatrix, glm::vec3(17.5f * scaleFactor, 0.0f, -segmentPosition));
+                TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 2, 0));
             }
 
             TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
-            TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 2, 0));
             ModelMatrix = TransMatrix;
 
             glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
@@ -263,6 +286,9 @@ void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Mat
         }
     }
 }
+
+
+
 
 
 GameLogic::GameLogic() : gameRunning(true), score(0)

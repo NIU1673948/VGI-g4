@@ -22,7 +22,7 @@ const float ROAD_END = ROAD_START + ROAD_WIDTH;
 extern vector<COBJModel*> ENVIRONMENT_MODELS;
 const float HOUSE_WIDTH = 325;
 const float HOUSE_HEIGHT = 1000;
-
+const int NUM_REPEATS = 6;
 // Constants del jugador
 const float MARGIN = 30;
 const float STEP = 5;
@@ -181,6 +181,7 @@ public:
 private:
     COBJModel* m_environmentObjects;
     COBJModel* m_road;
+    static std::vector<std::pair<int, int>> segmentModels;
 };
 
 class GameLogic {
