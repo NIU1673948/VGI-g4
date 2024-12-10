@@ -26,6 +26,7 @@ const float HOUSE_WIDTH = 325;
 const float HOUSE_HEIGHT = 1000;
 const int NUM_REPEATS = 6;
 const float Z_SPACE = ROAD_LENGTH / NUM_REPEATS;
+const float INIT_POSITION = 200;
 extern vector<COBJModel*> ENVIRONMENT_MODELS;
 
 // Constants del jugador
@@ -176,17 +177,32 @@ public:
     Object m_object;
 };
 
+class EnvironmentRow {
+public:
+    EnvironmentRow() : m_leftHouse(nullptr), m_rightHouse(nullptr), m_z(0) {};
+    void initRow(float z);
+    void move(float dz);
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    float getZ() const;
+
+private:
+    COBJModel* m_leftHouse;
+    COBJModel* m_rightHouse;
+    float m_z;
+};
+
+
 class Environment {
 public:
     Environment();
 
-    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    void update(float dz);
+    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
     float m_roadY;
 private:
-    COBJModel* m_environmentObjects;
+    EnvironmentRow m_environmentRows[NUM_REPEATS];
     COBJModel* m_road;
-    static std::vector<std::pair<int, int>> segmentModels;
 };
 
 class GameLogic {

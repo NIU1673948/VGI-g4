@@ -3,7 +3,6 @@
 vector<COBJModel*> CAR_MODELS;
 COBJModel* OBJECT_MODELS[3];
 vector<COBJModel*> ENVIRONMENT_MODELS;
-std::vector<std::pair<int, int>> Environment::segmentModels;
 
 vector<string> environmentPaths = {
     ".\\OBJFiles\\low_poly_houses_pack\\house_01.obj",
@@ -205,19 +204,72 @@ float RoadRow::getY() const {
     return m_obstacles[0].m_y;
 }
 
-Environment::Environment() : m_roadY(0), m_environmentObjects(nullptr), m_road(nullptr)
+
+void EnvironmentRow::initRow(float z) {
+    m_z = z;
+    m_leftHouse = ENVIRONMENT_MODELS[rand() % ENVIRONMENT_MODELS.size()];
+    m_rightHouse = ENVIRONMENT_MODELS[rand() % ENVIRONMENT_MODELS.size()];
+}
+
+void EnvironmentRow::move(float dz) {
+    m_z += dz;
+}
+
+float EnvironmentRow::getZ() const {
+    return m_z;
+}
+
+void EnvironmentRow::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const 
+{
+    glm::mat4 ModelMatrix(1.0), TransMatrix(1.0);
+
+    float scaleFactor = HOUSE_WIDTH / m_leftHouse->m_width;
+    TransMatrix = glm::translate(MatriuTG, glm::vec3(-9.0f * scaleFactor, 0.0f, m_z));
+    TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+    ModelMatrix = TransMatrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    m_leftHouse->draw_TriVAO_OBJ(sh_programID);
+
+    scaleFactor = HOUSE_WIDTH / m_rightHouse->m_width;
+    TransMatrix = glm::translate(MatriuTG, glm::vec3(17.5f * scaleFactor, 0.0f, m_z));
+    TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+    TransMatrix = glm::rotate(TransMatrix, float(PI), glm::vec3(0, 2, 0));
+    ModelMatrix = TransMatrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    m_rightHouse->draw_TriVAO_OBJ(sh_programID);
+}
+
+
+Environment::Environment() : m_roadY(0), m_road(nullptr)
 {
     m_road = new COBJModel();
     const char* rutaArxiu = ".\\OBJFiles\\Road\\Road.obj";
     m_road->LoadModel(const_cast<char*>(rutaArxiu));
 
-    m_environmentObjects = new COBJModel[ENVIRONMENT_MODELS.size()];
+    float z = -INIT_POSITION;
+    for (int i = 0; i < NUM_REPEATS; ++i) {
+        m_environmentRows[i].initRow(z);
+        z -= Z_SPACE;
+    }
+}
 
-    segmentModels.resize(NUM_REPEATS, { -1, -1 });
+void Environment::update(float dz) {
+    for (int i = 0; i < NUM_REPEATS; ++i) {
+        m_environmentRows[i].move(dz);
 
-        for (int z_index = 0; z_index < NUM_REPEATS; z_index++) {
-            segmentModels[z_index] = { rand() % ENVIRONMENT_MODELS.size(), rand() % ENVIRONMENT_MODELS.size() };
+        if (m_environmentRows[i].getZ() > INIT_POSITION * 4) {
+            float newZ = m_environmentRows[(i + NUM_REPEATS - 1) % NUM_REPEATS].getZ() - Z_SPACE;
+            m_environmentRows[i].initRow(newZ);
         }
+    }
+}
+
+void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
+    for (const auto& row : m_environmentRows) {
+        row.draw(sh_programID, MatriuVista, MatriuTG);
+    }
 }
 
 void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const
@@ -237,49 +289,6 @@ void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, 
 
     m_road->draw_TriVAO_OBJ(sh_programID);
 }
-
-
-void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
-    int n = ENVIRONMENT_MODELS.size();
-
-    for (int z_index = 0; z_index < NUM_REPEATS; z_index++) {
-        float segmentPosition = z_index * Z_SPACE - fmod(m_roadY, Z_SPACE);
-
-        if (segmentPosition > -ROAD_LENGTH ) { // redibuixar en el següent fragment
-            segmentModels[z_index] = segmentModels[(z_index + 1) % NUM_REPEATS];
-            //segmentPosition += ROAD_LENGTH;
-        }
-
-        for (int i = 0; i < 2; i++) {
-            m_environmentObjects[i] = *ENVIRONMENT_MODELS[(i == 0) ? segmentModels[z_index].first : segmentModels[z_index].second];
-
-            glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
-            TransMatrix = MatriuTG;
-
-            float scaleFactor = HOUSE_WIDTH / m_environmentObjects[i].m_width;
-
-            if (i == 0) {
-                TransMatrix = glm::translate(TransMatrix, glm::vec3(-9.0f * scaleFactor, 0.0f, -segmentPosition));
-            }
-            else {
-                TransMatrix = glm::translate(TransMatrix, glm::vec3(17.5f * scaleFactor, 0.0f, -segmentPosition));
-                TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 2, 0));
-            }
-
-            TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
-            ModelMatrix = TransMatrix;
-
-            glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
-            NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
-            glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
-
-            m_environmentObjects[i].draw_TriVAO_OBJ(sh_programID);
-        }
-    }
-}
-
-
-
 
 
 GameLogic::GameLogic() : gameRunning(true), score(0)
@@ -306,6 +315,7 @@ GameLogic::GameLogic() : gameRunning(true), score(0)
 void GameLogic::UpdateGameLogic() {
 
     UpdateRoadRows();
+    environment.update(player.m_speed);
 
     if (remainingShield <= 0)
         DoCollisions();
