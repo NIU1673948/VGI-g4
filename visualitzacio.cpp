@@ -29,9 +29,11 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	GLdouble angv, angh;
 
 	// Configuració de la font de llum LIGHT0
-	GLfloat position[] = { 0.0,0.0,200.0,1.0 };
+	GLfloat position[] = { 0.0,0.0,-1.0,0.0 };
 	GLfloat especular[] = { 0.0,0.0,0.0,1.0 };
-	GLfloat ambientg[] = { .5,.5,.5,1.0 };
+	//GLfloat ambientg[] = { .5,.5,.5,1.0 };
+	GLfloat ambientg[] = { 1,1,1,1.0 };
+
 
 // Definició de llum ambient segons booleana ll_amb
 //	if (ll_amb) glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientg);
@@ -47,11 +49,6 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	angv = lumin[0].posicio.alfa * PI / 180;
 	angh = lumin[0].posicio.beta * PI / 180;
 
-// Conversió Coord. esfèriques -> Coord. cartesianes per a la posició de la llum
-	position[0] = lumin[0].posicio.R * cos(angh) * cos(angv);
-	position[1] = lumin[0].posicio.R * sin(angh) * cos(angv);
-	position[2] = lumin[0].posicio.R * sin(angv);
-	position[3]=1.0;
 	//	glLightfv(GL_LIGHT0, GL_POSITION, position);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[0].position"), position[0], position[1], position[2], position[3]);
 
@@ -83,10 +80,10 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	angh = lumin[1].posicio.beta*PI / 180;
 
 // Conversió Coord. esfèriques -> Coord. cartesianes per a la posició de la llum
-	position[0] = lumin[1].posicio.R*cos(angh)*cos(angv);
-	position[1] = lumin[1].posicio.R*sin(angh)*cos(angv);
-	position[2] = lumin[1].posicio.R*sin(angv);
-	position[3] = 1.0;
+	position[0] = 0;
+	position[1] = -1;
+	position[2] = 0;
+	position[3] = 0;
 	//glLightfv(GL_LIGHT1, GL_POSITION, position);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[1].position"), position[0], position[1], position[2], position[3]);
 
@@ -454,11 +451,12 @@ glm::mat4 Projeccio_Perspectiva(GLuint sh_programID, int minx,int miny,GLsizei w
 
 // Vista_Esferica: Definició gluLookAt amb possibilitat de moure el punt de vista interactivament amb el ratolí, 
 //					ilumina i dibuixa l'escena
+//JAN el que passa esq l'esfera per on es mou la camera, segueix estan centrada al 0,0,0 per tant la camera apunta a la normal, pero es mou per la mateixa esfera
 glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPunt3D tr,CPunt3D trF,
 				 CColor col_fons,CColor col_object,char objecte,double mida,int step, 
 				 bool frnt_fcs, bool oculta, bool testv, bool bck_ln, 
 				 char iluminacio, bool llum_amb, LLUM* lumi, bool ifix, bool il2sides,
-				 bool eix, CMask3D reixa, CPunt3D hreixa)
+				 bool eix, CMask3D reixa, CPunt3D hreixa, vec3 origen, int c)
 {    
 	GLdouble cam[3] = { 0.0,0.0,0.0 }, up[3] = { 0.0,0.0,0.0 };
 	glm::mat4 MatriuVista(1.0);
@@ -505,11 +503,62 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
 
 // Especificació del punt de vista
    //gluLookAt(cam[0],cam[1],cam[2],0.,0.,0.,up[0],up[1],up[2]);
-   MatriuVista = glm::lookAt(
-	   glm::vec3(cam[0], cam[1], cam[2]), // Camera is here
-	   glm::vec3(0, 0, 0), // and looks here
-	   glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
-	   );
+	
+	switch (c)
+	{
+	case 0: //3er
+		MatriuVista = glm::lookAt(
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) + 300), // Camera is here
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
+			glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+		break;
+	case 1: //fora
+		MatriuVista = glm::lookAt(
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2) + 500, 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200), // Camera is here
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200), // and looks here
+			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+		break;
+	case 2:
+		MatriuVista = glm::lookAt(
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 400, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) + 50), // Camera is here
+			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 150), // and looks here
+			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+		break;
+	default:
+		MatriuVista = glm::lookAt(
+			glm::vec3(150, 30, 0), // Camera is here
+			glm::vec3(0, 0, 0), // and looks here
+			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+		break;
+	}
+	
+	/*
+		MatriuVista = glm::lookAt(
+			glm::vec3(cam[0], cam[1], cam[2]), // Camera is here
+			glm::vec3(0, 0, 0), // and looks here
+			glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+	   */
+	
+
+   //Posicio cotxe
+   //vec3(ROAD_START + ROAD_WIDTH / 2, 0, WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN)
+   
+   //CAM 3er Persona
+   //Posicio camera
+   //vec3((ROAD_START + ROAD_WIDTH / 2), 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) + 300)
+   //Punt on mira la camera
+   //vec3(ROAD_START + ROAD_WIDTH / 2, 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300)
+   
+   //CAM fora
+   //Posicio camera
+   //vec3((ROAD_START + ROAD_WIDTH / 2) + 500, 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200)
+   //Mira aqui
+   //vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200)
 
    MatriuVista = TransMatrix * MatriuVista;
 
@@ -547,7 +596,7 @@ glm::mat4 Vista_Navega(GLuint sh_programID, CPunt3D pv, GLdouble n[3],GLdouble v
 				  CColor col_fons,CColor col_object,char objecte,bool color, int step,
 				  bool frnt_fcs, bool oculta, bool testv, bool bck_ln, 
 				  char iluminacio, bool llum_amb, LLUM* lumi, bool ifix, bool il2sides,
-				  bool eix, CMask3D reixa, CPunt3D hreixa)
+				  bool eix, CMask3D reixa, CPunt3D hreixa, float movi)
 {   double altfar=0;
 	glm::mat4 MatriuVista(1.0), TransMatrix(1.0);
 
@@ -563,11 +612,20 @@ glm::mat4 Vista_Navega(GLuint sh_programID, CPunt3D pv, GLdouble n[3],GLdouble v
 
 // Especificació del punt de vista (CÀMERA)
 	//gluLookAt(pv.x,pv.y,pv.z,n[0],n[1],n[2],v[0],v[1],v[2]);
-	MatriuVista = glm::lookAt(
-		glm::vec3(pv.x, pv.y, pv.z), // Camera is here
-		glm::vec3(n[0], n[1], n[2]), // and looks here
-		glm::vec3(v[0], v[1], v[2])  // Head is up (set to 0,-1,0 to look upside-down)
+	if (movi != NULL) {
+		MatriuVista = glm::lookAt(
+			glm::vec3(movi, 30, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 50), // Camera is here
+			glm::vec3(movi, 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
+			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
+	}
+	else {
+	MatriuVista = glm::lookAt(
+		glm::vec3(ROAD_START + ROAD_WIDTH / 2, 50, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 10), // Camera is here
+		glm::vec3(ROAD_START + ROAD_WIDTH / 2, 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
+		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+	);
+	}
 
 // Concatenar matrius Traslació amb la de càmera per al pan
 	MatriuVista = TransMatrix * MatriuVista;
@@ -1069,56 +1127,55 @@ void FonsB()
 //					BMP, JPG, TIFF, TGA, GIF, i d'altres suportats per SOIL
 //		- Retorna: Identificador dins la taula textures on volem
 //                assignar la imatge
-GLint loadIMA_SOIL(const char * filename)
-{	FILE *file = NULL;
+GLint loadIMA_SOIL(const char* filename)
+{
+	FILE* file = NULL;
 	int errno;
 	GLuint textureID = 0;
 
-// Open the image file for reading
-//  file=fopen(nomf,"r");					// Funció Visual Studio 6.0
-	errno = fopen_s(&file, filename, "rb");		// Funció Visual 2010
+	// Abre el archivo de imagen
+	errno = fopen_s(&file, filename, "rb");
 
-// If the file is empty (or non existent) print an error and return false
-// if (file == NULL)
+	// Si no se puede abrir el archivo, retorna 0
 	if (errno != 0)
-	{	//	printf("Could not open file '%s'.\n",filename) ;
-		return false;
+	{
+		printf("No se pudo abrir el archivo '%s'.\n", filename);
+		return 0;
 	}
 
-// Close the image file
+	// Cierra el archivo
 	fclose(file);
 
-/*
-// SOIL_load_OGL_texture: Funció que llegeix la imatge del fitxer filename
-//				si és compatible amb els formats SOIL (BMP,JPG,GIF,TIF,TGA,etc.)
-//				i defineix la imatge com a textura OpenGL retornant l'identificador 
-//				de textura OpenGL.
-	textureID = SOIL_load_OGL_texture
-	(filename,
-		SOIL_LOAD_AUTO,
-		SOIL_CREATE_NEW_ID,
-		SOIL_FLAG_MIPMAPS | SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_INVERT_Y
-	);
-*/
-
-//Generate texture ID and load texture data 
+	// Genera un ID de textura
 	glGenTextures(1, &textureID);
+
+	// Carga la imagen usando SOIL con formato RGBA
 	int width, height;
-	unsigned char* image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGB);
-// Assign texture to ID
+	unsigned char* image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGBA);
+	if (!image)
+	{
+		printf("Error al cargar la imagen '%s': %s\n", filename, SOIL_last_result());
+		return 0;
+	}
+
+	// Asigna la textura al ID generado
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-// Parameters
+	// Configura los parámetros de la textura
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Desvincula la textura
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Libera los datos de la imagen
 	SOIL_free_image_data(image);
 
-// If execution arrives here it means that all went well. Return true
+	// Retorna el ID de la textura
 	return textureID;
 }
 

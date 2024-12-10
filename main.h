@@ -5,14 +5,20 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-
+#pragma once
 // Entorn VGI: Llibreries i constants Constants de l'aplicació EntornVGI
-#include "stdafx.h"
+//#include "stdafx.h"
+
+#include "GameLogic.h"
 
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
-#include "objLoader.h"	
+//#include "objLoader.h"	
 
 //-------------- Entorn VGI: Variables globals de main
+
+//JAN Variables canvi camera
+	int c;
+	float movi;
 
 // Retrieving main monitor
 	GLFWmonitor* primary;
@@ -29,7 +35,7 @@
 // EntornVGI.ImGui: Gestió de finestres de menú ImGui
 	bool show_demo_window = false;
 	bool show_another_window = false;
-	bool show_EntornVGI_window = true;
+	bool show_EntornVGI_window = false;
 	bool show_window_about = false;
 
 // Entorn V3D: Variables de control per Menú Càmera: Esfèrica, Navega, Mòbil, Zoom, Satelit, Polars... 
@@ -146,7 +152,7 @@
 	int width_old, height_old;	// Mides de la resolució actual de la pantalla (finestra Windows)
 	int w_old, h_old;		// Mides de la finestra Windows (w-amplada,h-alçada) per restaurar Finestra des de fullscreen
 	CEsfe3D OPV;			// Paràmetres camera en coord. esfèriques (R,alfa,beta)
-	float cam_Esferica[3] = { 15.0f, 0.0f, 0.0f }; // ImGui: Coordenades Esfèriques Càmera
+	float cam_Esferica[3] = { 15.0f, 30.0f, 180.0f }; // ImGui: Coordenades Esfèriques Càmera
 	char Vis_Polar;			// Variable que controla orientació dels eixos en Visualització Interactiva (POLARZ,POLARY,POLARX)
 
 // Entorn VGI: Color de fons i de l'objecte
@@ -202,9 +208,9 @@
 // Entorn VGI: Control de l'EVENT ONSIZE
 	void OnSize(GLFWwindow* window, int width, int height);
 
-	void OnPaint(GLFWwindow* window);
+	void OnPaint(GLFWwindow* window, const GameLogic& game);
 	void configura_Escena();
-	void dibuixa_Escena();
+	void dibuixa_Escena(GameLogic& game);
 	void Barra_Estat();
 
 // EntornVGI: Funcions de mostrar Finestres ImGui
@@ -257,17 +263,28 @@
 	void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
 		const GLchar* message, const void* userParam);
 
+
 // MAURI: variables de la pantalla d'inici
 	bool sortir = false;
 	bool iniciar = false;
 	bool configuracio = false;
 	bool debug = false;
 	bool pantallaCompleta = true;
+	bool pantallaInici = true;
+	bool garatge = false;
+	bool pause = false;
+	bool final = false;
+	bool primeraCarrega = true;
 
-// MAURI: Funcions del joc
-	void draw_ProgramButtons(bool& inici, bool& config, bool& exit);
-	//void carregarImatgeFons()
+
+	// MAURI: Funcions del joc
+	void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit);
 
 //LEVON
 	void draw_inici();
-	void draw_initial_car();
+
+
+	void dibuixa_Escena(GameLogic& game, bool& garage, float time);
+	float delta;
+	float logicTime = 0.0f;
+	int act = 0;

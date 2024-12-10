@@ -13,6 +13,7 @@
 
 #include "stdafx.h"
 #include "objLoader.h"
+#include <iostream>
 
 // OBJ File string indentifiers
 #define VERTEX_ID		 "v"
@@ -130,6 +131,10 @@ int _stdcall COBJModel::LoadModel(char* szFileName)
 
 // Start reading the file from the start
 	rewind(hFile);
+
+	float minX = FLT_MAX, maxX = FLT_MIN;
+	float minY = FLT_MAX, maxY = FLT_MIN;
+	float minZ = FLT_MAX, maxZ = FLT_MIN;
 	
 // Quit reading when end of file has been reached
 	while (!feof(hFile))
@@ -145,6 +150,18 @@ int _stdcall COBJModel::LoadModel(char* szFileName)
 				&pVertices[CurrentIndex.iVertexCount].fX,
 				&pVertices[CurrentIndex.iVertexCount].fY,
 				&pVertices[CurrentIndex.iVertexCount].fZ);
+
+			float x = pVertices[CurrentIndex.iVertexCount].fX;
+			float y = pVertices[CurrentIndex.iVertexCount].fY;
+			float z = pVertices[CurrentIndex.iVertexCount].fZ;
+
+			if (x < minX) minX = x;
+			if (x > maxX) maxX = x;
+			if (y < minY) minY = y;
+			if (y > maxY) maxY = y;
+			if (z < minZ) minZ = z;
+			if (z > maxZ) maxZ = z;
+
 			// Next vertex
 			CurrentIndex.iVertexCount++;
 		}
@@ -218,6 +235,10 @@ int _stdcall COBJModel::LoadModel(char* szFileName)
 			}
 		}
 	}	
+
+	m_width = maxX - minX;
+	m_height = maxY - minY;
+	m_depth = maxZ - minZ;
 
 	// Close OBJ file
 	fclose(hFile);
@@ -1669,11 +1690,38 @@ void _stdcall COBJModel::draw_TriVAO_Object_OBJ(GLint k)
 
 void _stdcall COBJModel::draw_TriVAO_OBJ(GLuint sh_programID)
 {
-	int i;
+	//int i;
+	//for (i = 0; i <= numMaterials; i++)
+	//{	UseMaterial_ShaderID(sh_programID, vMaterials[i]);	// Activació Material i-èssim
+	//	
+	//	draw_TriVAO_Object_OBJ(i);							// Dibuix objecte i-èssim
+	//}
 
-	for (i = 0; i <= numMaterials; i++)
-	{	UseMaterial_ShaderID(sh_programID, vMaterials[i]);	// Activació Material i-èssim
-		
-		draw_TriVAO_Object_OBJ(i);							// Dibuix objecte i-èssim
+	// Aplica textura per a cada material
+	for (int i = 0; i < numMaterials; ++i) {
+		Material& material = vMaterials[i];
+
+		if (material.iTextureID != 0) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, material.iTextureID);
+			glUniform1i(glGetUniformLocation(sh_programID, "texture0"), 0);
+
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
+		else
+		{
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+
+		glUniform3fv(glGetUniformLocation(sh_programID, "material.ambient"), 1, material.fAmbient);
+		glUniform3fv(glGetUniformLocation(sh_programID, "material.diffuse"), 1, material.fDiffuse);
+		glUniform3fv(glGetUniformLocation(sh_programID, "material.specular"), 1, material.fSpecular);
+		glUniform1f(glGetUniformLocation(sh_programID, "material.shininess"), material.fShininess);
+
+		draw_TriVAO_Object_OBJ(i);
 	}
 }
