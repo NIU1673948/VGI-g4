@@ -1098,7 +1098,6 @@ void pauseButton()
 
 void menuPause(GameLogic& game, ImFont* scoreFont)
 {
-
 	// Obtener el tamaño de la pantalla o ventana principal
 	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
 
@@ -1286,6 +1285,83 @@ void draw_garageButtons(bool& inici, bool& garage, bool& config, bool& exit)
 
 }
 
+void carregarFonsPantallaFinal() {
+	// Cargar la textura una sola vez
+	if (background == 0) {
+		background = loadIMA_SOIL(".\\textures\\game over.png");
+	}
+}
+
+void fonsPantallaFinal()
+{
+	carregarFonsPantallaFinal();
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Sin padding en la ventana
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);     // Sin borde en la ventana
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+
+	ImGui::Begin("Background Game Over", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs);
+	ImGui::Image((ImTextureID)(intptr_t)background, ImVec2(screenSize.x, screenSize.y));
+
+	ImGui::PopStyleVar(2);
+	ImGui::End();
+}
+
+void pantallaFinal(GameLogic& game)
+{
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	// Calcular tamaño y márgenes dinámicos para los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f); // Botones ocupan 13% de ancho y 7% de alto de la pantalla
+	float buttonSpacing = screenSize.y * 0.02f; // Espaciado entre botones (2% del alto)
+	int buttonCount = 2; // Número de botones
+
+	// Altura total necesaria para los botones y los espaciados
+	float totalHeight = buttonSize.y * buttonCount + buttonSpacing * (buttonCount - 1);
+	float totalWidth = buttonSize.x; // Ancho del botón
+
+	// Margen adicional para evitar que los botones se corten
+	float margin = 20.0f; // Espacio adicional alrededor de los botones
+
+	// Calcular la posición para centrar los botones
+	float posX = (screenSize.x - totalWidth - margin * 2) / 2.0f; // Centrado horizontalmente con margen
+	float posY = (screenSize.y - totalHeight - margin * 2) / 2.0f; // Centrado verticalmente con margen
+
+	// Configurar la ventana de ImGui
+	ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(totalWidth + margin * 2, totalHeight + margin * 2), ImGuiCond_Always);
+	ImGui::Begin("Game Over Buttons", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
+
+	// Dibujar botones
+	if (ImGui::Button("REINICIAR", buttonSize))
+	{
+		iniciar = true;
+		game = GameLogic();
+		final = false;
+	}
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing); // Añadir espaciado entre botones
+	if (ImGui::Button("TORNAR INICI", buttonSize))
+	{
+		iniciar = false;
+		game = GameLogic();
+		final = false;
+		primeraCarrega = true;
+	}
+
+	ImGui::PopStyleColor(3); // Restaurar colores
+	ImGui::End();
+}
+
 void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, GameLogic& game)
 {
 	/*
@@ -1305,24 +1381,7 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 		a la mateixa carpeta on es troben les textures, obj etc.. i s'ha de tenir la imatge de fons a la carpeta de Textures.
 
 	*/
-	if (!iniciar /*&& !garatge*/)
-	{
-		ImGui::PushFont(fontJoc);
-		if (!garatge)
-		{
-			fonsMenu();
-			draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
-		}
-		else
-		{
-			draw_garageButtons(iniciar, garatge, configuracio, sortir);
-		}
-		ImGui::PopFont();
-		ImGui::PushFont(fontDebug);
-		debugButton(debug);
-		ImGui::PopFont();
-	}
-	else
+	if (iniciar)
 	{
 		ImGui::PushFont(fontJoc);
 		pauseButton();
@@ -1336,6 +1395,46 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 		debugButton(debug);
 		ImGui::PopFont();
 	}
+	else
+	{
+		if (final)
+		{
+			if (primeraCarrega == true)
+			{
+				netejarFons();
+				primeraCarrega = false;
+			}
+			ImGui::PushFont(fontJoc);
+			fonsPantallaFinal();
+			pantallaFinal(game);
+			ImGui::PopFont();
+		}
+		else
+		{
+			ImGui::PushFont(fontJoc);
+			if (!garatge && !iniciar)
+			{
+				if (primeraCarrega == true)
+				{
+					netejarFons();
+					primeraCarrega = false;
+				}
+				fonsMenu();
+				draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
+			}
+			else
+			{
+				draw_garageButtons(iniciar, garatge, configuracio, sortir);
+			}
+			ImGui::PopFont();
+		}
+
+
+	}
+
+	ImGui::PushFont(fontDebug);
+	debugButton(debug);
+	ImGui::PopFont();
 }
 
 
@@ -5546,6 +5645,8 @@ int main(void)
 				{
 					cout << game.score / 100 << endl;
 					iniciar = false;
+					final = true;
+					primeraCarrega = true;
 					game = GameLogic();
 				}
 			}
@@ -5566,7 +5667,6 @@ int main(void)
 		OnPaint(window, game); // Ara només configura la càmara i shaders (crec) ALBERT
 		dibuixa_Escena(game, garatge, delta);
 
-
 // Entorn VGI.ImGui: Capta dades del menú InGui
 
 //Tancar frame --MAURI
@@ -5584,7 +5684,7 @@ int main(void)
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(window) == 0 && !sortir);
 
-	netejarFons();
+
 
 // Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();
