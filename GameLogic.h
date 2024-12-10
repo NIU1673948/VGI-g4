@@ -12,17 +12,22 @@
 using namespace std;
 using namespace glm;
 
-// Constants de l'entorn (carretera i cases)
+// Constants de la carretera
 const int WINDOW_HEIGHT = 600;
 const float LANE_WIDTH = 60;
 const int NUM_LANES = 4;
 const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
+const float ROAD_LENGTH = 2 * 63.8 * (20 + ROAD_WIDTH / 6.26);
 const float ROAD_START = 0;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
-extern vector<COBJModel*> ENVIRONMENT_MODELS;
+
+// Constants de l'entorn
 const float HOUSE_WIDTH = 325;
 const float HOUSE_HEIGHT = 1000;
 const int NUM_REPEATS = 6;
+const float Z_SPACE = ROAD_LENGTH / NUM_REPEATS;
+extern vector<COBJModel*> ENVIRONMENT_MODELS;
+
 // Constants del jugador
 const float MARGIN = 30;
 const float STEP = 5;
