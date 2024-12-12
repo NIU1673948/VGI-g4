@@ -48,6 +48,21 @@ vector<string> OBJpaths = {
     ".\\OBJFiles\\Car 08\\Car8_purple.obj",
 };
 
+void doMusic(const std::string& musicFilePath) {
+    irrklang::ISoundEngine* tempEngine = irrklang::createIrrKlangDevice();
+    if (!tempEngine) {
+        std::cout << "Could not startup engine" << std::endl;
+        return;
+    }
+    // Reproduce el sonido y no esperes su finalizaci�n en un loop infinito.
+    tempEngine->play2D(musicFilePath.c_str(), false);
+    // Aqu� surge un problema: Si sales de la funci�n de inmediato, el engine se destruye al salir 
+    // (si es local) o si haces drop(), la reproducci�n se corta. Debes mantener el engine vivo 
+    // mientras suene el sonido.
+}
+
+
+
 vector<vector<int>> carColorMap = {
     {CAR1, CAR1BLUE, CAR1RED, CAR1GRAY},
     {CAR2, CAR2BLACK, CAR2RED},
@@ -67,7 +82,6 @@ Car::Car() {
     m_visible = true;
     m_model = NULL;
 }
-
 
 void Car::move(float dx, float dy) {
     m_x += dx;
@@ -313,7 +327,7 @@ GameLogic::GameLogic() : gameRunning(true), score(0), t(0), animationRunning(fal
     extraLife = rand() % 2 == 0;
 }
 
-void GameLogic::UpdateGameLogic() {
+void GameLogic::UpdateGameLogic(SoundManager& soundManager) {
 
     UpdateRoadRows();
     environment.update(player.m_speed);
@@ -322,8 +336,8 @@ void GameLogic::UpdateGameLogic() {
         DoCollisions();
     else
         remainingShield -= FRAME_TIME;
-
-    DoPickUps();
+    
+    DoPickUps(soundManager);
 
     remainingFuel -= FRAME_TIME;
 
@@ -428,7 +442,7 @@ void GameLogic::DoCollisions()
     gameRunning = !collision;
 }
 
-void GameLogic::DoPickUps()
+void GameLogic::DoPickUps(SoundManager& soundManager)
 {
     for (int i = 0; i < NUM_ROWS; i++)
     {
@@ -441,12 +455,16 @@ void GameLogic::DoPickUps()
             case COIN:
                 score += COIN_SCORE;
                 player.m_speed = std::max(player.m_speed - COIN_SPEED_DOWN, 0.0f);
+                soundManager.playSound(".\\media\\coin.mp3");
                 break;
             case FUEL:
                 remainingFuel = FUEL_DURATION;
+                soundManager.playSound(".\\media\\fuel.mp3");
                 break;
             case SHIELD:
                 shieldEquipped = true;
+                soundManager.playSound(".\\media\\shield.mp3");
+                
                 break;
             default:
                 break;

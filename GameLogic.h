@@ -8,6 +8,9 @@
 #include "material.h"
 #include "visualitzacio.h"
 #include "objLoader.h"	
+#include "irrKlang/irrKlang.h"
+#include <thread>
+#include <chrono>
 
 using namespace std;
 using namespace glm;
@@ -70,7 +73,7 @@ const float ANIMATION_DURATION = 2; //segons
 // Constants de visualitzaci�
 const float TARGET_FPS = 60.0f;      // Freq��ncia de la l�gica
 const float FRAME_TIME = 1.0f / TARGET_FPS;
-
+void doMusic(const std::string& musicFilePath);
 
 
 
@@ -105,9 +108,98 @@ enum CARS {
     TOTALCARS
 };
 
+
 extern vector<string> OBJpaths;
 extern vector<vector<int>> carColorMap;
 extern vector<string> environmentPaths;
+class SoundManager {
+public:
+    ~SoundManager() {
+        stopBackgroundMusic();
+        for (auto& soundData : soundsInProgress) {
+            soundData.engine->drop();
+        }
+    }
+
+    void playBackgroundMusic(const std::string& file) {
+        stopBackgroundMusic();
+
+        backgroundMusicEngine = irrklang::createIrrKlangDevice();
+        if (!backgroundMusicEngine) {
+            std::cerr << "Could not create sound engine!" << std::endl;
+            return;
+        }
+
+        backgroundMusic = backgroundMusicEngine->play2D(file.c_str(), true, false, true);
+        if (!backgroundMusic) {
+            std::cerr << "Could not play music!" << std::endl;
+            backgroundMusicEngine->drop();
+            backgroundMusicEngine = nullptr;
+            return;
+        }
+
+        backgroundMusicThread = std::thread([this]() {
+            float speed = 1.0f;
+            while (backgroundMusic && !backgroundMusic->isFinished()) {
+                backgroundMusic->setPlaybackSpeed(speed);
+                speed += 0.001f;
+                if (speed > 2.0f) speed = 2.0f;
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            }
+            });
+        backgroundMusicThread.detach();
+    }
+
+    void playSound(const std::string& file) {
+        irrklang::ISoundEngine* eng = irrklang::createIrrKlangDevice();
+        if (!eng) return;
+
+        irrklang::ISound* snd = eng->play2D(file.c_str(), false, false, true);
+        if (!snd) {
+            eng->drop();
+            return;
+        }
+
+        soundsInProgress.push_back({ eng, snd });
+    }
+
+    void update() {
+        for (auto it = soundsInProgress.begin(); it != soundsInProgress.end();) {
+            if (it->sound->isFinished()) {
+                it->engine->drop();
+                it = soundsInProgress.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+    }
+
+    void stopBackgroundMusic() {
+        if (backgroundMusic) {
+            backgroundMusic->stop();
+            backgroundMusic->drop();
+            backgroundMusic = nullptr;
+        }
+
+        if (backgroundMusicEngine) {
+            backgroundMusicEngine->drop();
+            backgroundMusicEngine = nullptr;
+        }
+    }
+
+private:
+    struct SoundData {
+        irrklang::ISoundEngine* engine;
+        irrklang::ISound* sound;
+    };
+
+    irrklang::ISoundEngine* backgroundMusicEngine = nullptr;
+    irrklang::ISound* backgroundMusic = nullptr;
+    std::thread backgroundMusicThread;
+    std::vector<SoundData> soundsInProgress;
+};
+
 
 class Car {
 public:
@@ -211,7 +303,7 @@ class GameLogic {
 private:
     void UpdateRoadRows();
     void DoCollisions();
-    void DoPickUps();
+    void DoPickUps(SoundManager& soundManager);
     void finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, float t) const;
     int nextEmptyLane;
     COBJModel* modelCoin;
@@ -221,7 +313,7 @@ private:
 public:
     GameLogic();
     void GetUserInput();
-    void UpdateGameLogic();
+    void UpdateGameLogic(SoundManager& soundManager);
     bool CoinFlip();
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 

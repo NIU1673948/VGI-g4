@@ -18,6 +18,11 @@
 #include "escena.h"
 #include "main.h"
 #include "objLoader.h"
+#include "irrKlang/irrKlang.h"
+
+#include <thread>
+
+
 
 
 void InitGL()
@@ -1000,7 +1005,6 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			if (ImGui::Button("BACK", buttonSize)) {
 				config = false;
 			}
-
 		}
 	}
 
@@ -1156,7 +1160,6 @@ void pauseButton()
 {
 	int screenWidth = ImGui::GetIO().DisplaySize.x;
 	ImVec2 buttonPosition = ImVec2(screenWidth - 100, 10); //Establir posicio del boto debug
-
 	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
 	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
 	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
@@ -1258,7 +1261,6 @@ void menuPause(GameLogic& game, ImFont* scoreFont)
 	ImGui::PopStyleColor(4);
 
 	ImGui::End();
-
 
 }
 
@@ -1569,7 +1571,6 @@ void MostraEntornVGIWindow(bool* p_open)
 			//ShowAboutOptions(&show_window_about);
 			ImGui::EndMenu();
 		}
-
 		ImGui::EndMenuBar();
 	}
 
@@ -5520,7 +5521,6 @@ void carregarShield() {
 }
 
 void drawShield(bool shieldEquipped) {
-
 	if (!shieldEquipped) { return; }
 	carregarShield();
 
@@ -5547,6 +5547,11 @@ int main(void)
 	// Entorn VGI. Timer: Variables
 	float time = elapsedTime;
 	float now;
+
+	// Create the sound engine
+	SoundManager soundManager;
+	soundManager.playBackgroundMusic(".\\media\\background.mp3");
+
 
 
 
@@ -5743,7 +5748,7 @@ int main(void)
 				if (game.gameRunning)
 				{
 					game.GetUserInput();
-					game.UpdateGameLogic();
+					game.UpdateGameLogic(soundManager);
 				}
 				else if (!game.gameRunning && !debug && !animationViewed)
 				{
