@@ -404,10 +404,7 @@ void GameLogic::GetUserInput()
             player.rotate(player.m_rotation > 0 ? -ROTATION_SPEED : 0);
         }
     }
-    else if (GetKeyState(VK_SPACE) & 0x8000 && shieldEquipped) {
-        shieldEquipped = false;
-        remainingShield = SHIELD_DURATION;
-    }
+
     else
     {
         if (player.m_rotation > 0)
@@ -415,6 +412,10 @@ void GameLogic::GetUserInput()
         else if (player.m_rotation < 0)
             player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
 
+    }
+    if (GetKeyState(VK_SPACE) & 0x8000 && shieldEquipped) {
+        shieldEquipped = false;
+        remainingShield = SHIELD_DURATION;
     }
 }
 
