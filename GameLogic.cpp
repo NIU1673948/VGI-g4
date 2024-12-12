@@ -204,7 +204,6 @@ float RoadRow::getY() const {
     return m_obstacles[0].m_y;
 }
 
-
 void EnvironmentRow::initRow(float z) {
     m_z = z;
     m_leftHouse = ENVIRONMENT_MODELS[rand() % ENVIRONMENT_MODELS.size()];
@@ -289,6 +288,7 @@ void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, 
 
     m_road->draw_TriVAO_OBJ(sh_programID);
 }
+
 
 GameLogic::GameLogic() : gameRunning(true), score(0), t(0), animationRunning(false)
 {

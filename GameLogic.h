@@ -41,7 +41,7 @@ const float ROTATION_VEL = 0.05;
 const float CAR_WIDTH = 40;
 const float CAR_HEIGHT = 100;
 const int MIN_CARS = 1;
-const float OBSTACLE_SPEED = PLAYER_SPEED/4;
+const float OBSTACLE_SPEED = PLAYER_SPEED / 4;
 extern vector<COBJModel*> CAR_MODELS;
 //const int NUM_CAR_MODELS = 8;
 
