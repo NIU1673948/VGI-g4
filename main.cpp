@@ -5540,6 +5540,62 @@ void drawShield(bool shieldEquipped) {
 	ImGui::PopStyleVar(2);
 }
 
+//JAN - Funcions punutació
+
+string obtenirDataActual() {
+	auto ahora = chrono::system_clock::now();
+	time_t tiempo = chrono::system_clock::to_time_t(ahora);
+	tm* fechaLocal = localtime(&tiempo);
+
+	stringstream ss;
+	ss << put_time(fechaLocal, "%Y-%m-%d %H:%M:%S"); // Formato: Año-Mes-Día Hora:Minuto:Segundo
+	return ss.str();
+}
+
+void guardarMillorsPuntuacions(const vector<Puntuacio>& puntuacions) {
+	ofstream archivo(".\\bestScore.txt");
+	if (archivo.is_open()) {
+		for (const auto& p : puntuacions) {
+			archivo << p.punts << " " << p.data << endl;
+		}
+		archivo.close();
+	}
+	else {
+		cerr << "No se pudo abrir el archivo para guardar las puntuaciones." << endl;
+	}
+}
+
+vector<Puntuacio> cargarMillorsPuntuacions() {
+	ifstream archivo(".\\bestScore.txt");
+	vector<Puntuacio> puntuacions;
+	int punts;
+	string data;
+
+	if (archivo.is_open()) {
+		while (archivo >> punts) {
+			getline(archivo, data);
+			data = data.substr(1);
+			puntuacions.push_back({punts, data});
+		}
+		archivo.close();
+	}
+	else {
+		cerr << "No se pudo abrir el archivo para cargar las puntuaciones. Se usará una lista vacía." << endl;
+	}
+
+	return puntuacions;
+}
+
+void actualizarMejoresPuntuaciones(vector<Puntuacio>& puntuaciones, int nuevaPuntuacion) {
+	string fechaActual = obtenirDataActual();
+	puntuaciones.push_back({ nuevaPuntuacion, fechaActual }); // Agregar nueva puntuación y fecha
+	sort(puntuaciones.begin(), puntuaciones.end(), [](const Puntuacio& a, const Puntuacio& b) {
+		return a.punts > b.punts; // Orden descendente por puntuación
+		});
+	if (puntuaciones.size() > 10) {
+		puntuaciones.pop_back(); // Eliminar la menor si hay más de 10
+	}
+}
 
 int main(void)
 {
@@ -5740,6 +5796,11 @@ int main(void)
 
 		if (iniciar && !pause)
 		{
+			puntuacions = cargarMillorsPuntuacions();
+			if (!puntuacions.empty()) {
+				bestScore = puntuacions[0].punts;
+			}
+
 			logicTime += delta;
 			movi = game.player.m_x;
 
@@ -5755,11 +5816,6 @@ int main(void)
 					c = 10; //posicio on ha dapareixa la moneda
 					moneda = game.CoinFlip();
 
-					// Falta determiar la posici�
-					//He posat que la camera miri a 500,700,500 de moment (cap a dalt)
-					// moneda = animacioMoneda();
-					// La funcion de lanimacio retorna moneda com a 0 si es true sino qualsevol valor mes gran
-
 					if (!game.animationRunning)
 					{
 						animationViewed = true;
@@ -5774,10 +5830,14 @@ int main(void)
 						{
 							c = 0; //Reseteja camera
 							cout << game.score / 100 << endl;
-							if (game.score > bestScore)
-							{
-								bestScore = game.score;
-							}
+
+							actualizarMejoresPuntuaciones(puntuacions, game.score);
+							guardarMillorsPuntuacions(puntuacions);
+
+							//if (game.score > bestScore)
+							//{
+							//	bestScore = game.score;
+							//}
 							iniciar = false;
 							animationViewed = false;
 							game = GameLogic();
@@ -5788,10 +5848,14 @@ int main(void)
 				{
 					c = 0; //Reseteja camera
 					cout << game.score / 100 << endl;
-					if (game.score > bestScore)
-					{
-						bestScore = game.score;
-					}
+
+					actualizarMejoresPuntuaciones(puntuacions, game.score);
+					guardarMillorsPuntuacions(puntuacions);
+
+					//if (game.score > bestScore)
+					//{
+					//	bestScore = game.score;
+					//}
 					iniciar = false;
 					animationViewed = false;
 					final = true;
