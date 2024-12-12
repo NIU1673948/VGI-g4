@@ -27,7 +27,7 @@ const float ROAD_END = ROAD_START + ROAD_WIDTH;
 // Constants de l'entorn
 const float HOUSE_WIDTH = 325;
 const float HOUSE_HEIGHT = 1000;
-const int NUM_REPEATS = 6;
+const int NUM_REPEATS = 10;
 const float Z_SPACE = ROAD_LENGTH / NUM_REPEATS;
 const float INIT_POSITION = 200;
 extern vector<COBJModel*> ENVIRONMENT_MODELS;

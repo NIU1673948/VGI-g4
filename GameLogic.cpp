@@ -272,7 +272,7 @@ void Environment::update(float dz) {
     for (int i = 0; i < NUM_REPEATS; ++i) {
         m_environmentRows[i].move(dz);
 
-        if (m_environmentRows[i].getZ() > INIT_POSITION * 4) {
+        if (m_environmentRows[i].getZ() > INIT_POSITION * 6) {
             float newZ = m_environmentRows[(i + NUM_REPEATS - 1) % NUM_REPEATS].getZ() - Z_SPACE;
             m_environmentRows[i].initRow(newZ);
         }
