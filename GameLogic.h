@@ -12,13 +12,22 @@
 using namespace std;
 using namespace glm;
 
-// Constants carretera
+// Constants de la carretera
 const int WINDOW_HEIGHT = 600;
 const float LANE_WIDTH = 60;
 const int NUM_LANES = 4;
 const float ROAD_WIDTH = LANE_WIDTH * NUM_LANES;
+const float ROAD_LENGTH = 2 * 63.8 * (20 + ROAD_WIDTH / 6.26);
 const float ROAD_START = 0;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
+
+// Constants de l'entorn
+const float HOUSE_WIDTH = 325;
+const float HOUSE_HEIGHT = 1000;
+const int NUM_REPEATS = 6;
+const float Z_SPACE = ROAD_LENGTH / NUM_REPEATS;
+const float INIT_POSITION = 200;
+extern vector<COBJModel*> ENVIRONMENT_MODELS;
 
 // Constants del jugador
 const float MARGIN = 30;
@@ -34,14 +43,14 @@ const float CAR_HEIGHT = 100;
 const int MIN_CARS = 1;
 const float OBSTACLE_SPEED = PLAYER_SPEED/4;
 extern vector<COBJModel*> CAR_MODELS;
-const int NUM_CAR_MODELS = 8;
+//const int NUM_CAR_MODELS = 8;
 
 // Constants de files de cotxes
 const float ROW_SPACING = 300;
 const int NUM_ROWS = 15;
 const int VERTICAL_NOISE = ROW_SPACING / 2 - CAR_HEIGHT; // Hi ha lloc per a dos cotxes entre files
 
-// Constants de col·lisions
+// Constants de colï¿½lisions
 const float COLLISION_START = WINDOW_HEIGHT / 5;
 const float COLLISION_TOLERANCE = 5;
 
@@ -58,9 +67,12 @@ extern COBJModel* OBJECT_MODELS[3];
 // Constants de la moneda final
 const float ANIMATION_DURATION = 2; //segons
 
-// Constants de visualització
-const float TARGET_FPS = 60.0f;      // Freqüència de la lògica
+// Constants de visualitzaciï¿½
+const float TARGET_FPS = 60.0f;      // Freqï¿½ï¿½ncia de la lï¿½gica
 const float FRAME_TIME = 1.0f / TARGET_FPS;
+
+
+
 
 enum CARS {
     CAR1,
@@ -95,7 +107,7 @@ enum CARS {
 
 extern vector<string> OBJpaths;
 extern vector<vector<int>> carColorMap;
-
+extern vector<string> environmentPaths;
 
 class Car {
 public:
@@ -167,14 +179,39 @@ public:
     Object m_object;
 };
 
+class EnvironmentRow {
+public:
+    EnvironmentRow() : m_leftHouse(nullptr), m_rightHouse(nullptr), m_z(0) {};
+    void initRow(float z);
+    void move(float dz);
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    float getZ() const;
+
+private:
+    COBJModel* m_leftHouse;
+    COBJModel* m_rightHouse;
+    float m_z;
+};
+
+
+class Environment {
+public:
+    Environment();
+
+    void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
+    void update(float dz);
+    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
+    float m_roadY;
+private:
+    EnvironmentRow m_environmentRows[NUM_REPEATS];
+    COBJModel* m_road;
+};
+
 class GameLogic {
 private:
     void UpdateRoadRows();
     void DoCollisions();
     void DoPickUps();
-    COBJModel* m_road;
-    float m_roadY;
-    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
     void finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, float t) const;
     int nextEmptyLane;
     COBJModel* modelCoin;
@@ -197,4 +234,5 @@ public:
     bool extraLife;
     Player player;
     RoadRow roadRows[NUM_ROWS];
+    Environment environment;
 };

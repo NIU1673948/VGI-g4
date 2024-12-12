@@ -2,6 +2,21 @@
 
 vector<COBJModel*> CAR_MODELS;
 COBJModel* OBJECT_MODELS[3];
+vector<COBJModel*> ENVIRONMENT_MODELS;
+
+vector<string> environmentPaths = {
+    ".\\OBJFiles\\low_poly_houses_pack\\house_01.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_02.obj",
+    //".\\OBJFiles\\low_poly_houses_pack\\house_03.obj",
+    //".\\OBJFiles\\low_poly_houses_pack\\house_04.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_05.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_06.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_07.obj",
+    //".\\OBJFiles\\low_poly_houses_pack\\house_08.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_09.obj",
+    ".\\OBJFiles\\low_poly_houses_pack\\house_10.obj"
+
+};
 
 vector<string> OBJpaths = {
     ".\\OBJFiles\\Car 01\\Car.obj",
@@ -52,6 +67,7 @@ Car::Car() {
     m_visible = true;
     m_model = NULL;
 }
+
 
 void Car::move(float dx, float dy) {
     m_x += dx;
@@ -171,7 +187,7 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
             m_object.m_model = OBJECT_MODELS[COIN];
         }
 
-        while(true)
+        while (true)
         {
             int i = rand() % NUM_LANES;
 
@@ -188,17 +204,99 @@ float RoadRow::getY() const {
     return m_obstacles[0].m_y;
 }
 
-GameLogic::GameLogic() : gameRunning(true), m_roadY(0), score(0), t(0), animationRunning(false)
+
+void EnvironmentRow::initRow(float z) {
+    m_z = z;
+    m_leftHouse = ENVIRONMENT_MODELS[rand() % ENVIRONMENT_MODELS.size()];
+    m_rightHouse = ENVIRONMENT_MODELS[rand() % ENVIRONMENT_MODELS.size()];
+}
+
+void EnvironmentRow::move(float dz) {
+    m_z += dz;
+}
+
+float EnvironmentRow::getZ() const {
+    return m_z;
+}
+
+void EnvironmentRow::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
+{
+    glm::mat4 ModelMatrix(1.0), TransMatrix(1.0);
+
+    float scaleFactor = HOUSE_WIDTH / m_leftHouse->m_width;
+    TransMatrix = glm::translate(MatriuTG, glm::vec3(-9.0f * scaleFactor, 0.0f, m_z));
+    TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+    ModelMatrix = TransMatrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    m_leftHouse->draw_TriVAO_OBJ(sh_programID);
+
+    scaleFactor = HOUSE_WIDTH / m_rightHouse->m_width;
+    TransMatrix = glm::translate(MatriuTG, glm::vec3(17.5f * scaleFactor, 0.0f, m_z));
+    TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+    TransMatrix = glm::rotate(TransMatrix, float(PI), glm::vec3(0, 2, 0));
+    ModelMatrix = TransMatrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    m_rightHouse->draw_TriVAO_OBJ(sh_programID);
+}
+
+
+Environment::Environment() : m_roadY(0), m_road(nullptr)
+{
+    m_road = new COBJModel();
+    const char* rutaArxiu = ".\\OBJFiles\\Road\\Road.obj";
+    m_road->LoadModel(const_cast<char*>(rutaArxiu));
+
+    float z = -INIT_POSITION;
+    for (int i = 0; i < NUM_REPEATS; ++i) {
+        m_environmentRows[i].initRow(z);
+        z -= Z_SPACE;
+    }
+}
+
+void Environment::update(float dz) {
+    for (int i = 0; i < NUM_REPEATS; ++i) {
+        m_environmentRows[i].move(dz);
+
+        if (m_environmentRows[i].getZ() > INIT_POSITION * 4) {
+            float newZ = m_environmentRows[(i + NUM_REPEATS - 1) % NUM_REPEATS].getZ() - Z_SPACE;
+            m_environmentRows[i].initRow(newZ);
+        }
+    }
+}
+
+void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
+    for (const auto& row : m_environmentRows) {
+        row.draw(sh_programID, MatriuVista, MatriuTG);
+    }
+}
+
+void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const
+{
+
+    glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
+    TransMatrix = MatriuTG;
+
+    TransMatrix = glm::translate(TransMatrix, vec3(10 + ROAD_WIDTH / 2, -10, ROAD_LENGTH / 8 + fmod(m_roadY, ROAD_LENGTH / 8)));
+    TransMatrix = glm::scale(TransMatrix, vec3(20 + ROAD_WIDTH / 6.26, 20 + ROAD_WIDTH / 6.26, 20 + ROAD_WIDTH / 6.26));
+    TransMatrix = glm::rotate(TransMatrix, float(PI / 2), vec3(0, 1, 0));
+    ModelMatrix = TransMatrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
+    NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
+
+    m_road->draw_TriVAO_OBJ(sh_programID);
+}
+
+GameLogic::GameLogic() : gameRunning(true), score(0), t(0), animationRunning(false)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 
     modelCoin = new COBJModel();
     string path = ".\\OBJFiles\\Final_Coin\\Final_Coin.obj";
     modelCoin->LoadModel(const_cast<char*>(path.c_str()));
-
-    m_road = new COBJModel();
-    const char* rutaArxiu = ".\\OBJFiles\\Road\\Road.obj";
-    m_road->LoadModel(const_cast<char*>(rutaArxiu));
 
     remainingFuel = FUEL_DURATION;
     remainingShield = -SHIELD_DURATION;
@@ -218,12 +316,13 @@ GameLogic::GameLogic() : gameRunning(true), m_roadY(0), score(0), t(0), animatio
 void GameLogic::UpdateGameLogic() {
 
     UpdateRoadRows();
+    environment.update(player.m_speed);
 
     if (remainingShield <= 0)
         DoCollisions();
     else
         remainingShield -= FRAME_TIME;
-    
+
     DoPickUps();
 
     remainingFuel -= FRAME_TIME;
@@ -235,7 +334,7 @@ void GameLogic::UpdateGameLogic() {
     player.m_move_step += 0.00000002;
 
     score += player.m_speed;
-    m_roadY += player.m_speed;
+    environment.m_roadY += player.m_speed;
 }
 
 bool GameLogic::CoinFlip()
@@ -252,22 +351,25 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
 
 
     for (int i = 0; i < NUM_ROWS; i++) {
-        roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);    }
+        roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);
+    }
 
-    dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
+    environment.dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
+    environment.draw(sh_programID, MatriuVista, MatriuTG);
 
-    if(animationRunning) finalCoinAnimation(sh_programID, MatriuVista, MatriuTG, t);
+    if (animationRunning) finalCoinAnimation(sh_programID, MatriuVista, MatriuTG, t);
 
-    glUniform1f(glGetUniformLocation(sh_programID, "transparency"), remainingShield <= 0? 1:0.5f);
+    glUniform1f(glGetUniformLocation(sh_programID, "transparency"), remainingShield <= 0 ? 1 : 0.5f);
 
     player.draw(sh_programID, MatriuVista, MatriuTG);
+
 
 }
 
 
 void GameLogic::GetUserInput()
 {
-    if (GetKeyState('A') & 0x8000 && player.m_rotation<=0) {        
+    if (GetKeyState('A') & 0x8000 && player.m_rotation <= 0) {
         player.move(-player.m_move_step, 0);
 
         player.rotate(player.m_rotation > -ROTATION_ANGLE ? -ROTATION_SPEED : 0);
@@ -398,7 +500,7 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
 
     TransMatrix = glm::translate(TransMatrix, vec3(m_x, 0, m_y - m_height / 4));
     TransMatrix = glm::rotate(TransMatrix, m_rotation, vec3(0, -1, 0));
-    TransMatrix = glm::translate(TransMatrix, vec3(0, 0, m_height / 4)); 
+    TransMatrix = glm::translate(TransMatrix, vec3(0, 0, m_height / 4));
     TransMatrix = glm::rotate(TransMatrix, float(PI), vec3(0, 1, 0));
     float scaleFactor = m_width / m_model->m_width;
     TransMatrix = glm::scale(TransMatrix, vec3(scaleFactor, scaleFactor, scaleFactor));
@@ -408,7 +510,8 @@ void Player::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
     NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-    m_model->draw_TriVAO_OBJ(sh_programID);}
+    m_model->draw_TriVAO_OBJ(sh_programID);
+}
 
 bool Player::checkCollision(const Car& obstacle) const {
     if (obstacle.m_visible)
@@ -449,24 +552,6 @@ bool Player::checkCollision(const Object& object) const
     return false;
 }
 
-void GameLogic::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const {
-    
-    float length = 2* 63.8 * (20 + ROAD_WIDTH / 6.26);
-
-    glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
-    TransMatrix = MatriuTG;
-
-    TransMatrix = glm::translate(TransMatrix, vec3(10 + ROAD_WIDTH / 2, -10, length/8 + fmod(m_roadY, length/8)));
-    TransMatrix = glm::scale(TransMatrix, vec3(20 + ROAD_WIDTH / 6.26, 20 + ROAD_WIDTH / 6.26, 20 + ROAD_WIDTH / 6.26));
-    TransMatrix = glm::rotate(TransMatrix, float(PI / 2), vec3(0, 1, 0));
-    ModelMatrix = TransMatrix;
-
-    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
-    NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
-    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
-
-    m_road->draw_TriVAO_OBJ(sh_programID);}
-
 void Object::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
     if (m_visible) {
@@ -474,7 +559,7 @@ void Object::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG
         TransMatrix = MatriuTG;
 
         float scaleFactor = m_radius * 2 / m_model->m_width;
-        TransMatrix = translate(TransMatrix, vec3(m_x, m_model->m_height* scaleFactor *2/3, m_y));
+        TransMatrix = translate(TransMatrix, vec3(m_x, m_model->m_height * scaleFactor * 2 / 3, m_y));
         TransMatrix = rotate(TransMatrix, m_rotation, vec3(0, 1, 0));
         TransMatrix = scale(TransMatrix, vec3(scaleFactor, scaleFactor, scaleFactor));
         ModelMatrix = TransMatrix;
@@ -491,20 +576,20 @@ void GameLogic::finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, g
 {
     int finalTime = ANIMATION_DURATION;
 
-    t = t>finalTime ? finalTime : t;
+    t = t > finalTime ? finalTime : t;
 
     int x = 200 / finalTime * t;
-    int y = (200 - x) * 0.05* x;
+    int y = (200 - x) * 0.05 * x;
     float alpha = TWOPI * 5 / finalTime * t;
-    float beta = std::sin(TWOPI *4/ finalTime * t)*0.2;
+    float beta = std::sin(TWOPI * 4 / finalTime * t) * 0.2;
 
     glm::mat4 NormalMatrix(1.0), ModelMatrix(1.0), TransMatrix(1.0), ScaleMatrix(1.0), RotMatrix(1.0);
 
-    TransMatrix = translate(TransMatrix, vec3(-x*2,0,-y));
+    TransMatrix = translate(TransMatrix, vec3(-x * 2, 0, -y));
     TransMatrix = translate(TransMatrix, vec3(300, 1100, 3000));
     TransMatrix = rotate(TransMatrix, float(beta), vec3(1, 0, 0));
     TransMatrix = rotate(TransMatrix, float(alpha), vec3(0, 1, 0));
-    TransMatrix = rotate(TransMatrix, float(PI*!extraLife), vec3(0, 1, 0));
+    TransMatrix = rotate(TransMatrix, float(PI * !extraLife), vec3(0, 1, 0));
     TransMatrix = scale(TransMatrix, vec3(100, 100, 100));
 
     ModelMatrix = TransMatrix;
@@ -513,4 +598,5 @@ void GameLogic::finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, g
     NormalMatrix = transpose(inverse(MatriuVista * ModelMatrix));
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "normalMatrix"), 1, GL_FALSE, &NormalMatrix[0][0]);
 
-    modelCoin->draw_TriVAO_OBJ(sh_programID);}
+    modelCoin->draw_TriVAO_OBJ(sh_programID);
+}
