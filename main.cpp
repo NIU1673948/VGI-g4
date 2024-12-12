@@ -907,7 +907,6 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 
 			ImGui::SameLine();
 			if (ImGui::Button("GARATGE", buttonSize)) {
-				// Acci� boto garatge
 				garage = true;
 				draw_inici_garage();
 			}
@@ -980,30 +979,28 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				ImGui::PopStyleColor(3);
 
 				ImGui::End();
-
 			}
-			else
-			{
-				ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
-				if (ImGui::Button("FULLSCREEN", buttonSize)) {
-					OnFull_Screen(primary, window);
-				}
 
-				ImGui::SameLine();
-				if (ImGui::Button("DIFICULTAD", buttonSize)) {
-					// Acci? boto dificultat
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("AUDIO", buttonSize)) {
-					// Acci? boto audio
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("BACK", buttonSize)) {
-					config = false;
-				}
+			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+			if (ImGui::Button("FULLSCREEN", buttonSize)) {
+				OnFull_Screen(primary, window);
 			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("DIFICULTAD", buttonSize)) {
+				// Acci? boto dificultat
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("AUDIO", buttonSize)) {
+				// Acci? boto audio
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("BACK", buttonSize)) {
+				config = false;
+			}
+
 		}
 	}
 
@@ -1095,10 +1092,10 @@ void draw_Menu_ImGui()
 void debugButton(bool& debug) {
 	int screenHeight = ImGui::GetIO().DisplaySize.y;
 	ImVec2 buttonPosition = ImVec2(10, screenHeight - 50); //Establir posicio del boto debug
-
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Grosor del borde
 	if (!debug) {
 		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
-		ImGui::Begin("DebugButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		ImGui::Begin("DebugButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 
 		if (ImGui::Button("Debug")) {
 			debug = true; // Activar el modo debug cuando se presiona el bot�n
@@ -1110,7 +1107,7 @@ void debugButton(bool& debug) {
 		draw_Menu_ImGui();
 
 		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
-		ImGui::Begin("Debug Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		ImGui::Begin("Debug Options", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
 
 		if (ImGui::Button("Cerrar Debug")) {
 			debug = false; // Desactivar el modo debug
@@ -1118,6 +1115,7 @@ void debugButton(bool& debug) {
 		}
 		ImGui::End();
 	}
+	ImGui::PopStyleVar(1);
 }
 
 GLuint background = 0; // Variable global per a la textura del fons
@@ -1154,8 +1152,301 @@ void fonsMenu()
 	ImGui::End();
 }
 
+void pauseButton()
+{
+	int screenWidth = ImGui::GetIO().DisplaySize.x;
+	ImVec2 buttonPosition = ImVec2(screenWidth - 100, 10); //Establir posicio del boto debug
 
-void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
+	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
+	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f); // Bordes redondeados
+
+	if (!pause) {
+		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
+		ImGui::Begin("pauseButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
+
+		if (ImGui::Button("Pause")) {
+			pause = true;
+		}
+		ImGui::End();
+	}
+}
+
+void menuPause(GameLogic& game, ImFont* scoreFont)
+{
+	// Obtener el tama�o de la pantalla o ventana principal
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	// Calcular tama�o y m�rgenes din�micos para los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f);
+	float buttonSpacing = screenSize.y * 0.02f; // Espaciado vertical entre botones
+	float totalWidth = buttonSize.x + 20.0f;   // Ancho de la ventana considerando el bot�n
+	float totalHeight = buttonSize.y * 4 + buttonSpacing * 3; // Altura total para los 4 botones
+
+	// Ajustar la posici�n para centrar los botones verticalmente en la pantalla
+	float posX = (screenSize.x - totalWidth) / 2.0f;
+	float posY = (screenSize.y - totalHeight) / 2.0f;
+	ImGui::Begin("SCORE", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+	ImGui::PushFont(scoreFont);
+
+	std::string scoreStr = "Score: " + std::to_string(game.score / 100);
+
+	// Calcula el ancho del texto usando la cadena
+	float textWidth = ImGui::CalcTextSize(scoreStr.c_str()).x;
+
+	// Centrar el texto correctamente
+	ImGui::SetWindowPos(ImVec2((screenSize.x - textWidth) / 2.0f, 150));
+
+	// Muestra el texto
+	ImGui::Text("%s", scoreStr.c_str());
+
+	ImGui::PopFont();
+	ImGui::End();
+
+
+	// Configurar la ventana de ImGui para los botones
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowSize(ImVec2(totalWidth, totalHeight + 50), ImGuiCond_Always);
+	ImGui::Begin("Botones Centrales", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+	// Estilos de botones
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f);
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f);
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f);
+	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f);
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
+	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor);
+
+
+	ImGui::SetCursorPos(ImVec2(10.0f, 10.0f)); // Margen superior
+	if (ImGui::Button("REINICIAR", buttonSize)) {
+		pause = false;
+	}
+
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+	if (ImGui::Button("AUDIO", buttonSize)) {
+
+	}
+
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+	if (ImGui::Button("CONFIGURACIO", buttonSize)) {
+
+	}
+
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+	if (ImGui::Button("PANTALLA INICI", buttonSize)) {
+		iniciar = false;
+		pause = false;
+		game = GameLogic();
+	}
+
+	// Restaurar estilos
+	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(4);
+
+	ImGui::End();
+
+
+}
+
+void fonsMenuPause()
+{
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(screenSize);
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));  // Color blanco con transparencia 50%
+	ImGui::Begin("Pause Background", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+
+	ImGui::End();
+	ImGui::PopStyleColor();
+}
+
+void draw_garageButtons(bool& inici, bool& garage, bool& config, bool& exit)
+{
+	c = 4;
+	// Obtener el tama�o de la pantalla o ventana principal
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	// Calcular tama�o y m�rgenes din�micos para los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f); // Botones ocupan 20% de ancho y 10% de alto de la pantalla
+	float buttonSpacing = screenSize.x * 0.02f; // Espaciado entre botones (2% del ancho)
+	float totalWidth = buttonSize.x * 4 + buttonSpacing * 3; // Ancho total considerando los m�rgenes
+	float totalHeight = buttonSize.y + 20.0f; // Altura total con margen adicional
+
+	// Ajustar la posici�n para centrar los botones en la pantalla
+	float windowWidth = totalWidth + 20;
+	float windowHeight = totalHeight + 20;
+	float posX = (screenSize.x - windowWidth) / 2.0f;
+	float posY = screenSize.y - windowHeight - 200.0f;
+
+	// Configurar la ventana de ImGui para los botones
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowSize(ImVec2(totalWidth + 20, totalHeight + 20), ImGuiCond_Always);
+	ImGui::Begin("Botons Garatge", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
+	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
+	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f); // Bordes redondeados
+
+	float centerY = (totalHeight - buttonSize.y) / 2.0f;
+
+	ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
+	if (ImGui::Button("<--", buttonSize))
+	{
+		currentModel = (currentModel == 0) ? carColorMap.size() - 1 : currentModel - 1;
+		act = carColorMap[currentModel][0];
+		currentColor = 0;
+	}
+
+	ImGui::SameLine(0.0f, buttonSpacing);
+	if (ImGui::Button("COLOR", buttonSize))
+	{
+		currentColor = (currentColor == carColorMap[currentModel].size() - 1) ? 0 : currentColor + 1;
+		act = carColorMap[currentModel][currentColor];
+	}
+
+	ImGui::SameLine(0.0f, buttonSpacing);
+	if (ImGui::Button("-->", buttonSize))
+	{
+		currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
+		act = carColorMap[currentModel][0];
+		currentColor = 0;
+	}
+
+	float lowerWindowWidth = 700.0f;
+	float lowerWindowHeight = 200.0f;
+	float lowerPosX = (screenSize.x - lowerWindowWidth) / 2.0f;
+	float lowerPosY = screenSize.y * 0.8f;
+
+	ImGui::SetNextWindowPos(ImVec2(lowerPosX, lowerPosY), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(lowerWindowWidth, lowerWindowHeight), ImGuiCond_Always);
+
+	ImGui::Begin("Ventana COLOR", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+	ImVec2 lowerButtonSize = ImVec2(lowerWindowWidth * 0.6, lowerWindowHeight * 0.6f);
+
+	ImGui::SetCursorPos(ImVec2((lowerWindowWidth - lowerButtonSize.x) / 2.0f, (lowerWindowHeight - lowerButtonSize.y) / 2.0f));
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImFont* bigFont = io.Fonts->Fonts.back();
+	ImGui::PushFont(bigFont);
+
+	if (ImGui::Button("SELECCIONAR", lowerButtonSize)) {
+		cubemapTexture = NULL;
+		skC_VAOID.vaoId = 0;
+		skC_programID = NULL;
+		garage = false;
+	}
+
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor(3);
+
+	ImGui::End();
+
+}
+
+void carregarFonsPantallaFinal() {
+	// Cargar la textura una sola vez
+	if (background == 0) {
+		background = loadIMA_SOIL(".\\textures\\game over.png");
+	}
+}
+
+void fonsPantallaFinal()
+{
+	carregarFonsPantallaFinal();
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Sin padding en la ventana
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);     // Sin borde en la ventana
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+
+	ImGui::Begin("Background Game Over", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs);
+	ImGui::Image((ImTextureID)(intptr_t)background, ImVec2(screenSize.x, screenSize.y));
+
+	ImGui::PopStyleVar(2);
+	ImGui::End();
+}
+
+void pantallaFinal(GameLogic& game)
+{
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	// Calcular tama�o y m�rgenes din�micos para los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f); // Botones ocupan 13% de ancho y 7% de alto de la pantalla
+	float buttonSpacing = screenSize.y * 0.02f; // Espaciado entre botones (2% del alto)
+	int buttonCount = 2; // N�mero de botones
+
+	// Altura total necesaria para los botones y los espaciados
+	float totalHeight = buttonSize.y * buttonCount + buttonSpacing * (buttonCount - 1);
+	float totalWidth = buttonSize.x; // Ancho del bot�n
+
+	// Margen adicional para evitar que los botones se corten
+	float margin = 20.0f; // Espacio adicional alrededor de los botones
+
+	// Calcular la posici�n para centrar los botones
+	float posX = (screenSize.x - totalWidth - margin * 2) / 2.0f; // Centrado horizontalmente con margen
+	float posY = (screenSize.y - totalHeight - margin * 2) / 2.0f; // Centrado verticalmente con margen
+
+	// Configurar la ventana de ImGui
+	ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(totalWidth + margin * 2, totalHeight + margin * 2), ImGuiCond_Always);
+	ImGui::Begin("Game Over Buttons", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
+	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
+
+	// Dibujar botones
+	if (ImGui::Button("REINICIAR", buttonSize))
+	{
+		iniciar = true;
+		game = GameLogic();
+		final = false;
+	}
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing); // A�adir espaciado entre botones
+	if (ImGui::Button("TORNAR INICI", buttonSize))
+	{
+		iniciar = false;
+		game = GameLogic();
+		final = false;
+		primeraCarrega = true;
+	}
+
+	ImGui::PopStyleColor(3); // Restaurar colores
+	ImGui::End();
+}
+
+void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, GameLogic& game)
 {
 	/*
 		Aquesta es la funcio principal del menu inicial del joc i es la funcio que genera tots els btotons que tinguin
@@ -1174,21 +1465,60 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug)
 		a la mateixa carpeta on es troben les textures, obj etc.. i s'ha de tenir la imatge de fons a la carpeta de Textures.
 
 	*/
-	if (!iniciar /*&& !garatge*/)
+	if (iniciar)
 	{
-		if (!garatge)
-		{
-			fonsMenu();
-		}
 		ImGui::PushFont(fontJoc);
-		draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
+		pauseButton();
 		ImGui::PopFont();
+		if (pause)
+		{
+			fonsMenuPause();
+			menuPause(game, scoreFont);
+		}
+		ImGui::PushFont(fontDebug);
+		debugButton(debug);
+		ImGui::PopFont();
+	}
+	else
+	{
+		if (final)
+		{
+			if (primeraCarrega == true)
+			{
+				netejarFons();
+				primeraCarrega = false;
+			}
+			ImGui::PushFont(fontJoc);
+			fonsPantallaFinal();
+			pantallaFinal(game);
+			ImGui::PopFont();
+		}
+		else
+		{
+			ImGui::PushFont(fontJoc);
+			if (!garatge && !iniciar)
+			{
+				if (primeraCarrega == true)
+				{
+					netejarFons();
+					primeraCarrega = false;
+				}
+				fonsMenu();
+				draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
+			}
+			else
+			{
+				draw_garageButtons(iniciar, garatge, configuracio, sortir);
+			}
+			ImGui::PopFont();
+		}
+
+
 	}
 
 	ImGui::PushFont(fontDebug);
-	debugButton(debug); //MAURI: El menu debug desapareix quan inicies i despres surts de la partida ns pq
+	debugButton(debug);
 	ImGui::PopFont();
-
 }
 
 
@@ -2793,8 +3123,14 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 2 && garatge == false) c = (c < 2) ? (c + 1) : 0, camera = CAM_ESFERICA;
 		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 2 && garatge == false) camera = CAM_NAVEGA, c++;
 		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
+
+
+		//MAURI: Menu Pause
+		else if ((key == GLFW_KEY_P) && action == GLFW_PRESS && !pause && iniciar) pause = true;
+		else if ((key == GLFW_KEY_P) && action == GLFW_PRESS && pause && iniciar) pause = false;
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);
+
 	}
 	// Crida a 
 	// ) per redibuixar l'escena
@@ -4900,38 +5236,36 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 //							 (coord. pantalla) quan el bot� s'ha apretat.
 void OnMouseWheel(GLFWwindow* window, double xoffset, double yoffset)
 {
-	// TODO: Agregue aqu� su c�digo de controlador de mensajes o llame al valor predeterminado
-	double modul = 0;
-	GLdouble vdir[3] = { 0, 0, 0 };
-
-	// EntornVGI.ImGui: Test si events de mouse han sigut filtrats per ImGui (io.WantCaptureMouse)
-	// (1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
-	ImGuiIO& io = ImGui::GetIO();
-	//io.AddMouseButtonEvent(button, true);
-
-// (2) ONLY forward mouse data to your underlying app/game.
-	if (!io.WantCaptureMouse) { // <Tractament mouse de l'aplicaci�>}
-		// Funci� de zoom quan est� activada la funci� pan o les T. Geom�triques
-		if ((zzoom) || (transX) || (transY) || (transZ))
-		{
-			OPV.R = OPV.R + yoffset / 4;
-			if (OPV.R < 1) OPV.R = 1;
-		}
-		else if (camera == CAM_NAVEGA && !io.WantCaptureMouse)
-		{
-			vdir[0] = n[0] - opvN.x;
-			vdir[1] = n[1] - opvN.y;
-			vdir[2] = n[2] - opvN.z;
-			modul = sqrt(vdir[0] * vdir[0] + vdir[1] * vdir[1] + vdir[2] * vdir[2]);
-			vdir[0] = vdir[0] / modul;
-			vdir[1] = vdir[1] / modul;
-			vdir[2] = vdir[2] / modul;
-			opvN.x += (yoffset / 4) * vdir[0];		//opvN.x += (zDelta / 4) * vdir[0];
-			opvN.y += (yoffset / 4) * vdir[1];		//opvN.y += (zDelta / 4) * vdir[1];
-			n[0] += (yoffset / 4) * vdir[0];		//n[0] += (zDelta / 4) * vdir[0];
-			n[1] += (yoffset / 4) * vdir[1];		//n[1] += (zDelta / 4) * vdir[1];
-		}
-	}
+	//	// TODO: Agregue aqu� su c�digo de controlador de mensajes o llame al valor predeterminado
+		//	double modul = 0;
+		//	GLdouble vdir[3] = { 0, 0, 0 };
+		//
+		//// EntornVGI.ImGui: Test si events de mouse han sigut filtrats per ImGui (io.WantCaptureMouse)
+		//// (1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
+		//	ImGuiIO& io = ImGui::GetIO();
+		//	//io.AddMouseButtonEvent(button, true);
+		//
+		//// (2) ONLY forward mouse data to your underlying app/game.
+		//	if (!io.WantCaptureMouse) { // <Tractament mouse de l'aplicaci�>}
+		//		// Funci� de zoom quan est� activada la funci� pan o les T. Geom�triques
+		//		if ((zzoom) || (transX) || (transY) || (transZ))
+		//		{	OPV.R = OPV.R + yoffset / 4;
+		//			if (OPV.R < 1) OPV.R = 1;
+		//		}
+		//		else if (camera == CAM_NAVEGA && !io.WantCaptureMouse)
+		//		{	vdir[0] = n[0] - opvN.x;
+		//			vdir[1] = n[1] - opvN.y;
+		//			vdir[2] = n[2] - opvN.z;
+		//			modul = sqrt(vdir[0] * vdir[0] + vdir[1] * vdir[1] + vdir[2] * vdir[2]);
+		//			vdir[0] = vdir[0] / modul;
+		//			vdir[1] = vdir[1] / modul;
+		//			vdir[2] = vdir[2] / modul;
+		//			opvN.x += (yoffset / 4) * vdir[0];		//opvN.x += (zDelta / 4) * vdir[0];
+		//			opvN.y += (yoffset / 4) * vdir[1];		//opvN.y += (zDelta / 4) * vdir[1];
+		//			n[0] += (yoffset / 4) * vdir[0];		//n[0] += (zDelta / 4) * vdir[0];
+		//			n[1] += (yoffset / 4) * vdir[1];		//n[1] += (zDelta / 4) * vdir[1];
+		//		}
+		//	}
 }
 
 
@@ -5186,6 +5520,7 @@ void carregarShield() {
 }
 
 void drawShield(bool shieldEquipped) {
+
 	if (!shieldEquipped) { return; }
 	carregarShield();
 
@@ -5205,16 +5540,6 @@ void drawShield(bool shieldEquipped) {
 	ImGui::PopStyleVar(2);
 }
 
-
-/*
-MAURI: FALTA ACABAR DE REVISAR PQ NO DETECTA LA FUNCIO LOAD TEXTURE (preguntar al profe)
-void carregarPantallaInicial() {
-	GLuint backgroundTexture = LoadTexture2
-	if (backgroundTexture == 0) {
-		std::cerr << "Error al cargar la textura de fondo." << std::endl;
-	}
-}
-*/
 
 int main(void)
 {
@@ -5354,6 +5679,9 @@ int main(void)
 	io.Fonts->AddFontFromFileTTF(".\\Fonts\\Fifties Movies.ttf", 24.0f);
 	ImFont* largeFont = io.Fonts->Fonts.back(); // Obt�n la fuente cargada
 
+	io.Fonts->AddFontFromFileTTF(".\\Fonts\\Fifties Movies.ttf", 80.0f);
+	ImFont* scoreFont = io.Fonts->Fonts.back(); // Obt�n la fuente cargada
+
 	// Intentamos cargar la segunda fuente
 	io.Fonts->AddFontFromFileTTF(".\\Fonts\\ConsolaMono-Book.ttf", 16.0f);
 	ImFont* debugFont = io.Fonts->Fonts.back();  // Obt�n la fuente cargada
@@ -5375,9 +5703,6 @@ int main(void)
 		// Poll for and process events */
 		//        glfwPollEvents();
 
-
-
-		// Entorn VGI. Timer: common part, do this only once
 		now = glfwGetTime();
 		delta = now - previous;
 		previous = now;
@@ -5395,11 +5720,8 @@ int main(void)
 		ImGui::NewFrame();
 
 
-		//AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
-		draw_menuInicial(largeFont, debugFont);
+		draw_menuInicial(largeFont, debugFont, scoreFont, game);
 
-
-		//AQUI DIBUIXARE EL MENU DE LA PANTALLA D'INICI
 		if (iniciar == false) {
 			//draw_ProgramButtons(iniciar, configuracio, sortir);
 			logicTime = 0.0f;
@@ -5408,12 +5730,12 @@ int main(void)
 		// Crida a OnPaint() per redibuixar l'escena
 				//assert(ObOBJ);
 
-		logicTime += delta;
 
 		// Executa la l�gica del joc amb el pas de temps fix
 
-		if (iniciar)
+		if (iniciar && !pause)
 		{
+			logicTime += delta;
 			movi = game.player.m_x;
 
 			if (logicTime >= FRAME_TIME) {
@@ -5467,6 +5789,8 @@ int main(void)
 					}
 					iniciar = false;
 					animationViewed = false;
+					final = true;
+					primeraCarrega = true;
 					game = GameLogic();
 				}
 			}
@@ -5492,9 +5816,6 @@ int main(void)
 		OnPaint(window, game); // Ara nom�s configura la c�mara i shaders (crec) ALBERT
 		dibuixa_Escena(game, garatge, delta);
 
-
-		// Entorn VGI.ImGui: Capta dades del men� InGui
-
 		//Tancar frame --MAURI
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -5510,7 +5831,7 @@ int main(void)
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(window) == 0 && !sortir);
 
-	netejarFons();
+
 
 	// Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();
