@@ -24,7 +24,14 @@
 	int moneda;
 
 	int bestScore;
-	vector<int> puntuacions;
+
+	struct Puntuacio
+	{
+			int punts;
+			string data;
+	};
+
+	vector<Puntuacio> puntuacions;
 // Retrieving main monitor
 	GLFWmonitor* primary;
 

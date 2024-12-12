@@ -5541,11 +5541,22 @@ void drawShield(bool shieldEquipped) {
 }
 
 //JAN - Funcions punutació
-void guardarMillorsPuntuacions(const vector<int>& puntuaciones) {
+
+string obtenirDataActual() {
+	auto ahora = chrono::system_clock::now();
+	time_t tiempo = chrono::system_clock::to_time_t(ahora);
+	tm* fechaLocal = localtime(&tiempo);
+
+	stringstream ss;
+	ss << put_time(fechaLocal, "%Y-%m-%d %H:%M:%S"); // Formato: Año-Mes-Día Hora:Minuto:Segundo
+	return ss.str();
+}
+
+void guardarMillorsPuntuacions(const vector<Puntuacio>& puntuacions) {
 	ofstream archivo(".\\bestScore.txt");
 	if (archivo.is_open()) {
-		for (int puntuacion : puntuaciones) {
-			archivo << puntuacion << endl;
+		for (const auto& p : puntuacions) {
+			archivo << p.punts << " " << p.data << endl;
 		}
 		archivo.close();
 	}
@@ -5554,14 +5565,17 @@ void guardarMillorsPuntuacions(const vector<int>& puntuaciones) {
 	}
 }
 
-vector<int> cargarMillorsPuntuacions() {
+vector<Puntuacio> cargarMillorsPuntuacions() {
 	ifstream archivo(".\\bestScore.txt");
-	vector<int> puntuaciones;
-	int puntuacion;
+	vector<Puntuacio> puntuacions;
+	int punts;
+	string data;
 
 	if (archivo.is_open()) {
-		while (archivo >> puntuacion) {
-			puntuaciones.push_back(puntuacion);
+		while (archivo >> punts) {
+			getline(archivo, data);
+			data = data.substr(1);
+			puntuacions.push_back({punts, data});
 		}
 		archivo.close();
 	}
@@ -5569,12 +5583,15 @@ vector<int> cargarMillorsPuntuacions() {
 		cerr << "No se pudo abrir el archivo para cargar las puntuaciones. Se usará una lista vacía." << endl;
 	}
 
-	return puntuaciones;
+	return puntuacions;
 }
 
-void actualizarMejoresPuntuaciones(vector<int>& puntuaciones, int nuevaPuntuacion) {
-	puntuaciones.push_back(nuevaPuntuacion); // Agregar la nueva puntuación
-	sort(puntuaciones.begin(), puntuaciones.end(), greater<int>()); // Orden descendente
+void actualizarMejoresPuntuaciones(vector<Puntuacio>& puntuaciones, int nuevaPuntuacion) {
+	string fechaActual = obtenirDataActual();
+	puntuaciones.push_back({ nuevaPuntuacion, fechaActual }); // Agregar nueva puntuación y fecha
+	sort(puntuaciones.begin(), puntuaciones.end(), [](const Puntuacio& a, const Puntuacio& b) {
+		return a.punts > b.punts; // Orden descendente por puntuación
+		});
 	if (puntuaciones.size() > 10) {
 		puntuaciones.pop_back(); // Eliminar la menor si hay más de 10
 	}
@@ -5781,7 +5798,7 @@ int main(void)
 		{
 			puntuacions = cargarMillorsPuntuacions();
 			if (!puntuacions.empty()) {
-				bestScore = puntuacions[0];
+				bestScore = puntuacions[0].punts;
 			}
 
 			logicTime += delta;
