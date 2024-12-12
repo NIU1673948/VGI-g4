@@ -24,6 +24,7 @@
 	int moneda;
 
 	int bestScore;
+	vector<int> puntuacions;
 // Retrieving main monitor
 	GLFWmonitor* primary;
 

@@ -11,6 +11,7 @@
 #include "irrKlang/irrKlang.h"
 #include <thread>
 #include <chrono>
+#include <fstream>
 
 using namespace std;
 using namespace glm;

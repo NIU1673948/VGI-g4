@@ -5540,6 +5540,45 @@ void drawShield(bool shieldEquipped) {
 	ImGui::PopStyleVar(2);
 }
 
+//JAN - Funcions punutació
+void guardarMillorsPuntuacions(const vector<int>& puntuaciones) {
+	ofstream archivo(".\\bestScore.txt");
+	if (archivo.is_open()) {
+		for (int puntuacion : puntuaciones) {
+			archivo << puntuacion << endl;
+		}
+		archivo.close();
+	}
+	else {
+		cerr << "No se pudo abrir el archivo para guardar las puntuaciones." << endl;
+	}
+}
+
+vector<int> cargarMillorsPuntuacions() {
+	ifstream archivo(".\\bestScore.txt");
+	vector<int> puntuaciones;
+	int puntuacion;
+
+	if (archivo.is_open()) {
+		while (archivo >> puntuacion) {
+			puntuaciones.push_back(puntuacion);
+		}
+		archivo.close();
+	}
+	else {
+		cerr << "No se pudo abrir el archivo para cargar las puntuaciones. Se usará una lista vacía." << endl;
+	}
+
+	return puntuaciones;
+}
+
+void actualizarMejoresPuntuaciones(vector<int>& puntuaciones, int nuevaPuntuacion) {
+	puntuaciones.push_back(nuevaPuntuacion); // Agregar la nueva puntuación
+	sort(puntuaciones.begin(), puntuaciones.end(), greater<int>()); // Orden descendente
+	if (puntuaciones.size() > 10) {
+		puntuaciones.pop_back(); // Eliminar la menor si hay más de 10
+	}
+}
 
 int main(void)
 {
@@ -5740,6 +5779,11 @@ int main(void)
 
 		if (iniciar && !pause)
 		{
+			puntuacions = cargarMillorsPuntuacions();
+			if (!puntuacions.empty()) {
+				bestScore = puntuacions[0];
+			}
+
 			logicTime += delta;
 			movi = game.player.m_x;
 
@@ -5755,11 +5799,6 @@ int main(void)
 					c = 10; //posicio on ha dapareixa la moneda
 					moneda = game.CoinFlip();
 
-					// Falta determiar la posici�
-					//He posat que la camera miri a 500,700,500 de moment (cap a dalt)
-					// moneda = animacioMoneda();
-					// La funcion de lanimacio retorna moneda com a 0 si es true sino qualsevol valor mes gran
-
 					if (!game.animationRunning)
 					{
 						animationViewed = true;
@@ -5774,10 +5813,14 @@ int main(void)
 						{
 							c = 0; //Reseteja camera
 							cout << game.score / 100 << endl;
-							if (game.score > bestScore)
-							{
-								bestScore = game.score;
-							}
+
+							actualizarMejoresPuntuaciones(puntuacions, game.score);
+							guardarMillorsPuntuacions(puntuacions);
+
+							//if (game.score > bestScore)
+							//{
+							//	bestScore = game.score;
+							//}
 							iniciar = false;
 							animationViewed = false;
 							game = GameLogic();
@@ -5788,10 +5831,14 @@ int main(void)
 				{
 					c = 0; //Reseteja camera
 					cout << game.score / 100 << endl;
-					if (game.score > bestScore)
-					{
-						bestScore = game.score;
-					}
+
+					actualizarMejoresPuntuaciones(puntuacions, game.score);
+					guardarMillorsPuntuacions(puntuacions);
+
+					//if (game.score > bestScore)
+					//{
+					//	bestScore = game.score;
+					//}
 					iniciar = false;
 					animationViewed = false;
 					final = true;
