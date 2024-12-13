@@ -5851,11 +5851,6 @@ int main(void)
 			ImGui::Text("BestScore: %d", bestScore / 100);
 			ImGui::End();
 
-			ImGui::Begin("Dificultat", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-			ImGui::SetWindowPos(ImVec2(10, 500));
-			ImGui::Text("Dificultat: %d", game.m_dificultat);
-			ImGui::End();
-
 			float percentatgeFuel = game.remainingFuel / FUEL_DURATION;
 			drawFuelBar(percentatgeFuel);
 			drawShield(game.shieldEquipped);
