@@ -31,8 +31,8 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	// Configuraci� de la font de llum LIGHT0
 	GLfloat position[] = { 0.0,0.0,-1.0,0.0 };
 	GLfloat especular[] = { 0.0,0.0,0.0,1.0 };
-	//GLfloat ambientg[] = { .5,.5,.5,1.0 };
-	GLfloat ambientg[] = { 1,1,1,1.0 };
+	GLfloat ambientg[] = { .15,.15,.15, 1.0 };
+	//GLfloat ambientg[] = { 1,1,1,1.0 };
 
 
 // Definici� de llum ambient segons booleana ll_amb

@@ -75,7 +75,7 @@ const int PROB_SHIELD_EXPERT = 10; //%
 
 const float FUEL_DURATION = 30;
 const float SHIELD_DURATION = 5;
-const float COIN_SPEED_DOWN = 0.5;
+const float COIN_SPEED_DOWN = 0.08;
 const float COIN_SCORE = 100;
 extern COBJModel* OBJECT_MODELS[3];
 

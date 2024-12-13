@@ -536,7 +536,7 @@ void GameLogic::DoPickUps(SoundManager& soundManager)
             {
             case COIN:
                 score += COIN_SCORE;
-                player.m_speed = std::max(player.m_speed - COIN_SPEED_DOWN, 0.0f);
+                player.m_speed = player.m_speed * (1 - COIN_SPEED_DOWN);
                 soundManager.playSound(".\\media\\coin.mp3");
                 break;
             case FUEL:

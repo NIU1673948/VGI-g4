@@ -102,7 +102,7 @@ void InitGL()
 
 	// Entorn VGI: Variables de control del men� Llums
 	// Entorn VGI: Inicialitzaci� variables Llums
-	llum_ambient = false;
+	llum_ambient = true;
 	for (i = 1; i < NUM_MAX_LLUMS; i++) llumGL[i].encesa = false;
 	for (i = 0; i < NUM_MAX_LLUMS; i++) {
 		llumGL[i].encesa = false;
@@ -112,8 +112,9 @@ void InitGL()
 
 	// LLum 0: Atenuaci� constant (c=1), sobre l'eix Z, no restringida.
 	llumGL[0].encesa = false;
-	llumGL[0].difusa[0] = 1.0f;			llumGL[0].difusa[1] = 1.0f;			llumGL[0].difusa[2] = 1.0f;		llumGL[0].difusa[3] = 1.0f;
-	llumGL[0].especular[0] = 1.0f;		llumGL[0].especular[1] = 1.0f;		llumGL[0].especular[2] = 1.0f;	llumGL[0].especular[3] = 1.0f;
+	float intensity = 0.5f;
+	llumGL[0].difusa[0] = intensity;			llumGL[0].difusa[1] = intensity;			llumGL[0].difusa[2] = intensity;		llumGL[0].difusa[3] = intensity;
+	llumGL[0].especular[0] = intensity;		llumGL[0].especular[1] = intensity;		llumGL[0].especular[2] = intensity;	llumGL[0].especular[3] = intensity;
 
 	//llumGL[0].posicio.R = 1000.0;		llumGL[0].posicio.alfa = 90.0;		llumGL[0].posicio.beta = 90.0;		// Posici� llum (x,y,z)=(0,200,0)
 	llumGL[0].atenuacio.a = 0.0;		llumGL[0].atenuacio.b = 0.0;		llumGL[0].atenuacio.c = 0.0;		// Llum sense atenuaci� per dist�ncia (a,b,c)=(0,0,1)
@@ -5781,12 +5782,12 @@ int main(void)
 
 			if (logicTime >= FRAME_TIME) {
 				logicTime -= FRAME_TIME;
-				if (game.gameRunning)
+				if (game.gameRunning || debug)
 				{
 					game.GetUserInput();
 					game.UpdateGameLogic(soundManager);
 				}
-				else if (!game.gameRunning && !debug && !animationViewed)
+				else if (!game.gameRunning && !animationViewed)
 				{
 					c = 10; //posicio on ha dapareixa la moneda
 					moneda = game.CoinFlip();
@@ -5820,7 +5821,7 @@ int main(void)
 						}
 					}
 				}
-				else if (!game.gameRunning && !debug)
+				else if (!game.gameRunning)
 				{
 					c = 0; //Reseteja camera
 					cout << game.score / 100 << endl;
