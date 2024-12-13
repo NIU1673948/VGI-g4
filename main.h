@@ -27,8 +27,8 @@
 
 	struct Puntuacio
 	{
-			int punts;
-			string data;
+		int punts;
+		string data;
 	};
 
 	vector<Puntuacio> puntuacions;
@@ -287,6 +287,7 @@
 	bool pause = false;
 	bool final = false;
 	bool primeraCarrega = true;
+	bool dificultats = false;
 
 
 	// MAURI: Funcions del joc
@@ -300,3 +301,4 @@
 	float delta;
 	float logicTime = 0.0f;
 	int act = 0;
+	int dificultat=0;

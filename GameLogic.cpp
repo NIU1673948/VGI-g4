@@ -181,36 +181,104 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
         }
     }
 
-    m_object.m_visible = rand() % 100 < PROB_OBJECT;
-
-    if (m_object.m_visible)
+    switch (m_dificultat)
     {
-        int value = rand() % 100;
+        case(PRINCIPIANT):
+            m_object.m_visible = rand() % 100 < PROB_OBJECT_PRINCIPIANT;
 
-        if (value < PROB_FUEL) {
-            m_object.m_type = FUEL;
-            m_object.m_model = OBJECT_MODELS[FUEL];
-        }
-        else if (value < PROB_FUEL + PROB_SHIELD) {
-            m_object.m_type = SHIELD;
-            m_object.m_model = OBJECT_MODELS[SHIELD];
+            if (m_object.m_visible)
+            {
+                int value = rand() % 100;
 
-        }
-        else {
-            m_object.m_type = COIN;
-            m_object.m_model = OBJECT_MODELS[COIN];
-        }
+                if (value < PROB_FUEL_PRINCIPIANT) {
+                    m_object.m_type = FUEL;
+                    m_object.m_model = OBJECT_MODELS[FUEL];
+                }
+                else if (value < PROB_FUEL_PRINCIPIANT + PROB_SHIELD_PRINCIPIANT) {
+                    m_object.m_type = SHIELD;
+                    m_object.m_model = OBJECT_MODELS[SHIELD];
+                }
+                else {
+                    m_object.m_type = COIN;
+                    m_object.m_model = OBJECT_MODELS[COIN];
+                }
 
-        while (true)
-        {
-            int i = rand() % NUM_LANES;
+                while (true)
+                {
+                    int i = rand() % NUM_LANES;
 
-            if (!m_obstacles[i].m_visible) {
-                m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
-                m_object.m_y = y;
-                break;
+                    if (!m_obstacles[i].m_visible) {
+                        m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
+                        m_object.m_y = y;
+                        break;
+                    }
+                }
             }
-        }
+            break;
+        case(INTERMIG):
+            m_object.m_visible = rand() % 100 < PROB_OBJECT_INTERMIG;
+
+            if (m_object.m_visible)
+            {
+                int value = rand() % 100;
+
+                if (value < PROB_FUEL_INTERMIG) {
+                    m_object.m_type = FUEL;
+                    m_object.m_model = OBJECT_MODELS[FUEL];
+                }
+                else if (value < PROB_FUEL_INTERMIG + PROB_SHIELD_INTERMIG) {
+                    m_object.m_type = SHIELD;
+                    m_object.m_model = OBJECT_MODELS[SHIELD];
+                }
+                else {
+                    m_object.m_type = COIN;
+                    m_object.m_model = OBJECT_MODELS[COIN];
+                }
+
+                while (true)
+                {
+                    int i = rand() % NUM_LANES;
+
+                    if (!m_obstacles[i].m_visible) {
+                        m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
+                        m_object.m_y = y;
+                        break;
+                    }
+                }
+            }
+            break;
+        case(EXPERT):
+            m_object.m_visible = rand() % 100 < PROB_OBJECT_EXPERT;
+
+            if (m_object.m_visible)
+            {
+                int value = rand() % 100;
+
+                if (value < PROB_FUEL_EXPERT) {
+                    m_object.m_type = FUEL;
+                    m_object.m_model = OBJECT_MODELS[FUEL];
+                }
+                else if (value < PROB_FUEL_EXPERT + PROB_SHIELD_EXPERT) {
+                    m_object.m_type = SHIELD;
+                    m_object.m_model = OBJECT_MODELS[SHIELD];
+                }
+                else {
+                    m_object.m_type = COIN;
+                    m_object.m_model = OBJECT_MODELS[COIN];
+                }
+
+                while (true)
+                {
+                    int i = rand() % NUM_LANES;
+
+                    if (!m_obstacles[i].m_visible) {
+                        m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
+                        m_object.m_y = y;
+                        break;
+                    }
+                }
+            }
+            break;
     }
 }
 
@@ -304,7 +372,7 @@ void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, 
 }
 
 
-GameLogic::GameLogic() : gameRunning(true), score(0), t(0), animationRunning(false)
+GameLogic::GameLogic(int dif) : gameRunning(true), score(0), t(0), animationRunning(false), m_dificultat(dif)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 
@@ -320,6 +388,7 @@ GameLogic::GameLogic() : gameRunning(true), score(0), t(0), animationRunning(fal
     float y = -(CAR_HEIGHT / 2 + VERTICAL_NOISE);
 
     for (int i = 0; i < NUM_ROWS; ++i) {
+        roadRows[i].m_dificultat=dif;
         roadRows[i].initRow(y, nextEmptyLane);
         y -= CAR_HEIGHT + ROW_SPACING;
     }
@@ -344,7 +413,19 @@ void GameLogic::UpdateGameLogic(SoundManager& soundManager) {
     if (remainingFuel <= 0)
         gameRunning = false;
 
-    player.m_speed += 0.002;
+    switch (m_dificultat)
+    {
+        case(PRINCIPIANT):
+            player.m_speed += 0.002;
+            break;
+        case(INTERMIG):
+            player.m_speed += 0.003;
+            break;
+        case(EXPERT):
+            player.m_speed += 0.005;
+            break;
+    }
+
     player.m_move_step += 0.00000002;
 
     score += player.m_speed;
@@ -376,8 +457,6 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
     glUniform1f(glGetUniformLocation(sh_programID, "transparency"), remainingShield <= 0 ? 1 : 0.5f);
 
     player.draw(sh_programID, MatriuVista, MatriuTG);
-
-
 }
 
 
@@ -404,7 +483,6 @@ void GameLogic::GetUserInput()
             player.rotate(player.m_rotation > 0 ? -ROTATION_SPEED : 0);
         }
     }
-
     else
     {
         if (player.m_rotation > 0)
@@ -413,6 +491,7 @@ void GameLogic::GetUserInput()
             player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
 
     }
+
     if (GetKeyState(VK_SPACE) & 0x8000 && shieldEquipped) {
         shieldEquipped = false;
         remainingShield = SHIELD_DURATION;

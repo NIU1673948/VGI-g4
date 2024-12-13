@@ -902,12 +902,10 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 		}
 	}
 	else {
-		if (!config && !garage) {
+		if (!config && !garage && !dificultats) {
 			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
 			if (ImGui::Button("INICIAR", buttonSize)) {
-				inici = true;
-				c = 0;
-				draw_inici();
+				dificultats = true;
 			}
 
 			ImGui::SameLine();
@@ -927,83 +925,57 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 			}
 		}
 		else {
-			if (garage)
+			if (dificultats)
 			{
 				float centerY = (totalHeight - buttonSize.y) / 2.0f;
 
 				ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
-				if (ImGui::Button("<--", buttonSize))
+				if (ImGui::Button("PRINCIPIANT", buttonSize))
 				{
-					currentModel = (currentModel == 0) ? carColorMap.size() - 1 : currentModel - 1;
-					act = carColorMap[currentModel][0];
-					currentColor = 0;
+					dificultat = PRINCIPIANT;
+					iniciar = true;
+					c = 0;
+					draw_inici();
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("COLOR", buttonSize))
+				if (ImGui::Button("INTERMIG", buttonSize))
 				{
-					currentColor = (currentColor == carColorMap[currentModel].size() - 1) ? 0 : currentColor + 1;
-					act = carColorMap[currentModel][currentColor];
+					dificultat = INTERMIG;
+					iniciar = true;
+					c = 0;
+					draw_inici();
 				}
 
 				ImGui::SameLine(0.0f, buttonSpacing);
-				if (ImGui::Button("-->", buttonSize))
+				if (ImGui::Button("EXPERT", buttonSize))
 				{
-					currentModel = (currentModel == carColorMap.size() - 1) ? 0 : currentModel + 1;
-					act = carColorMap[currentModel][0];
-					currentColor = 0;
+					dificultat = EXPERT;
+					iniciar = true;
+					c = 0;
+					draw_inici();
+				}
+			}
+			else {
+				ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+				if (ImGui::Button("FULLSCREEN", buttonSize)) {
+					OnFull_Screen(primary, window);
 				}
 
-				ImVec2 buttonSize = ImVec2(screenSize.x * 0.12f, screenSize.y * 0.2f);
-				float lowerWindowWidth = 700.0f;
-				float lowerWindowHeight = 200.0f;
-				float lowerPosX = (screenSize.x - lowerWindowWidth) / 2.0f;
-				float lowerPosY = screenSize.y * 0.8f;
-
-				ImGui::SetNextWindowPos(ImVec2(lowerPosX, lowerPosY), ImGuiCond_Always);
-				ImGui::SetNextWindowSize(ImVec2(lowerWindowWidth, lowerWindowHeight), ImGuiCond_Always);
-
-				ImGui::Begin("Ventana COLOR", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
-
-				ImVec2 lowerButtonSize = ImVec2(lowerWindowWidth * 0.6, lowerWindowHeight * 0.6f);
-
-				ImGui::SetCursorPos(ImVec2((lowerWindowWidth - lowerButtonSize.x) / 2.0f, (lowerWindowHeight - lowerButtonSize.y) / 2.0f));
-
-				ImGuiIO& io = ImGui::GetIO();
-				ImFont* bigFont = io.Fonts->Fonts.back();
-				ImGui::PushFont(bigFont);
-
-				if (ImGui::Button("SELECCIONAR", lowerButtonSize)) {
-					cubemapTexture = NULL;
-					skC_VAOID.vaoId = 0;
-					skC_programID = NULL;
-					garage = false;
+				ImGui::SameLine();
+				if (ImGui::Button("DIFICULTAD", buttonSize)) {
+					// Acci? boto dificultat
 				}
 
-				ImGui::PopStyleVar();
-				ImGui::PopStyleColor(3);
+				ImGui::SameLine();
+				if (ImGui::Button("AUDIO", buttonSize)) {
+					// Acci? boto audio
+				}
 
-				ImGui::End();
-			}
-
-			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
-			if (ImGui::Button("FULLSCREEN", buttonSize)) {
-				OnFull_Screen(primary, window);
-			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("DIFICULTAD", buttonSize)) {
-				// Acci? boto dificultat
-			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("AUDIO", buttonSize)) {
-				// Acci? boto audio
-			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("BACK", buttonSize)) {
-				config = false;
+				ImGui::SameLine();
+				if (ImGui::Button("BACK", buttonSize)) {
+					config = false;
+				}
 			}
 		}
 	}
@@ -1253,7 +1225,7 @@ void menuPause(GameLogic& game, ImFont* scoreFont)
 	if (ImGui::Button("PANTALLA INICI", buttonSize)) {
 		iniciar = false;
 		pause = false;
-		game = GameLogic();
+		game = GameLogic(dificultat);
 	}
 
 	// Restaurar estilos
@@ -1432,14 +1404,15 @@ void pantallaFinal(GameLogic& game)
 	if (ImGui::Button("REINICIAR", buttonSize))
 	{
 		iniciar = true;
-		game = GameLogic();
+		game = GameLogic(dificultat);
 		final = false;
 	}
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing); // A�adir espaciado entre botones
 	if (ImGui::Button("TORNAR INICI", buttonSize))
 	{
 		iniciar = false;
-		game = GameLogic();
+		dificultats = false;
+		game = GameLogic(dificultat);
 		final = false;
 		primeraCarrega = true;
 	}
@@ -5753,7 +5726,7 @@ int main(void)
 
 	configModels();
 
-	GameLogic game;
+	GameLogic game(dificultat);
 	Player& player = game.player;
 	RoadRow* roadRows = game.roadRows;
 	bool animationViewed = false;
@@ -5783,6 +5756,8 @@ int main(void)
 
 		draw_menuInicial(largeFont, debugFont, scoreFont, game);
 
+		if (dificultat != game.m_dificultat) game = GameLogic(dificultat);
+		
 		if (iniciar == false) {
 			//draw_ProgramButtons(iniciar, configuracio, sortir);
 			logicTime = 0.0f;
@@ -5823,7 +5798,7 @@ int main(void)
 						{
 							c = 0; //Resetejar camera
 							int score = game.score; //Guardar puntuaci�
-							game = GameLogic(); //Tornar a iniciar pero no es modifica l'score
+							game = GameLogic(dificultat); //Tornar a iniciar pero no es modifica l'score
 							game.score = score;
 						}
 						else
@@ -5839,8 +5814,9 @@ int main(void)
 							//	bestScore = game.score;
 							//}
 							iniciar = false;
+							dificultats = false;
 							animationViewed = false;
-							game = GameLogic();
+							game = GameLogic(dificultat);
 						}
 					}
 				}
@@ -5860,7 +5836,7 @@ int main(void)
 					animationViewed = false;
 					final = true;
 					primeraCarrega = true;
-					game = GameLogic();
+					game = GameLogic(dificultat);
 				}
 			}
 
@@ -5873,6 +5849,11 @@ int main(void)
 			ImGui::Begin("BestScore", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 			ImGui::SetWindowPos(ImVec2(10, 10));
 			ImGui::Text("BestScore: %d", bestScore / 100);
+			ImGui::End();
+
+			ImGui::Begin("Dificultat", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+			ImGui::SetWindowPos(ImVec2(10, 500));
+			ImGui::Text("Dificultat: %d", game.m_dificultat);
 			ImGui::End();
 
 			float percentatgeFuel = game.remainingFuel / FUEL_DURATION;

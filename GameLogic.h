@@ -49,7 +49,6 @@ const float CAR_HEIGHT = 100;
 const int MIN_CARS = 1;
 const float OBSTACLE_SPEED = PLAYER_SPEED / 4;
 extern vector<COBJModel*> CAR_MODELS;
-//const int NUM_CAR_MODELS = 8;
 
 // Constants de files de cotxes
 const float ROW_SPACING = 300;
@@ -60,10 +59,20 @@ const int VERTICAL_NOISE = ROW_SPACING / 2 - CAR_HEIGHT; // Hi ha lloc per a dos
 const float COLLISION_START = WINDOW_HEIGHT / 5;
 const float COLLISION_TOLERANCE = 5;
 
-// Constants d'objectes
-const int PROB_OBJECT = 40; //%
-const int PROB_FUEL = 40; //%
-const int PROB_SHIELD = 20; //%
+// Constants d'objectes 
+    // Dificultat principiant
+const int PROB_OBJECT_PRINCIPIANT = 50; //%
+const int PROB_FUEL_PRINCIPIANT = 40; //%
+const int PROB_SHIELD_PRINCIPIANT = 20; //%
+    // Dificultat intermig
+const int PROB_OBJECT_INTERMIG = 35; //%
+const int PROB_FUEL_INTERMIG = 40; //%
+const int PROB_SHIELD_INTERMIG = 15; //%
+    // Dificultat expert
+const int PROB_OBJECT_EXPERT = 20; //%
+const int PROB_FUEL_EXPERT = 40; //%
+const int PROB_SHIELD_EXPERT = 10; //%
+
 const float FUEL_DURATION = 30;
 const float SHIELD_DURATION = 5;
 const float COIN_SPEED_DOWN = 0.5;
@@ -79,7 +88,7 @@ const float FRAME_TIME = 1.0f / TARGET_FPS;
 void doMusic(const std::string& musicFilePath);
 
 
-
+// Llistat de cotxes del joc
 enum CARS {
     CAR1,
     CAR1BLUE,
@@ -111,10 +120,16 @@ enum CARS {
     TOTALCARS
 };
 
+enum DIFICULTATS {
+    PRINCIPIANT,
+    INTERMIG,
+    EXPERT
+};
 
 extern vector<string> OBJpaths;
 extern vector<vector<int>> carColorMap;
 extern vector<string> environmentPaths;
+
 class SoundManager {
 public:
     ~SoundManager() {
@@ -270,6 +285,7 @@ public:
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
     void initRow(float y, int& nextEmptyLane);
 
+    int m_dificultat;
     Car m_obstacles[NUM_LANES];
     Object m_object;
 };
@@ -314,12 +330,13 @@ private:
 
 
 public:
-    GameLogic();
+    GameLogic(int dif);
     void GetUserInput();
     void UpdateGameLogic(SoundManager& soundManager);
     bool CoinFlip();
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 
+    int m_dificultat;
     float remainingFuel;
     float remainingShield;
     int score;
