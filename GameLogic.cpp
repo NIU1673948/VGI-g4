@@ -454,7 +454,9 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
 
     if (animationRunning) finalCoinAnimation(sh_programID, MatriuVista, MatriuTG, t);
 
-    glUniform1f(glGetUniformLocation(sh_programID, "transparency"), remainingShield <= 0 ? 1 : 0.5f);
+    if (remainingShield >= 1.5 || (remainingShield > 0 && fmod(remainingShield, 0.5f) < 0.25f) ){
+        glUniform1f(glGetUniformLocation(sh_programID, "transparency"), 0.5f);
+    }
 
     player.draw(sh_programID, MatriuVista, MatriuTG);
 }

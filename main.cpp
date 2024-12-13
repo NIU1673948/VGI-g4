@@ -102,7 +102,7 @@ void InitGL()
 
 	// Entorn VGI: Variables de control del men� Llums
 	// Entorn VGI: Inicialitzaci� variables Llums
-	llum_ambient = true;
+	llum_ambient = false;
 	for (i = 1; i < NUM_MAX_LLUMS; i++) llumGL[i].encesa = false;
 	for (i = 0; i < NUM_MAX_LLUMS; i++) {
 		llumGL[i].encesa = false;
