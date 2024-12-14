@@ -28,11 +28,11 @@ const float ROAD_START = 0;
 const float ROAD_END = ROAD_START + ROAD_WIDTH;
 
 // Constants de l'entorn
-const float HOUSE_WIDTH = 325;
-const float HOUSE_HEIGHT = 1000;
-const int NUM_REPEATS = 10;
-const float Z_SPACE = ROAD_LENGTH / NUM_REPEATS;
-const float INIT_POSITION = 200;
+const float HOUSE_WIDTH = 480;
+const int NUM_REPEATS = 6;
+const float Y_SPACE = ROAD_LENGTH / NUM_REPEATS;
+const float INIT_POSITION = 400;
+const float TREE_WIDTH = 300;
 extern vector<COBJModel*> ENVIRONMENT_MODELS;
 
 // Constants del jugador
@@ -292,30 +292,33 @@ public:
 
 class EnvironmentRow {
 public:
-    EnvironmentRow() : m_leftHouse(nullptr), m_rightHouse(nullptr), m_z(0) {};
-    void initRow(float z);
-    void move(float dz);
+    EnvironmentRow() : m_tree(nullptr), m_house(nullptr), m_y(0), m_rightHouse(false), m_treeVisible(false) {};
+    void initRow(float y, bool rightHouse, COBJModel* tree);
+    void move(float dy);
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
-    float getZ() const;
+    float getY() const;
 
 private:
-    COBJModel* m_leftHouse;
-    COBJModel* m_rightHouse;
-    float m_z;
+    bool m_rightHouse;
+    bool m_treeVisible;
+    COBJModel* m_house;
+    COBJModel* m_tree;
+    float m_y;
 };
 
 
 class Environment {
 public:
     Environment();
-
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
-    void update(float dz);
-    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
+    void update(float dy);
     float m_roadY;
+    bool nextRightHouse;
 private:
+    void dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, const glm::mat4 MatriuTG) const;
     EnvironmentRow m_environmentRows[NUM_REPEATS];
     COBJModel* m_road;
+    COBJModel* m_tree;
 };
 
 class GameLogic {
@@ -327,7 +330,6 @@ private:
     int nextEmptyLane;
     COBJModel* modelCoin;
     float t;
-
 
 public:
     GameLogic(int dif);

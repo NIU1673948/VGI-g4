@@ -5759,16 +5759,9 @@ int main(void)
 
 		if (dificultat != game.m_dificultat) game = GameLogic(dificultat);
 		
-		if (iniciar == false) {
-			//draw_ProgramButtons(iniciar, configuracio, sortir);
+		if (!iniciar) {
 			logicTime = 0.0f;
 		}
-
-		// Crida a OnPaint() per redibuixar l'escena
-				//assert(ObOBJ);
-
-
-		// Executa la l�gica del joc amb el pas de temps fix
 
 		if (iniciar && !pause)
 		{
@@ -5810,10 +5803,6 @@ int main(void)
 							actualizarMejoresPuntuaciones(puntuacions, game.score);
 							guardarMillorsPuntuacions(puntuacions);
 
-							//if (game.score > bestScore)
-							//{
-							//	bestScore = game.score;
-							//}
 							iniciar = false;
 							dificultats = false;
 							animationViewed = false;

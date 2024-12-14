@@ -13,8 +13,8 @@ vector<string> environmentPaths = {
     ".\\OBJFiles\\low_poly_houses_pack\\house_06.obj",
     ".\\OBJFiles\\low_poly_houses_pack\\house_07.obj",
     //".\\OBJFiles\\low_poly_houses_pack\\house_08.obj",
-    ".\\OBJFiles\\low_poly_houses_pack\\house_09.obj",
-    ".\\OBJFiles\\low_poly_houses_pack\\house_10.obj"
+    //".\\OBJFiles\\low_poly_houses_pack\\house_09.obj",
+    //".\\OBJFiles\\low_poly_houses_pack\\house_10.obj"
 
 };
 
@@ -286,40 +286,59 @@ float RoadRow::getY() const {
     return m_obstacles[0].m_y;
 }
 
-void EnvironmentRow::initRow(float z) {
-    m_z = z;
-    m_leftHouse = ENVIRONMENT_MODELS[rand() % ENVIRONMENT_MODELS.size()];
-    m_rightHouse = ENVIRONMENT_MODELS[rand() % ENVIRONMENT_MODELS.size()];
+void EnvironmentRow::initRow(float y, bool rightHouse, COBJModel* tree) {
+    m_y = y;
+    m_house = ENVIRONMENT_MODELS[rand() % ENVIRONMENT_MODELS.size()];
+    m_rightHouse = rightHouse;
+    m_treeVisible = rand() % 2;
+    m_tree = tree;
 }
 
-void EnvironmentRow::move(float dz) {
-    m_z += dz;
+void EnvironmentRow::move(float dy) {
+    m_y += dy;
 }
 
-float EnvironmentRow::getZ() const {
-    return m_z;
+float EnvironmentRow::getY() const {
+    return m_y;
 }
 
 void EnvironmentRow::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
 {
     glm::mat4 ModelMatrix(1.0), TransMatrix(1.0);
+    float scaleFactor = HOUSE_WIDTH / m_house->m_width;
 
-    float scaleFactor = HOUSE_WIDTH / m_leftHouse->m_width;
-    TransMatrix = glm::translate(MatriuTG, glm::vec3(-9.0f * scaleFactor, 0.0f, m_z));
+    if (m_rightHouse)
+    {
+        TransMatrix = glm::translate(MatriuTG, glm::vec3(15.0f * scaleFactor, 0.0f, m_y));
+        TransMatrix = glm::rotate(TransMatrix, float(PI), glm::vec3(0, 2, 0));
+    }
+    else
+    {
+        TransMatrix = glm::translate(MatriuTG, glm::vec3(-9.0f * scaleFactor, 0.0f, m_y));
+    }
+
     TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
     ModelMatrix = TransMatrix;
-
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
-    m_leftHouse->draw_TriVAO_OBJ(sh_programID);
+    m_house->draw_TriVAO_OBJ(sh_programID);
 
-    scaleFactor = HOUSE_WIDTH / m_rightHouse->m_width;
-    TransMatrix = glm::translate(MatriuTG, glm::vec3(17.5f * scaleFactor, 0.0f, m_z));
+    if (m_rightHouse)
+    {
+        TransMatrix = glm::translate(MatriuTG, glm::vec3(15.0f * scaleFactor, 0.0f, m_y+(m_house->m_depth/2 * scaleFactor)+400));
+        TransMatrix = glm::rotate(TransMatrix, float(PI), glm::vec3(0, 2, 0));
+    }
+    else
+    {
+        TransMatrix = glm::translate(MatriuTG, glm::vec3(-9.0f * scaleFactor, 0.0f, m_y + (m_house->m_depth / 2 * scaleFactor) + 400));
+    }
+
+    scaleFactor = TREE_WIDTH / m_tree->m_width;
     TransMatrix = glm::scale(TransMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
-    TransMatrix = glm::rotate(TransMatrix, float(PI), glm::vec3(0, 2, 0));
     ModelMatrix = TransMatrix;
-
     glUniformMatrix4fv(glGetUniformLocation(sh_programID, "modelMatrix"), 1, GL_FALSE, &ModelMatrix[0][0]);
-    m_rightHouse->draw_TriVAO_OBJ(sh_programID);
+    m_tree->draw_TriVAO_OBJ(sh_programID);
+
+
 }
 
 
@@ -329,27 +348,30 @@ Environment::Environment() : m_roadY(0), m_road(nullptr)
     const char* rutaArxiu = ".\\OBJFiles\\Road\\Road.obj";
     m_road->LoadModel(const_cast<char*>(rutaArxiu));
 
-    float z = -INIT_POSITION;
+    m_tree = new COBJModel();
+    rutaArxiu = ".\\OBJFiles\\Tree\\WC_Tree_01.obj";
+    m_tree->LoadModel(const_cast<char*>(rutaArxiu));
+
+    nextRightHouse = true;
+
+    float y = INIT_POSITION;
     for (int i = 0; i < NUM_REPEATS; ++i) {
-        m_environmentRows[i].initRow(z);
-        z -= Z_SPACE;
+        m_environmentRows[i].initRow(y, nextRightHouse, m_tree);
+        nextRightHouse = !nextRightHouse;
+        y -= Y_SPACE;
     }
+
 }
 
-void Environment::update(float dz) {
+void Environment::update(float dy) {
     for (int i = 0; i < NUM_REPEATS; ++i) {
-        m_environmentRows[i].move(dz);
+        m_environmentRows[i].move(dy);
 
-        if (m_environmentRows[i].getZ() > INIT_POSITION * 6) {
-            float newZ = m_environmentRows[(i + NUM_REPEATS - 1) % NUM_REPEATS].getZ() - Z_SPACE;
-            m_environmentRows[i].initRow(newZ);
+        if (m_environmentRows[i].getY() > INIT_POSITION * 6) {
+            float newY = m_environmentRows[(i + NUM_REPEATS - 1) % NUM_REPEATS].getY() - Y_SPACE;
+            m_environmentRows[i].initRow(newY, nextRightHouse, m_tree);
+            nextRightHouse = !nextRightHouse;
         }
-    }
-}
-
-void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
-    for (const auto& row : m_environmentRows) {
-        row.draw(sh_programID, MatriuVista, MatriuTG);
     }
 }
 
@@ -371,6 +393,12 @@ void Environment::dibuixaRoad(GLuint sh_programID, const glm::mat4 MatriuVista, 
     m_road->draw_TriVAO_OBJ(sh_programID);
 }
 
+void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const {
+    for (const auto& row : m_environmentRows) {
+        row.draw(sh_programID, MatriuVista, MatriuTG);
+    }
+    dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
+}
 
 GameLogic::GameLogic(int dif) : gameRunning(true), score(0), t(0), animationRunning(false), m_dificultat(dif)
 {
@@ -449,7 +477,6 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
         roadRows[i].draw(sh_programID, MatriuVista, MatriuTG);
     }
 
-    environment.dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
     environment.draw(sh_programID, MatriuVista, MatriuTG);
 
     if (animationRunning) finalCoinAnimation(sh_programID, MatriuVista, MatriuTG, t);
