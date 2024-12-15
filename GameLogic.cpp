@@ -489,9 +489,10 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
 }
 
 
-void GameLogic::GetUserInput()
+void GameLogic::GetUserInput(GLFWwindow* window)
 {
-    if (GetKeyState('A') & 0x8000 && player.m_rotation <= 0) {
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && player.m_rotation <= 0) 
+    {
         player.move(-player.m_move_step, 0);
 
         player.rotate(player.m_rotation > -ROTATION_ANGLE ? -ROTATION_SPEED : 0);
@@ -502,7 +503,8 @@ void GameLogic::GetUserInput()
             player.rotate(player.m_rotation < 0 ? ROTATION_SPEED : 0);
         }
     }
-    else if (GetKeyState('D') & 0x8000 && player.m_rotation >= 0) {
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && player.m_rotation >= 0) 
+    {
         player.move(player.m_move_step, 0);
 
         player.rotate(player.m_rotation < ROTATION_ANGLE ? ROTATION_SPEED : 0);
@@ -512,19 +514,21 @@ void GameLogic::GetUserInput()
             player.rotate(player.m_rotation > 0 ? -ROTATION_SPEED : 0);
         }
     }
-    else
+    else 
     {
         if (player.m_rotation > 0)
             player.rotate(player.m_rotation > ROTATION_SPEED ? -ROTATION_SPEED : -player.m_rotation);
         else if (player.m_rotation < 0)
             player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
-
     }
 
-    if (GetKeyState(VK_SPACE) & 0x8000 && shieldEquipped) {
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && shieldEquipped) 
+    {
         shieldEquipped = false;
         remainingShield = SHIELD_DURATION;
     }
+
+
 }
 
 void GameLogic::UpdateRoadRows()

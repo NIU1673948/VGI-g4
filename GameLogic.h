@@ -62,7 +62,7 @@ const float COLLISION_TOLERANCE = 5;
 // Constants d'objectes 
     // Dificultat principiant
 const int PROB_OBJECT_PRINCIPIANT = 50; //%
-const int PROB_FUEL_PRINCIPIANT = 40; //%
+const int PROB_FUEL_PRINCIPIANT = 50; //%
 const int PROB_SHIELD_PRINCIPIANT = 20; //%
     // Dificultat intermig
 const int PROB_OBJECT_INTERMIG = 35; //%
@@ -333,7 +333,7 @@ private:
 
 public:
     GameLogic(int dif);
-    void GetUserInput();
+    void GetUserInput(GLFWwindow* window);
     void UpdateGameLogic(SoundManager& soundManager);
     bool CoinFlip();
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;

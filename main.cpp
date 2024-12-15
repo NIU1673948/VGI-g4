@@ -1388,7 +1388,7 @@ void pantallaFinal(GameLogic& game)
 	// Calcular la posici�n para centrar los botones
 	float posX = (screenSize.x - totalWidth - margin * 2) / 2.0f; // Centrado horizontalmente con margen
 	float posY = (screenSize.y - totalHeight - margin * 2) / 2.0f; // Centrado verticalmente con margen
-
+	
 	// Configurar la ventana de ImGui
 	ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(totalWidth + margin * 2, totalHeight + margin * 2), ImGuiCond_Always);
@@ -1404,6 +1404,7 @@ void pantallaFinal(GameLogic& game)
 	// Dibujar botones
 	if (ImGui::Button("REINICIAR", buttonSize))
 	{
+		netejarFons();
 		iniciar = true;
 		game = GameLogic(dificultat);
 		final = false;
@@ -1411,6 +1412,7 @@ void pantallaFinal(GameLogic& game)
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing); // A�adir espaciado entre botones
 	if (ImGui::Button("TORNAR INICI", buttonSize))
 	{
+		netejarFons();
 		iniciar = false;
 		dificultats = false;
 		game = GameLogic(dificultat);
@@ -5582,9 +5584,6 @@ int main(void)
 	SoundManager soundManager;
 	soundManager.playBackgroundMusic(".\\media\\background.mp3");
 
-
-
-
 	// glfw: initialize and configure
 	// ------------------------------
 	if (!glfwInit())
@@ -5754,7 +5753,6 @@ int main(void)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-
 		draw_menuInicial(largeFont, debugFont, scoreFont, game);
 
 		if (dificultat != game.m_dificultat) game = GameLogic(dificultat);
@@ -5777,7 +5775,7 @@ int main(void)
 				logicTime -= FRAME_TIME;
 				if (game.gameRunning || debug)
 				{
-					game.GetUserInput();
+					game.GetUserInput(window);
 					game.UpdateGameLogic(soundManager);
 				}
 				else if (!game.gameRunning && !animationViewed)
@@ -5803,10 +5801,11 @@ int main(void)
 							actualizarMejoresPuntuaciones(puntuacions, game.score);
 							guardarMillorsPuntuacions(puntuacions);
 
+							final=true;
 							iniciar = false;
 							dificultats = false;
 							animationViewed = false;
-							game = GameLogic(dificultat);
+							primeraCarrega = true;
 						}
 					}
 				}
@@ -5818,15 +5817,11 @@ int main(void)
 					actualizarMejoresPuntuaciones(puntuacions, game.score);
 					guardarMillorsPuntuacions(puntuacions);
 
-					//if (game.score > bestScore)
-					//{
-					//	bestScore = game.score;
-					//}
+					
+					final = true;
 					iniciar = false;
 					animationViewed = false;
-					final = true;
 					primeraCarrega = true;
-					game = GameLogic(dificultat);
 				}
 			}
 
