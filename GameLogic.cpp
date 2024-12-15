@@ -566,7 +566,7 @@ void GameLogic::GetUserInput(GLFWwindow* window)
                     player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
             }
 
-            if (buttons[1] == GLFW_PRESS && shieldEquipped)
+            if (buttons[0] == GLFW_PRESS && shieldEquipped)
             {
                 shieldEquipped = false;
                 remainingShield = SHIELD_DURATION;
