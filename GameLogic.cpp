@@ -183,102 +183,102 @@ void RoadRow::initRow(float y, int& nextEmptyLane)
 
     switch (m_dificultat)
     {
-        case(PRINCIPIANT):
-            m_object.m_visible = rand() % 100 < PROB_OBJECT_PRINCIPIANT;
+    case(PRINCIPIANT):
+        m_object.m_visible = rand() % 100 < PROB_OBJECT_PRINCIPIANT;
 
-            if (m_object.m_visible)
+        if (m_object.m_visible)
+        {
+            int value = rand() % 100;
+
+            if (value < PROB_FUEL_PRINCIPIANT) {
+                m_object.m_type = FUEL;
+                m_object.m_model = OBJECT_MODELS[FUEL];
+            }
+            else if (value < PROB_FUEL_PRINCIPIANT + PROB_SHIELD_PRINCIPIANT) {
+                m_object.m_type = SHIELD;
+                m_object.m_model = OBJECT_MODELS[SHIELD];
+            }
+            else {
+                m_object.m_type = COIN;
+                m_object.m_model = OBJECT_MODELS[COIN];
+            }
+
+            while (true)
             {
-                int value = rand() % 100;
+                int i = rand() % NUM_LANES;
 
-                if (value < PROB_FUEL_PRINCIPIANT) {
-                    m_object.m_type = FUEL;
-                    m_object.m_model = OBJECT_MODELS[FUEL];
-                }
-                else if (value < PROB_FUEL_PRINCIPIANT + PROB_SHIELD_PRINCIPIANT) {
-                    m_object.m_type = SHIELD;
-                    m_object.m_model = OBJECT_MODELS[SHIELD];
-                }
-                else {
-                    m_object.m_type = COIN;
-                    m_object.m_model = OBJECT_MODELS[COIN];
-                }
-
-                while (true)
-                {
-                    int i = rand() % NUM_LANES;
-
-                    if (!m_obstacles[i].m_visible) {
-                        m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
-                        m_object.m_y = y;
-                        break;
-                    }
+                if (!m_obstacles[i].m_visible) {
+                    m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
+                    m_object.m_y = y;
+                    break;
                 }
             }
-            break;
-        case(INTERMIG):
-            m_object.m_visible = rand() % 100 < PROB_OBJECT_INTERMIG;
+        }
+        break;
+    case(INTERMIG):
+        m_object.m_visible = rand() % 100 < PROB_OBJECT_INTERMIG;
 
-            if (m_object.m_visible)
+        if (m_object.m_visible)
+        {
+            int value = rand() % 100;
+
+            if (value < PROB_FUEL_INTERMIG) {
+                m_object.m_type = FUEL;
+                m_object.m_model = OBJECT_MODELS[FUEL];
+            }
+            else if (value < PROB_FUEL_INTERMIG + PROB_SHIELD_INTERMIG) {
+                m_object.m_type = SHIELD;
+                m_object.m_model = OBJECT_MODELS[SHIELD];
+            }
+            else {
+                m_object.m_type = COIN;
+                m_object.m_model = OBJECT_MODELS[COIN];
+            }
+
+            while (true)
             {
-                int value = rand() % 100;
+                int i = rand() % NUM_LANES;
 
-                if (value < PROB_FUEL_INTERMIG) {
-                    m_object.m_type = FUEL;
-                    m_object.m_model = OBJECT_MODELS[FUEL];
-                }
-                else if (value < PROB_FUEL_INTERMIG + PROB_SHIELD_INTERMIG) {
-                    m_object.m_type = SHIELD;
-                    m_object.m_model = OBJECT_MODELS[SHIELD];
-                }
-                else {
-                    m_object.m_type = COIN;
-                    m_object.m_model = OBJECT_MODELS[COIN];
-                }
-
-                while (true)
-                {
-                    int i = rand() % NUM_LANES;
-
-                    if (!m_obstacles[i].m_visible) {
-                        m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
-                        m_object.m_y = y;
-                        break;
-                    }
+                if (!m_obstacles[i].m_visible) {
+                    m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
+                    m_object.m_y = y;
+                    break;
                 }
             }
-            break;
-        case(EXPERT):
-            m_object.m_visible = rand() % 100 < PROB_OBJECT_EXPERT;
+        }
+        break;
+    case(EXPERT):
+        m_object.m_visible = rand() % 100 < PROB_OBJECT_EXPERT;
 
-            if (m_object.m_visible)
+        if (m_object.m_visible)
+        {
+            int value = rand() % 100;
+
+            if (value < PROB_FUEL_EXPERT) {
+                m_object.m_type = FUEL;
+                m_object.m_model = OBJECT_MODELS[FUEL];
+            }
+            else if (value < PROB_FUEL_EXPERT + PROB_SHIELD_EXPERT) {
+                m_object.m_type = SHIELD;
+                m_object.m_model = OBJECT_MODELS[SHIELD];
+            }
+            else {
+                m_object.m_type = COIN;
+                m_object.m_model = OBJECT_MODELS[COIN];
+            }
+
+            while (true)
             {
-                int value = rand() % 100;
+                int i = rand() % NUM_LANES;
 
-                if (value < PROB_FUEL_EXPERT) {
-                    m_object.m_type = FUEL;
-                    m_object.m_model = OBJECT_MODELS[FUEL];
-                }
-                else if (value < PROB_FUEL_EXPERT + PROB_SHIELD_EXPERT) {
-                    m_object.m_type = SHIELD;
-                    m_object.m_model = OBJECT_MODELS[SHIELD];
-                }
-                else {
-                    m_object.m_type = COIN;
-                    m_object.m_model = OBJECT_MODELS[COIN];
-                }
-
-                while (true)
-                {
-                    int i = rand() % NUM_LANES;
-
-                    if (!m_obstacles[i].m_visible) {
-                        m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
-                        m_object.m_y = y;
-                        break;
-                    }
+                if (!m_obstacles[i].m_visible) {
+                    m_object.m_x = ROAD_START + LANE_WIDTH / 2 + i * LANE_WIDTH;
+                    m_object.m_y = y;
+                    break;
                 }
             }
-            break;
+        }
+        break;
     }
 }
 
@@ -324,7 +324,7 @@ void EnvironmentRow::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 
 
     if (m_rightHouse)
     {
-        TransMatrix = glm::translate(MatriuTG, glm::vec3(15.0f * scaleFactor, 0.0f, m_y+(m_house->m_depth/2 * scaleFactor)+400));
+        TransMatrix = glm::translate(MatriuTG, glm::vec3(15.0f * scaleFactor, 0.0f, m_y + (m_house->m_depth / 2 * scaleFactor) + 400));
         TransMatrix = glm::rotate(TransMatrix, float(PI), glm::vec3(0, 2, 0));
     }
     else
@@ -416,7 +416,7 @@ GameLogic::GameLogic(int dif) : gameRunning(true), score(0), t(0), animationRunn
     float y = -(CAR_HEIGHT / 2 + VERTICAL_NOISE);
 
     for (int i = 0; i < NUM_ROWS; ++i) {
-        roadRows[i].m_dificultat=dif;
+        roadRows[i].m_dificultat = dif;
         roadRows[i].initRow(y, nextEmptyLane);
         y -= CAR_HEIGHT + ROW_SPACING;
     }
@@ -433,7 +433,7 @@ void GameLogic::UpdateGameLogic(SoundManager& soundManager) {
         DoCollisions();
     else
         remainingShield -= FRAME_TIME;
-    
+
     DoPickUps(soundManager);
 
     remainingFuel -= FRAME_TIME;
@@ -443,15 +443,15 @@ void GameLogic::UpdateGameLogic(SoundManager& soundManager) {
 
     switch (m_dificultat)
     {
-        case(PRINCIPIANT):
-            player.m_speed += 0.002;
-            break;
-        case(INTERMIG):
-            player.m_speed += 0.003;
-            break;
-        case(EXPERT):
-            player.m_speed += 0.005;
-            break;
+    case(PRINCIPIANT):
+        player.m_speed += 0.002;
+        break;
+    case(INTERMIG):
+        player.m_speed += 0.003;
+        break;
+    case(EXPERT):
+        player.m_speed += 0.005;
+        break;
     }
 
     player.m_move_step += 0.00000002;
@@ -481,7 +481,7 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
 
     if (animationRunning) finalCoinAnimation(sh_programID, MatriuVista, MatriuTG, t);
 
-    if (remainingShield >= 1.5 || (remainingShield > 0 && fmod(remainingShield, 0.5f) < 0.25f) ){
+    if (remainingShield >= 1.5 || (remainingShield > 0 && fmod(remainingShield, 0.5f) < 0.25f)) {
         glUniform1f(glGetUniformLocation(sh_programID, "transparency"), 0.5f);
     }
 
@@ -491,44 +491,88 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
 
 void GameLogic::GetUserInput(GLFWwindow* window)
 {
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && player.m_rotation <= 0) 
-    {
-        player.move(-player.m_move_step, 0);
-
-        player.rotate(player.m_rotation > -ROTATION_ANGLE ? -ROTATION_SPEED : 0);
-
-        if (player.m_x < ROAD_START + player.m_width / 2)
+    if (!glfwJoystickPresent(GLFW_JOYSTICK_1)) {
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && player.m_rotation <= 0)
         {
-            player.move(ROAD_START + player.m_width / 2 - player.m_x, 0);
-            player.rotate(player.m_rotation < 0 ? ROTATION_SPEED : 0);
+            player.move(-player.m_move_step, 0);
+
+            player.rotate(player.m_rotation > -ROTATION_ANGLE ? -ROTATION_SPEED : 0);
+
+            if (player.m_x < ROAD_START + player.m_width / 2)
+            {
+                player.move(ROAD_START + player.m_width / 2 - player.m_x, 0);
+                player.rotate(player.m_rotation < 0 ? ROTATION_SPEED : 0);
+            }
+        }
+        else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && player.m_rotation >= 0)
+        {
+            player.move(player.m_move_step, 0);
+
+            player.rotate(player.m_rotation < ROTATION_ANGLE ? ROTATION_SPEED : 0);
+            if (player.m_x > ROAD_END - player.m_width / 2)
+            {
+                player.move(-(player.m_x - ROAD_END + player.m_width / 2), 0);
+                player.rotate(player.m_rotation > 0 ? -ROTATION_SPEED : 0);
+            }
+        }
+        else
+        {
+            if (player.m_rotation > 0)
+                player.rotate(player.m_rotation > ROTATION_SPEED ? -ROTATION_SPEED : -player.m_rotation);
+            else if (player.m_rotation < 0)
+                player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && shieldEquipped)
+        {
+            shieldEquipped = false;
+            remainingShield = SHIELD_DURATION;
         }
     }
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && player.m_rotation >= 0) 
-    {
-        player.move(player.m_move_step, 0);
+    else {
+        int buttonCount;
+        const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+        int axisCount;
+        const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axisCount);
+        if (axisCount > 0) {
+            if (axes[0] < -0.5 && player.m_rotation <= 0)
+            {
+                player.move(-player.m_move_step, 0);
 
-        player.rotate(player.m_rotation < ROTATION_ANGLE ? ROTATION_SPEED : 0);
-        if (player.m_x > ROAD_END - player.m_width / 2)
-        {
-            player.move(-(player.m_x - ROAD_END + player.m_width / 2), 0);
-            player.rotate(player.m_rotation > 0 ? -ROTATION_SPEED : 0);
+                player.rotate(player.m_rotation > -ROTATION_ANGLE ? -ROTATION_SPEED : 0);
+
+                if (player.m_x < ROAD_START + player.m_width / 2)
+                {
+                    player.move(ROAD_START + player.m_width / 2 - player.m_x, 0);
+                    player.rotate(player.m_rotation < 0 ? ROTATION_SPEED : 0);
+                }
+            }
+            else if (axes[0] > 0.5 && player.m_rotation >= 0)
+            {
+                player.move(player.m_move_step, 0);
+
+                player.rotate(player.m_rotation < ROTATION_ANGLE ? ROTATION_SPEED : 0);
+                if (player.m_x > ROAD_END - player.m_width / 2)
+                {
+                    player.move(-(player.m_x - ROAD_END + player.m_width / 2), 0);
+                    player.rotate(player.m_rotation > 0 ? -ROTATION_SPEED : 0);
+                }
+            }
+            else
+            {
+                if (player.m_rotation > 0)
+                    player.rotate(player.m_rotation > ROTATION_SPEED ? -ROTATION_SPEED : -player.m_rotation);
+                else if (player.m_rotation < 0)
+                    player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
+            }
+
+            if (buttons[1] == GLFW_PRESS && shieldEquipped)
+            {
+                shieldEquipped = false;
+                remainingShield = SHIELD_DURATION;
+            }
         }
     }
-    else 
-    {
-        if (player.m_rotation > 0)
-            player.rotate(player.m_rotation > ROTATION_SPEED ? -ROTATION_SPEED : -player.m_rotation);
-        else if (player.m_rotation < 0)
-            player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && shieldEquipped) 
-    {
-        shieldEquipped = false;
-        remainingShield = SHIELD_DURATION;
-    }
-
-
 }
 
 void GameLogic::UpdateRoadRows()
@@ -577,7 +621,7 @@ void GameLogic::DoPickUps(SoundManager& soundManager)
             case SHIELD:
                 shieldEquipped = true;
                 soundManager.playSound(".\\media\\shield.mp3");
-                
+
                 break;
             default:
                 break;
