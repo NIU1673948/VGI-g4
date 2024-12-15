@@ -329,19 +329,19 @@ private:
     void finalCoinAnimation(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG, float t) const;
     int nextEmptyLane;
     COBJModel* modelCoin;
-    float t;
+    float animationTime;
 
 public:
-    GameLogic(int dif);
+    GameLogic(int dificultat);
     void GetUserInput(GLFWwindow* window);
     void UpdateGameLogic(SoundManager& soundManager);
-    bool CoinFlip();
+    void DoAnimation();
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 
-    int m_dificultat;
+    int score;
+    int dificultat;
     float remainingFuel;
     float remainingShield;
-    int score;
     bool animationRunning;
     bool shieldEquipped;
     bool gameRunning;

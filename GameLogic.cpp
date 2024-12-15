@@ -400,7 +400,7 @@ void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Mat
     dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
 }
 
-GameLogic::GameLogic(int dif) : gameRunning(true), score(0), t(0), animationRunning(false), m_dificultat(dif)
+GameLogic::GameLogic(int dificultat) : gameRunning(true), score(0), animationTime(0), animationRunning(false), dificultat(dificultat)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 
@@ -416,7 +416,7 @@ GameLogic::GameLogic(int dif) : gameRunning(true), score(0), t(0), animationRunn
     float y = -(CAR_HEIGHT / 2 + VERTICAL_NOISE);
 
     for (int i = 0; i < NUM_ROWS; ++i) {
-        roadRows[i].m_dificultat = dif;
+        roadRows[i].m_dificultat = dificultat;
         roadRows[i].initRow(y, nextEmptyLane);
         y -= CAR_HEIGHT + ROW_SPACING;
     }
@@ -441,7 +441,7 @@ void GameLogic::UpdateGameLogic(SoundManager& soundManager) {
     if (remainingFuel <= 0)
         gameRunning = false;
 
-    switch (m_dificultat)
+    switch (dificultat)
     {
     case(PRINCIPIANT):
         player.m_speed += 0.002;
@@ -460,12 +460,10 @@ void GameLogic::UpdateGameLogic(SoundManager& soundManager) {
     environment.m_roadY += player.m_speed;
 }
 
-bool GameLogic::CoinFlip()
+void GameLogic::DoAnimation()
 {
-    animationRunning = t <= ANIMATION_DURATION + 1;
-    t += FRAME_TIME;
-
-    return extraLife;
+    animationRunning = animationTime <= ANIMATION_DURATION + 1;
+    animationTime += FRAME_TIME;
 }
 
 void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const
@@ -479,7 +477,7 @@ void GameLogic::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Matri
 
     environment.draw(sh_programID, MatriuVista, MatriuTG);
 
-    if (animationRunning) finalCoinAnimation(sh_programID, MatriuVista, MatriuTG, t);
+    if (animationRunning) finalCoinAnimation(sh_programID, MatriuVista, MatriuTG, animationTime);
 
     if (remainingShield >= 1.5 || (remainingShield > 0 && fmod(remainingShield, 0.5f) < 0.25f)) {
         glUniform1f(glGetUniformLocation(sh_programID, "transparency"), 0.5f);

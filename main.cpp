@@ -5755,7 +5755,7 @@ int main(void)
 
 		draw_menuInicial(largeFont, debugFont, scoreFont, game);
 
-		if (dificultat != game.m_dificultat) game = GameLogic(dificultat);
+		if (dificultat != game.dificultat) game = GameLogic(dificultat);
 		
 		if (!iniciar) {
 			logicTime = 0.0f;
@@ -5780,17 +5780,17 @@ int main(void)
 				}
 				else if (!game.gameRunning && !animationViewed)
 				{
-					c = 10; //posicio on ha dapareixa la moneda
-					moneda = game.CoinFlip();
+					c = 10;
+					game.DoAnimation();
 
 					if (!game.animationRunning)
 					{
 						animationViewed = true;
-						if (moneda)
+						if (game.extraLife)
 						{
-							c = 0; //Resetejar camera
-							int score = game.score; //Guardar puntuaci�
-							game = GameLogic(dificultat); //Tornar a iniciar pero no es modifica l'score
+							c = 0;
+							int score = game.score; 
+							game = GameLogic(dificultat);
 							game.score = score;
 						}
 						else
@@ -5811,7 +5811,7 @@ int main(void)
 				}
 				else if (!game.gameRunning)
 				{
-					c = 0; //Reseteja camera
+					c = 0;
 					cout << game.score / 100 << endl;
 
 					actualizarMejoresPuntuaciones(puntuacions, game.score);
