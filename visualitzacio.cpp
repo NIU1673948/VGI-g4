@@ -513,14 +513,14 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
 			glm::vec3(up[0], up[1], up[2])  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 		break;
-	case 1: //fora
-		MatriuVista = glm::lookAt(
-			glm::vec3((ROAD_START + ROAD_WIDTH / 2) + 500, 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200), // Camera is here
-			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200), // and looks here
-			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
-		);
-		break;
-	case 2:
+	//case 1: //fora
+	//	MatriuVista = glm::lookAt(
+	//		glm::vec3((ROAD_START + ROAD_WIDTH / 2) + 500, 300, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200), // Camera is here
+	//		glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 200), // and looks here
+	//		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+	//	);
+	//	break;
+	case 1:
 		MatriuVista = glm::lookAt(
 			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 400, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) + 50), // Camera is here
 			glm::vec3((ROAD_START + ROAD_WIDTH / 2), 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 150), // and looks here

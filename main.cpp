@@ -3100,8 +3100,8 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 			else if (escal) Teclat_TransEscala(key, action);
 		}
 		//JAN Canviar la camera al pulsar 'R'
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 2 && garatge == false) c = (c < 2) ? (c + 1) : 0, camera = CAM_ESFERICA;
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 2 && garatge == false) camera = CAM_NAVEGA, c++;
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 1 && garatge == false) c = (c < 1) ? (c + 1) : 0, camera = CAM_ESFERICA;
+		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 1 && garatge == false) camera = CAM_NAVEGA, c++;
 		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
 
 
@@ -5787,6 +5787,7 @@ int main(void)
 			movi = game.player.m_x;
 
 			if (logicTime >= FRAME_TIME) {
+				int cameraActual = camera;
 				logicTime -= FRAME_TIME;
 				if (game.gameRunning || debug)
 				{
@@ -5796,7 +5797,6 @@ int main(void)
 				else if (!game.gameRunning && !animationViewed)
 				{
 					soundManager.backgroundMusic->setPlaybackSpeed(1.0f);
-					int cameraActual = camera;
 					camera = CAM_ESFERICA;
 					c = 10;
 					game.DoAnimation();
