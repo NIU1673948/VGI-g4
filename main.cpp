@@ -1208,7 +1208,7 @@ void menuPause(GameLogic& game, ImFont* scoreFont)
 
 
 	ImGui::SetCursorPos(ImVec2(10.0f, 10.0f)); // Margen superior
-	if (ImGui::Button("REINICIAR", buttonSize)) {
+	if (ImGui::Button("REANUDAR", buttonSize)) {
 		pause = false;
 	}
 
