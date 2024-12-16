@@ -413,7 +413,7 @@ GameLogic::GameLogic(int dificultat) : gameRunning(true), score(0), animationTim
     shieldEquipped = false;
 
     nextEmptyLane = rand() % NUM_LANES;
-    float y = -(CAR_HEIGHT / 2 + VERTICAL_NOISE);
+    float y = -(CAR_HEIGHT * 5);
 
     for (int i = 0; i < NUM_ROWS; ++i) {
         roadRows[i].m_dificultat = dificultat;

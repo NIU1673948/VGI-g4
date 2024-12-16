@@ -621,7 +621,7 @@ glm::mat4 Vista_Navega(GLuint sh_programID, CPunt3D pv, GLdouble n[3],GLdouble v
 	//gluLookAt(pv.x,pv.y,pv.z,n[0],n[1],n[2],v[0],v[1],v[2]);
 	if (movi != NULL) {
 		MatriuVista = glm::lookAt(
-			glm::vec3(movi, 30, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 50), // Camera is here
+			glm::vec3(movi, 30, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 20), // Camera is here
 			glm::vec3(movi, 0, (WINDOW_HEIGHT - CAR_HEIGHT / 2 - MARGIN) - 300), // and looks here
 			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
