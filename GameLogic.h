@@ -149,6 +149,7 @@ public:
         }
 
         backgroundMusic = backgroundMusicEngine->play2D(file.c_str(), true, false, true);
+        backgroundMusic->setVolume(0.2f);
         if (!backgroundMusic) {
             std::cerr << "Could not play music!" << std::endl;
             backgroundMusicEngine->drop();
@@ -160,8 +161,8 @@ public:
             float speed = 1.0f;
             while (backgroundMusic && !backgroundMusic->isFinished()) {
                 backgroundMusic->setPlaybackSpeed(speed);
-                speed += 0.001f;
-                if (speed > 2.0f) speed = 2.0f;
+                speed += 0.00005f;
+                if (speed > 1.75f) speed = 1.75f;
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
             });
@@ -206,7 +207,6 @@ public:
         }
     }
 
-private:
     struct SoundData {
         irrklang::ISoundEngine* engine;
         irrklang::ISound* sound;
@@ -217,6 +217,7 @@ private:
     std::thread backgroundMusicThread;
     std::vector<SoundData> soundsInProgress;
 };
+
 
 
 class Car {

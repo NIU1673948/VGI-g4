@@ -1424,7 +1424,7 @@ void pantallaFinal(GameLogic& game)
 	ImGui::End();
 }
 
-void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, GameLogic& game)
+void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, GameLogic& game, SoundManager& sound)
 {
 	/*
 		Aquesta es la funcio principal del menu inicial del joc i es la funcio que genera tots els btotons que tinguin
@@ -1459,6 +1459,7 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 	}
 	else
 	{
+		sound.backgroundMusic->setPlaybackSpeed(1.0f);
 		if (final)
 		{
 			if (primeraCarrega == true)
@@ -1498,6 +1499,7 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 	debugButton(debug);
 	ImGui::PopFont();
 }
+
 
 
 void MostraEntornVGIWindow(bool* p_open)
@@ -5753,7 +5755,7 @@ int main(void)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		draw_menuInicial(largeFont, debugFont, scoreFont, game);
+		draw_menuInicial(largeFont, debugFont, scoreFont, game, soundManager);
 
 		if (dificultat != game.dificultat) game = GameLogic(dificultat);
 		
@@ -5780,6 +5782,7 @@ int main(void)
 				}
 				else if (!game.gameRunning && !animationViewed)
 				{
+					soundManager.backgroundMusic->setPlaybackSpeed(1.0f);
 					c = 10;
 					game.DoAnimation();
 
@@ -5811,6 +5814,7 @@ int main(void)
 				}
 				else if (!game.gameRunning)
 				{
+					soundManager.backgroundMusic->setPlaybackSpeed(1.0f);
 					c = 0;
 					cout << game.score / 100 << endl;
 
