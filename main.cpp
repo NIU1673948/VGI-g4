@@ -1224,6 +1224,7 @@ void menuPause(GameLogic& game, ImFont* scoreFont)
 
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
 	if (ImGui::Button("PANTALLA INICI", buttonSize)) {
+		dificultats = false;
 		iniciar = false;
 		pause = false;
 		game = GameLogic(dificultat);
@@ -5530,8 +5531,18 @@ string obtenirDataActual() {
 	return ss.str();
 }
 
-void guardarMillorsPuntuacions(const vector<Puntuacio>& puntuacions) {
-	ofstream archivo(".\\bestScore.txt");
+string obtenirNomArchiu(int dificultad) {
+	switch (dificultad) {
+	case 0: return "scores_facil.txt";
+	case 1: return "scores_mig.txt";
+	case 2: return "scores_dificil.txt";
+	default: return "scores_desconocido.txt";
+	}
+}
+
+void guardarMillorsPuntuacions(const vector<Puntuacio>& puntuacions, int dificultat) {
+	string nomFixer = obtenirNomArchiu(dificultat);
+	ofstream archivo(nomFixer);
 	if (archivo.is_open()) {
 		for (const auto& p : puntuacions) {
 			archivo << p.punts << " " << p.data << endl;
@@ -5543,8 +5554,9 @@ void guardarMillorsPuntuacions(const vector<Puntuacio>& puntuacions) {
 	}
 }
 
-vector<Puntuacio> cargarMillorsPuntuacions() {
-	ifstream archivo(".\\bestScore.txt");
+vector<Puntuacio> cargarMillorsPuntuacions(int dificultat) {
+	string nomFixer = obtenirNomArchiu(dificultat);
+	ifstream archivo(nomFixer);
 	vector<Puntuacio> puntuacions;
 	int punts;
 	string data;
@@ -5566,12 +5578,12 @@ vector<Puntuacio> cargarMillorsPuntuacions() {
 
 void actualizarMejoresPuntuaciones(vector<Puntuacio>& puntuaciones, int nuevaPuntuacion) {
 	string fechaActual = obtenirDataActual();
-	puntuaciones.push_back({ nuevaPuntuacion, fechaActual }); // Agregar nueva puntuación y fecha
+	puntuaciones.push_back({ nuevaPuntuacion, fechaActual });
 	sort(puntuaciones.begin(), puntuaciones.end(), [](const Puntuacio& a, const Puntuacio& b) {
-		return a.punts > b.punts; // Orden descendente por puntuación
+		return a.punts > b.punts;
 		});
 	if (puntuaciones.size() > 10) {
-		puntuaciones.pop_back(); // Eliminar la menor si hay más de 10
+		puntuaciones.pop_back();
 	}
 }
 
@@ -5765,7 +5777,8 @@ int main(void)
 
 		if (iniciar && !pause)
 		{
-			puntuacions = cargarMillorsPuntuacions();
+			puntuacions = cargarMillorsPuntuacions(dificultat);
+
 			if (!puntuacions.empty()) {
 				bestScore = puntuacions[0].punts;
 			}
@@ -5783,6 +5796,8 @@ int main(void)
 				else if (!game.gameRunning && !animationViewed)
 				{
 					soundManager.backgroundMusic->setPlaybackSpeed(1.0f);
+					int cameraActual = camera;
+					camera = CAM_ESFERICA;
 					c = 10;
 					game.DoAnimation();
 
@@ -5795,14 +5810,16 @@ int main(void)
 							int score = game.score; 
 							game = GameLogic(dificultat);
 							game.score = score;
+							camera = cameraActual;
 						}
 						else
 						{
 							c = 0; //Reseteja camera
+							camera = cameraActual;
 							cout << game.score / 100 << endl;
 
 							actualizarMejoresPuntuaciones(puntuacions, game.score);
-							guardarMillorsPuntuacions(puntuacions);
+							guardarMillorsPuntuacions(puntuacions, dificultat);
 
 							final=true;
 							iniciar = false;
@@ -5819,7 +5836,7 @@ int main(void)
 					cout << game.score / 100 << endl;
 
 					actualizarMejoresPuntuaciones(puntuacions, game.score);
-					guardarMillorsPuntuacions(puntuacions);
+					guardarMillorsPuntuacions(puntuacions, dificultat);
 
 					
 					final = true;
