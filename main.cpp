@@ -1374,27 +1374,21 @@ void pantallaFinal(GameLogic& game)
 {
 	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
 
-	// Calcular tama�o y m�rgenes din�micos para los botones
-	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f); // Botones ocupan 13% de ancho y 7% de alto de la pantalla
-	float buttonSpacing = screenSize.y * 0.02f; // Espaciado entre botones (2% del alto)
-	int buttonCount = 2; // N�mero de botones
+	// Tamaño de los botones
+	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f);
+	ImVec2 windowsSize = ImVec2(screenSize.x * 0.20f, screenSize.y * 0.10f);
+	float buttonOffsetY = screenSize.y * 0.15f; // Desplazamiento vertical más abajo
+	float buttonSpacingX = screenSize.x * 0.2f; // Separación horizontal más grande
 
-	// Altura total necesaria para los botones y los espaciados
-	float totalHeight = buttonSize.y * buttonCount + buttonSpacing * (buttonCount - 1);
-	float totalWidth = buttonSize.x; // Ancho del bot�n
+	// Coordenadas para el centro de la pantalla (donde está el coche)
+	float centerX = screenSize.x / 2.0f;
+	float centerY = screenSize.y / 2.0f;
 
-	// Margen adicional para evitar que los botones se corten
-	float margin = 20.0f; // Espacio adicional alrededor de los botones
+	// Posiciones de los botones ajustadas
+	ImVec2 buttonLeftPos = ImVec2(centerX - buttonSize.x - buttonSpacingX, centerY + buttonOffsetY);
+	ImVec2 buttonRightPos = ImVec2(centerX + buttonSpacingX, centerY + buttonOffsetY);
 
-	// Calcular la posici�n para centrar los botones
-	float posX = (screenSize.x - totalWidth - margin * 2) / 2.0f; // Centrado horizontalmente con margen
-	float posY = (screenSize.y - totalHeight - margin * 2) / 2.0f; // Centrado verticalmente con margen
-	
-	// Configurar la ventana de ImGui
-	ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(totalWidth + margin * 2, totalHeight + margin * 2), ImGuiCond_Always);
-	ImGui::Begin("Game Over Buttons", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
-
+	// Estilos de color
 	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
 	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
 	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
@@ -1402,7 +1396,10 @@ void pantallaFinal(GameLogic& game)
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
 
-	// Dibujar botones
+	// Ventana para el Botón Izquierdo (REINICIAR)
+	ImGui::SetNextWindowPos(buttonLeftPos, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(windowsSize);
+	ImGui::Begin("LeftButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
 	if (ImGui::Button("REINICIAR", buttonSize))
 	{
 		netejarFons();
@@ -1410,7 +1407,12 @@ void pantallaFinal(GameLogic& game)
 		game = GameLogic(dificultat);
 		final = false;
 	}
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing); // A�adir espaciado entre botones
+	ImGui::End();
+
+	// Ventana para el Botón Derecho (TORNAR INICI)
+	ImGui::SetNextWindowPos(buttonRightPos, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(windowsSize);
+	ImGui::Begin("RightButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
 	if (ImGui::Button("TORNAR INICI", buttonSize))
 	{
 		netejarFons();
@@ -1420,10 +1422,27 @@ void pantallaFinal(GameLogic& game)
 		final = false;
 		primeraCarrega = true;
 	}
+	ImGui::End();
 
 	ImGui::PopStyleColor(3); // Restaurar colores
-	ImGui::End();
 }
+
+
+void menuPuntuacions(vector<Puntuacio>& puntuacions)
+{
+	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+
+	ImGui::Begin("Menu Millors Puntuacions", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs);
+	for (int i = 0; i < puntuacions.size(); i++)
+	{
+		ImGui::Text("Score: %d\n", (int)puntuacions[i].punts / 100);
+	}
+
+}
+
 
 void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, GameLogic& game, SoundManager& sound)
 {
