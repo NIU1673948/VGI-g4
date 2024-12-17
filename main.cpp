@@ -874,20 +874,20 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 	float windowWidth = totalWidth + 20;
 	float windowHeight = totalHeight + 20;
 	float posX = (screenSize.x - windowWidth) / 2.0f;
-	float posY = screenSize.y - windowHeight - 200.0f;
+	float posY = screenSize.y - windowHeight - 153.0f;
 
 	// Configurar la ventana de ImGui para los botones
 	ImGui::SetNextWindowPos(ImVec2(posX, posY));
 	ImGui::SetNextWindowSize(ImVec2(totalWidth + 20, totalHeight + 20), ImGuiCond_Always);
 	ImGui::Begin("Botons centrals", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
 
-	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
-	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
-	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
-	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+	ImVec4 fonsColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f); // Gris claro para el botón
+	ImVec4 bordeColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);  // Gris oscuro para el borde
+	ImVec4 hoverColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);  // Gris medio para hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Gris ligeramente más oscuro para activo
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
-	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_Button, fonsColor); // Color de fondo
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
 	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
@@ -904,7 +904,8 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 	}
 	else {
 		if (!config && !garage && !dificultats) {
-			ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
+			float centerX = (totalWidth - 4 * buttonSize.x) / 2.0f;
+			ImGui::SetCursorPos(ImVec2(centerX, (totalHeight - buttonSize.y) / 2.0f));
 			if (ImGui::Button("INICIAR", buttonSize)) {
 				dificultats = true;
 			}
@@ -958,23 +959,20 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				}
 			}
 			else {
-				ImGui::SetCursorPos(ImVec2(10.0f, (totalHeight - buttonSize.y) / 2.0f));
-				if (ImGui::Button("FULLSCREEN", buttonSize)) {
+				float centerY = (totalHeight - buttonSize.y) / 2.0f;
+				ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
+				if (ImGui::Button("FULLSCREEN", buttonSize))
+				{
 					OnFull_Screen(primary, window);
 				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("DIFICULTAD", buttonSize)) {
-					// Acci? boto dificultat
+				ImGui::SameLine(0.0f, buttonSpacing);
+				if (ImGui::Button("AUDIO", buttonSize))
+				{
+					
 				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("AUDIO", buttonSize)) {
-					// Acci? boto audio
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("BACK", buttonSize)) {
+				ImGui::SameLine(0.0f, buttonSpacing);
+				if (ImGui::Button("BACK", buttonSize))
+				{
 					config = false;
 				}
 			}
@@ -1132,24 +1130,29 @@ void fonsMenu()
 void pauseButton()
 {
 	int screenWidth = ImGui::GetIO().DisplaySize.x;
-	ImVec2 buttonPosition = ImVec2(screenWidth - 100, 10); //Establir posicio del boto debug
-	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
-	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
-	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
-	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+
+	ImVec2 buttonPosition = ImVec2(screenWidth - 180, 10); //Establir posicio del boto debug
+
+	ImVec4 fonsColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f); // Gris claro para el botón
+	ImVec4 bordeColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);  // Gris oscuro para el borde
+	ImVec4 hoverColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);  // Gris medio para hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Gris ligeramente más oscuro para activo
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
-	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_Button, fonsColor); // Color de fondo
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
 	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f); // Bordes redondeados
 
+
 	if (!pause) {
 		ImGui::SetNextWindowPos(buttonPosition, ImGuiCond_Always);
 		ImGui::Begin("pauseButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
+		
+		ImVec2 buttonSize = ImVec2(150, 50);
 
-		if (ImGui::Button("Pause")) {
+		if (ImGui::Button("Pause", buttonSize)) {
 			pause = true;
 		}
 		ImGui::End();
@@ -1180,10 +1183,11 @@ void menuPause(GameLogic& game, ImFont* scoreFont)
 
 	// Centrar el texto correctamente
 	ImGui::SetWindowPos(ImVec2((screenSize.x - textWidth) / 2.0f, 150));
-
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f)); // Color blanco
 	// Muestra el texto
 	ImGui::Text("%s", scoreStr.c_str());
-
+	
+	ImGui::PopStyleColor();
 	ImGui::PopFont();
 	ImGui::End();
 
@@ -1194,14 +1198,14 @@ void menuPause(GameLogic& game, ImFont* scoreFont)
 	ImGui::Begin("Botones Centrales", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
 
 	// Estilos de botones
-	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f);
-	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f);
-	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f);
-	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f);
+	ImVec4 fonsColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f); // Gris claro para el botón
+	ImVec4 bordeColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);  // Gris oscuro para el borde
+	ImVec4 hoverColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);  // Gris medio para hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Gris ligeramente más oscuro para activo
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f);
-	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor);
+	ImGui::PushStyleColor(ImGuiCol_Button, fonsColor);
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
 	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor);
@@ -1245,7 +1249,8 @@ void fonsMenuPause()
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(screenSize);
 
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));  // Color blanco con transparencia 50%
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.7f));  // Gris oscuro con 70% transparencia
+
 	ImGui::Begin("Pause Background", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
 
@@ -1275,14 +1280,13 @@ void draw_garageButtons(bool& inici, bool& garage, bool& config, bool& exit)
 	ImGui::SetNextWindowPos(ImVec2(posX, posY));
 	ImGui::SetNextWindowSize(ImVec2(totalWidth + 20, totalHeight + 20), ImGuiCond_Always);
 	ImGui::Begin("Botons Garatge", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
-
-	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
-	ImVec4 bordeColor = ImVec4(0.4f, 0.2f, 0.0f, 1.0f); // Color del borde
-	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
-	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
+	ImVec4 fonsColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f); // Gris claro para el botón
+	ImVec4 bordeColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);  // Gris oscuro para el borde
+	ImVec4 hoverColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);  // Gris medio para hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Gris ligeramente más oscuro para activo
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
-	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor); // Color de fondo
+	ImGui::PushStyleColor(ImGuiCol_Button, fonsColor); // Color de fondo
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
 	ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
@@ -1395,10 +1399,11 @@ void pantallaFinal(GameLogic& game)
 	ImGui::SetNextWindowSize(ImVec2(totalWidth + margin * 2, totalHeight + margin * 2), ImGuiCond_Always);
 	ImGui::Begin("Game Over Buttons", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
 
-	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
-	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
-	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
-	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor);
+	ImVec4 fonsColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f); // Gris claro para el botón
+	ImVec4 bordeColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);  // Gris oscuro para el borde
+	ImVec4 hoverColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);  // Gris medio para hover
+	ImVec4 activeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Gris ligeramente más oscuro para activo
+	ImGui::PushStyleColor(ImGuiCol_Button, fonsColor);
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
 
@@ -1455,7 +1460,7 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 			menuPause(game, scoreFont);
 		}
 		ImGui::PushFont(fontDebug);
-		debugButton(debug);
+		//debugButton(debug);
 		ImGui::PopFont();
 	}
 	else
@@ -1497,7 +1502,7 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 	}
 
 	ImGui::PushFont(fontDebug);
-	debugButton(debug);
+	//debugButton(debug);
 	ImGui::PopFont();
 }
 
@@ -1512,7 +1517,7 @@ void MostraEntornVGIWindow(bool* p_open)
 	// Examples Apps (accessible from the "Examples" menu)
 	//static bool show_window_about = false;
 
-	if (show_window_about)       ShowAboutWindow(&show_window_about);
+	if (show_window_about) ShowAboutWindow(&show_window_about);
 
 	// We specify a default position/size in case there's no data in the .ini file.
 	// We only do it to make the demo applications a little more welcoming, but typically this isn't required.
@@ -3082,8 +3087,7 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 	// (2) ONLY forward mouse data to your underlying app/game.
 	if (!io.WantCaptureKeyboard) { //<Tractament mouse de l'aplicaci�>}
 		// EntornVGI: Si tecla pulsada �s ESCAPE, tancar finestres i aplicaci�.
-		if (mods == 0 && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, GL_TRUE);
-		else if (mods == 0 && key == GLFW_KEY_PRINT_SCREEN && action == GLFW_PRESS) statusB = !statusB;
+		if (mods == 0 && key == GLFW_KEY_PRINT_SCREEN && action == GLFW_PRESS) statusB = !statusB;
 		else if ((mods == 1) && (action == GLFW_PRESS)) Teclat_Shift(key, window);	// Shorcuts Shift Key
 		else if ((mods == 2) && (action == GLFW_PRESS)) Teclat_Ctrl(key);	// Shortcuts Ctrl Key
 		else if ((objecte == C_BEZIER || objecte == C_BSPLINE || objecte == C_LEMNISCATA || objecte == C_HERMITTE
@@ -3106,8 +3110,9 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 
 
 		//MAURI: Menu Pause
-		else if ((key == GLFW_KEY_P) && action == GLFW_PRESS && !pause && iniciar) pause = true;
-		else if ((key == GLFW_KEY_P) && action == GLFW_PRESS && pause && iniciar) pause = false;
+		else if (((key == GLFW_KEY_P) ||(key==GLFW_KEY_ESCAPE)) && action == GLFW_PRESS && !pause && iniciar) pause = true;
+		else if (((key == GLFW_KEY_P) || (key == GLFW_KEY_ESCAPE)) && action == GLFW_PRESS && pause && iniciar) pause = false;
+
 		else if (!sw_color) Teclat_ColorFons(key, action);
 		else Teclat_ColorObjecte(key, action);
 
