@@ -333,14 +333,14 @@ private:
     float animationTime;
 
 public:
-    GameLogic(int dificultat);
+    GameLogic(DIFICULTATS dificultat);
     void GetUserInput(GLFWwindow* window);
     void UpdateGameLogic(SoundManager& soundManager);
     void DoAnimation();
     void draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 MatriuTG) const;
 
     int score;
-    int dificultat;
+    DIFICULTATS dificultat;
     float remainingFuel;
     float remainingShield;
     bool animationRunning;

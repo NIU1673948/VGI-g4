@@ -5592,6 +5592,15 @@ void actualizarMejoresPuntuaciones(vector<Puntuacio>& puntuaciones, int nuevaPun
 	}
 }
 
+const char* GetDificultatName(DIFICULTATS dificultat) {
+	switch (dificultat) {
+	case 0: return "Principiant";
+	case 1: return "Intermig";
+	case 2: return "Expert";
+	}
+}
+
+
 int main(void)
 {
 	//    GLFWwindow* window;
@@ -5860,6 +5869,11 @@ int main(void)
 			ImGui::Begin("BestScore", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 			ImGui::SetWindowPos(ImVec2(10, 10));
 			ImGui::Text("BestScore: %d", bestScore / 100);
+			ImGui::End();
+
+			ImGui::Begin("Dificultat", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+			ImGui::SetWindowPos(ImVec2(820, 10));
+			ImGui::Text("Dificultat: %s", GetDificultatName(game.dificultat));
 			ImGui::End();
 
 			float percentatgeFuel = game.remainingFuel / FUEL_DURATION;

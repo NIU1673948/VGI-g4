@@ -400,7 +400,7 @@ void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Mat
     dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
 }
 
-GameLogic::GameLogic(int dificultat) : gameRunning(true), score(0), animationTime(0), animationRunning(false), dificultat(dificultat)
+GameLogic::GameLogic(DIFICULTATS dificultat) : gameRunning(true), score(0), animationTime(0), animationRunning(false), dificultat(dificultat)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 

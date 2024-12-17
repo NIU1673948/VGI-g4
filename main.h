@@ -301,4 +301,4 @@
 	float delta;
 	float logicTime = 0.0f;
 	int act = 0;
-	int dificultat=0;
+	DIFICULTATS dificultat;
