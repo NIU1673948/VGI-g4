@@ -400,7 +400,7 @@ void Environment::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 Mat
     dibuixaRoad(sh_programID, MatriuVista, MatriuTG);
 }
 
-GameLogic::GameLogic(int dificultat) : gameRunning(true), score(0), animationTime(0), animationRunning(false), dificultat(dificultat)
+GameLogic::GameLogic(int dificultat, bool music, bool sounds) : gameRunning(true), score(0), animationTime(0), animationRunning(false), dificultat(dificultat), musicsounds(music), soundsounds(sounds)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 
@@ -458,6 +458,23 @@ void GameLogic::UpdateGameLogic(SoundManager& soundManager) {
 
     score += player.m_speed;
     environment.m_roadY += player.m_speed;
+    if (!musicsounds)
+    {
+        soundManager.backgroundMusic->setVolume(0);
+    }
+    else
+    {
+        soundManager.backgroundMusic->setVolume(0.2f);
+    }
+    if (shieldpicked)
+    {
+        if (soundsounds)
+        {
+            soundManager.playSound(".\\media\\equp_shield.wav");
+        }
+        shieldpicked = false;
+    }
+
 }
 
 void GameLogic::DoAnimation()
@@ -521,11 +538,14 @@ void GameLogic::GetUserInput(GLFWwindow* window)
                 player.rotate(player.m_rotation < -ROTATION_SPEED ? ROTATION_SPEED : -player.m_rotation);
         }
 
+
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && shieldEquipped)
         {
             shieldEquipped = false;
             remainingShield = SHIELD_DURATION;
+            shieldpicked = true;
         }
+
     }
     else {
         int buttonCount;
@@ -568,6 +588,7 @@ void GameLogic::GetUserInput(GLFWwindow* window)
             {
                 shieldEquipped = false;
                 remainingShield = SHIELD_DURATION;
+
             }
         }
     }
@@ -610,15 +631,24 @@ void GameLogic::DoPickUps(SoundManager& soundManager)
             case COIN:
                 score += COIN_SCORE;
                 player.m_speed = player.m_speed * (1 - COIN_SPEED_DOWN);
-                soundManager.playSound(".\\media\\coin.mp3");
+                if (soundsounds)
+                {
+                    soundManager.playSound(".\\media\\coin.mp3");
+                }
                 break;
             case FUEL:
                 remainingFuel = FUEL_DURATION;
-                soundManager.playSound(".\\media\\fuel.mp3");
+                if (soundsounds)
+                {
+                    soundManager.playSound(".\\media\\fuel.mp3");
+                }
                 break;
             case SHIELD:
                 shieldEquipped = true;
-                soundManager.playSound(".\\media\\shield.mp3");
+                if (soundsounds)
+                {
+                    soundManager.playSound(".\\media\\pick_shield.wav");
+                }
 
                 break;
             default:

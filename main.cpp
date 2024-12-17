@@ -1156,7 +1156,9 @@ void pauseButton()
 	}
 }
 
-void menuPause(GameLogic& game, ImFont* scoreFont)
+bool musicamuted = false;
+bool sonsmuted = false;
+void menuPause(GameLogic& game, ImFont* scoreFont, SoundManager& sound)
 {
 	// Obtener el tama�o de la pantalla o ventana principal
 	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
@@ -1227,9 +1229,36 @@ void menuPause(GameLogic& game, ImFont* scoreFont)
 		dificultats = false;
 		iniciar = false;
 		pause = false;
-		game = GameLogic(dificultat);
+		game = GameLogic(dificultat, game.musicsounds, game.soundsounds);
 	}
-
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+	if (game.musicsounds)
+	{
+		if (ImGui::Button("MUSIC: ON", buttonSize)) {
+			game.musicsounds = false;
+			sound.backgroundMusic->setVolume(0);
+		}
+	}
+	else
+	{
+		if (ImGui::Button("MUSIC: OFF", buttonSize)) {
+			game.musicsounds = true;
+			sound.backgroundMusic->setVolume(0.2f);
+		}
+	}
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+	if (game.soundsounds)
+	{
+		if (ImGui::Button("SOUND: ON", buttonSize)) {
+			game.soundsounds = false;
+		}
+	}
+	else
+	{
+		if (ImGui::Button("SOUND: OFF", buttonSize)) {
+			game.soundsounds = true;
+		}
+	}
 	// Restaurar estilos
 	ImGui::PopStyleVar(2);
 	ImGui::PopStyleColor(4);
@@ -1407,7 +1436,7 @@ void pantallaFinal(GameLogic& game)
 	{
 		netejarFons();
 		iniciar = true;
-		game = GameLogic(dificultat);
+		game = GameLogic(dificultat, game.musicsounds, game.soundsounds);
 		final = false;
 	}
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing); // A�adir espaciado entre botones
@@ -1416,7 +1445,7 @@ void pantallaFinal(GameLogic& game)
 		netejarFons();
 		iniciar = false;
 		dificultats = false;
-		game = GameLogic(dificultat);
+		game = GameLogic(dificultat, game.musicsounds, game.soundsounds);
 		final = false;
 		primeraCarrega = true;
 	}
@@ -1452,7 +1481,7 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 		if (pause)
 		{
 			fonsMenuPause();
-			menuPause(game, scoreFont);
+			menuPause(game, scoreFont, sound);
 		}
 		ImGui::PushFont(fontDebug);
 		debugButton(debug);
@@ -5740,10 +5769,12 @@ int main(void)
 
 	configModels();
 
-	GameLogic game(dificultat);
+	GameLogic game(dificultat, true, true);
 	Player& player = game.player;
 	RoadRow* roadRows = game.roadRows;
 	bool animationViewed = false;
+	game.musicsounds = true;
+	game.soundsounds = true;
 
 	// Loop until the user closes the window -- MAURI: BUCLE PRINCIPAL
 	while (!glfwWindowShouldClose(window) && !sortir)
@@ -5769,7 +5800,7 @@ int main(void)
 
 		draw_menuInicial(largeFont, debugFont, scoreFont, game, soundManager);
 
-		if (dificultat != game.dificultat) game = GameLogic(dificultat);
+		if (dificultat != game.dificultat) game = GameLogic(dificultat, game.musicsounds, game.soundsounds);
 		
 		if (!iniciar) {
 			logicTime = 0.0f;
@@ -5808,7 +5839,7 @@ int main(void)
 						{
 							c = 0;
 							int score = game.score; 
-							game = GameLogic(dificultat);
+							game = GameLogic(dificultat, game.musicsounds, game.soundsounds);
 							game.score = score;
 							camera = cameraActual;
 						}
