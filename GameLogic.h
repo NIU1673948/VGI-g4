@@ -161,7 +161,7 @@ public:
             float speed = 1.0f;
             while (backgroundMusic && !backgroundMusic->isFinished()) {
                 backgroundMusic->setPlaybackSpeed(speed);
-                speed += 0.00005f;
+                speed += 0.000001f;
                 if (speed > 1.75f) speed = 1.75f;
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
@@ -333,7 +333,7 @@ private:
     float animationTime;
 
 public:
-    GameLogic(DIFICULTATS dificultat);
+    GameLogic(DIFICULTATS dificultat, bool music, bool sounds);
     void GetUserInput(GLFWwindow* window);
     void UpdateGameLogic(SoundManager& soundManager);
     void DoAnimation();
@@ -347,6 +347,9 @@ public:
     bool shieldEquipped;
     bool gameRunning;
     bool extraLife;
+    bool musicsounds;
+    bool soundsounds;
+    bool shieldpicked;
     Player player;
     RoadRow roadRows[NUM_ROWS];
     Environment environment;
