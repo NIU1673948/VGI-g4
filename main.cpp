@@ -1376,30 +1376,31 @@ void pantallaFinal(GameLogic& game)
 
 	// Tamaño de los botones
 	ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f);
-	ImVec2 windowsSize = ImVec2(screenSize.x * 0.20f, screenSize.y * 0.10f);
-	float buttonOffsetY = screenSize.y * 0.15f; // Desplazamiento vertical más abajo
-	float buttonSpacingX = screenSize.x * 0.2f; // Separación horizontal más grande
+	float buttonSpacingY = screenSize.y * 0.02f; // Espaciado vertical entre botones
 
-	// Coordenadas para el centro de la pantalla (donde está el coche)
-	float centerX = screenSize.x / 2.0f;
-	float centerY = screenSize.y / 2.0f;
+	// Posición general de la ventana a la izquierda del coche
+	float windowWidth = buttonSize.x + 40.0f; // Ancho de la ventana (botón + margen)
+	float windowHeight = buttonSize.y * 2 + buttonSpacingY + 40.0f; // Alto para dos botones + margen
+	ImVec2 windowPos = ImVec2(screenSize.x * 0.25f - windowWidth / 2, screenSize.y / 1.5f - windowHeight / 2);
 
-	// Posiciones de los botones ajustadas
-	ImVec2 buttonLeftPos = ImVec2(centerX - buttonSize.x - buttonSpacingX, centerY + buttonOffsetY);
-	ImVec2 buttonRightPos = ImVec2(centerX + buttonSpacingX, centerY + buttonOffsetY);
+	// Colores
+	ImVec4 transparentColor = ImVec4(0, 0, 0, 0);   // Totalmente transparente
+	ImVec4 textColor = ImVec4(0, 0, 0, 1);          // Negro
+	ImVec4 textHoverColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Gris al pasar el mouse
 
-	// Estilos de color
-	ImVec4 maderaColor = ImVec4(0.6f, 0.3f, 0.1f, 1.0f); // Color madera
-	ImVec4 hoverColor = ImVec4(0.8f, 0.4f, 0.2f, 1.0f); // Color hover
-	ImVec4 activeColor = ImVec4(0.5f, 0.3f, 0.1f, 1.0f); // Color activo
-	ImGui::PushStyleColor(ImGuiCol_Button, maderaColor);
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
+	// Configuración de la ventana
+	ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
+	ImGui::Begin("Game Over Buttons", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
 
-	// Ventana para el Botón Izquierdo (REINICIAR)
-	ImGui::SetNextWindowPos(buttonLeftPos, ImGuiCond_Always);
-	ImGui::SetNextWindowSize(windowsSize);
-	ImGui::Begin("LeftButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+	// Sin bordes en los botones
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Eliminar bordes
+	ImGui::PushStyleColor(ImGuiCol_Button, transparentColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, transparentColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, transparentColor);
+
+	// Botón "REINICIAR"
+	ImGui::PushStyleColor(ImGuiCol_Text, textColor); // Texto negro
 	if (ImGui::Button("REINICIAR", buttonSize))
 	{
 		netejarFons();
@@ -1407,12 +1408,21 @@ void pantallaFinal(GameLogic& game)
 		game = GameLogic(dificultat);
 		final = false;
 	}
-	ImGui::End();
 
-	// Ventana para el Botón Derecho (TORNAR INICI)
-	ImGui::SetNextWindowPos(buttonRightPos, ImGuiCond_Always);
-	ImGui::SetNextWindowSize(windowsSize);
-	ImGui::Begin("RightButton", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+	// Detectar hover para cambiar el color del texto
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::PopStyleColor(); // Eliminar color de texto original
+		ImGui::PushStyleColor(ImGuiCol_Text, textHoverColor); // Texto gris
+	}
+
+	ImGui::PopStyleColor(); // Restaurar color de texto original
+
+	// Espaciado
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacingY);
+
+	// Botón "TORNAR INICI"
+	ImGui::PushStyleColor(ImGuiCol_Text, textColor); // Texto negro
 	if (ImGui::Button("TORNAR INICI", buttonSize))
 	{
 		netejarFons();
@@ -1422,9 +1432,19 @@ void pantallaFinal(GameLogic& game)
 		final = false;
 		primeraCarrega = true;
 	}
-	ImGui::End();
 
-	ImGui::PopStyleColor(3); // Restaurar colores
+	// Detectar hover para cambiar el color del texto
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::PopStyleColor(); // Eliminar color de texto original
+		ImGui::PushStyleColor(ImGuiCol_Text, textHoverColor); // Texto gris
+	}
+
+	ImGui::PopStyleColor(); // Restaurar color de texto original
+
+	ImGui::PopStyleVar(); // Restaurar estilo de bordes de botones
+	ImGui::PopStyleColor(3); // Restaurar estilos de botones
+	ImGui::End();
 }
 
 
@@ -1474,7 +1494,7 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 			menuPause(game, scoreFont);
 		}
 		ImGui::PushFont(fontDebug);
-		debugButton(debug);
+		//debugButton(debug);
 		ImGui::PopFont();
 	}
 	else
