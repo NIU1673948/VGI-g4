@@ -968,7 +968,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 				ImGui::SameLine(0.0f, buttonSpacing);
 				if (ImGui::Button("AUDIO", buttonSize))
 				{
-					
+					botoaudio = true;
 				}
 				ImGui::SameLine(0.0f, buttonSpacing);
 				if (ImGui::Button("BACK", buttonSize))
@@ -1220,7 +1220,7 @@ void menuPause(GameLogic& game, ImFont* scoreFont, SoundManager& sound)
 
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
 	if (ImGui::Button("AUDIO", buttonSize)) {
-
+		botoaudio = true;
 	}
 
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
@@ -1235,34 +1235,7 @@ void menuPause(GameLogic& game, ImFont* scoreFont, SoundManager& sound)
 		pause = false;
 		game = GameLogic(dificultat, game.musicsounds, game.soundsounds);
 	}
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
-	if (game.musicsounds)
-	{
-		if (ImGui::Button("MUSIC: ON", buttonSize)) {
-			game.musicsounds = false;
-			sound.backgroundMusic->setVolume(0);
-		}
-	}
-	else
-	{
-		if (ImGui::Button("MUSIC: OFF", buttonSize)) {
-			game.musicsounds = true;
-			sound.backgroundMusic->setVolume(0.2f);
-		}
-	}
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
-	if (game.soundsounds)
-	{
-		if (ImGui::Button("SOUND: ON", buttonSize)) {
-			game.soundsounds = false;
-		}
-	}
-	else
-	{
-		if (ImGui::Button("SOUND: OFF", buttonSize)) {
-			game.soundsounds = true;
-		}
-	}
+
 	// Restaurar estilos
 	ImGui::PopStyleVar(2);
 	ImGui::PopStyleColor(4);
@@ -1271,6 +1244,177 @@ void menuPause(GameLogic& game, ImFont* scoreFont, SoundManager& sound)
 
 }
 
+void menuAudio(GameLogic& game, ImFont* scoreFont, SoundManager& sound) {
+
+	if (iniciar)
+	{
+		// Obtener el tama�o de la pantalla o ventana principal
+		ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+		// Calcular tama�o y m�rgenes din�micos para los botones
+		ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f);
+		float buttonSpacing = screenSize.y * 0.02f; // Espaciado vertical entre botones
+		float totalWidth = buttonSize.x + 20.0f;   // Ancho de la ventana considerando el bot�n
+		float totalHeight = buttonSize.y * 4 + buttonSpacing * 3; // Altura total para los 4 botones
+
+		// Ajustar la posici�n para centrar los botones verticalmente en la pantalla
+		float posX = (screenSize.x - totalWidth) / 2.0f;
+		float posY = (screenSize.y - totalHeight) / 2.0f;
+		ImGui::Begin("SCORE", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+		ImGui::PushFont(scoreFont);
+
+		std::string scoreStr = "Score: " + std::to_string(game.score / 100);
+
+		// Calcula el ancho del texto usando la cadena
+		float textWidth = ImGui::CalcTextSize(scoreStr.c_str()).x;
+
+		// Centrar el texto correctamente
+		ImGui::SetWindowPos(ImVec2((screenSize.x - textWidth) / 2.0f, 150));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f)); // Color blanco
+		// Muestra el texto
+		ImGui::Text("%s", scoreStr.c_str());
+
+		ImGui::PopStyleColor();
+		ImGui::PopFont();
+		ImGui::End();
+
+
+		// Configurar la ventana de ImGui para los botones
+		ImGui::SetNextWindowPos(ImVec2(posX, posY));
+		ImGui::SetNextWindowSize(ImVec2(totalWidth, totalHeight + 50), ImGuiCond_Always);
+		ImGui::Begin("Botones Centrales", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+		// Estilos de botones
+		ImVec4 fonsColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f); // Gris claro para el botón
+		ImVec4 bordeColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);  // Gris oscuro para el borde
+		ImVec4 hoverColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);  // Gris medio para hover
+		ImVec4 activeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Gris ligeramente más oscuro para activo
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f);
+		ImGui::PushStyleColor(ImGuiCol_Button, fonsColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);
+		ImGui::PushStyleColor(ImGuiCol_Border, bordeColor);
+
+		ImGui::SetCursorPos(ImVec2(10.0f, 10.0f)); // Margen superior
+		if (game.musicsounds)
+		{
+
+			if (ImGui::Button("MUSIC: ON", buttonSize)) {
+				game.musicsounds = false;
+				sound.backgroundMusic->setVolume(0);
+			}
+		}
+		else
+		{
+			if (ImGui::Button("MUSIC: OFF", buttonSize)) {
+				game.musicsounds = true;
+				sound.backgroundMusic->setVolume(0.2f);
+			}
+		}
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+		if (game.soundsounds)
+		{
+			if (ImGui::Button("SOUND: ON", buttonSize)) {
+				game.soundsounds = false;
+			}
+		}
+		else
+		{
+			if (ImGui::Button("SOUND: OFF", buttonSize)) {
+				game.soundsounds = true;
+			}
+		}
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+		if (ImGui::Button("SORTIR", buttonSize)) {
+			botoaudio = false;
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(4);
+
+		ImGui::End();
+	}
+	else
+	{
+		
+		// Obtener el tama�o de la pantalla o ventana principal
+		ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+
+		// Calcular tama�o y m�rgenes din�micos para los botones
+		ImVec2 buttonSize = ImVec2(screenSize.x * 0.13f, screenSize.y * 0.07f); // Botones ocupan 20% de ancho y 10% de alto de la pantalla
+		float buttonSpacing = screenSize.x * 0.02f; // Espaciado entre botones (2% del ancho)
+		float totalWidth = buttonSize.x * 4 + buttonSpacing * 3; // Ancho total considerando los m�rgenes
+		float totalHeight = buttonSize.y + 20.0f; // Altura total con margen adicional
+
+		// Ajustar la posici�n para centrar los botones en la pantalla
+		float windowWidth = totalWidth + 20;
+		float windowHeight = totalHeight + 20;
+		float posX = (screenSize.x - windowWidth) / 2.0f;
+		float posY = screenSize.y - windowHeight - 153.0f;
+
+		// Configurar la ventana de ImGui para los botones
+		ImGui::SetNextWindowPos(ImVec2(posX, posY));
+		ImGui::SetNextWindowSize(ImVec2(totalWidth + 20, totalHeight + 20), ImGuiCond_Always);
+		ImGui::Begin("Botons audio", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+
+		ImVec4 fonsColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f); // Gris claro para el botón
+		ImVec4 bordeColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);  // Gris oscuro para el borde
+		ImVec4 hoverColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);  // Gris medio para hover
+		ImVec4 activeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // Gris ligeramente más oscuro para activo
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 5.0f); // Grosor del borde
+		ImGui::PushStyleColor(ImGuiCol_Button, fonsColor); // Color de fondo
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor); // Color hover
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor); // Color activo
+		ImGui::PushStyleColor(ImGuiCol_Border, bordeColor); // Color del borde
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f); // Bordes redondeados
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing);
+		float centerX = (totalWidth - 4 * buttonSize.x) / 2.0f;
+		float centerY = (totalHeight - buttonSize.y) / 2.0f;
+
+		ImGui::SetCursorPos(ImVec2((totalWidth - buttonSize.x * 3 - buttonSpacing * 2) / 2.0f, centerY));
+		if (game.musicsounds)
+		{
+
+			if (ImGui::Button("MUSIC: ON", buttonSize)) {
+				game.musicsounds = false;
+				sound.backgroundMusic->setVolume(0);
+			}
+		}
+		else
+		{
+			if (ImGui::Button("MUSIC: OFF", buttonSize)) {
+				game.musicsounds = true;
+				sound.backgroundMusic->setVolume(0.2f);
+			}
+		}
+		ImGui::SameLine(0.0f, buttonSpacing);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY());
+		if (game.soundsounds)
+		{
+			if (ImGui::Button("SOUND: ON", buttonSize)) {
+				game.soundsounds = false;
+			}
+		}
+		else
+		{
+			if (ImGui::Button("SOUND: OFF", buttonSize)) {
+				game.soundsounds = true;
+			}
+		}
+		ImGui::SameLine(0.0f, buttonSpacing);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY());
+		if (ImGui::Button("SORTIR", buttonSize)) {
+			botoaudio = false;
+		}
+		// Restaurar estilos
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(4);
+
+		ImGui::End();
+	}
+}
 void fonsMenuPause()
 {
 	ImVec2 screenSize = ImGui::GetIO().DisplaySize;
@@ -1442,6 +1586,7 @@ void pantallaFinal(GameLogic& game)
 		netejarFons();
 		iniciar = true;
 		game = GameLogic(dificultat, game.musicsounds, game.soundsounds);
+		game.shieldpicked = false;
 		final = false;
 	}
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonSpacing); // A�adir espaciado entre botones
@@ -1486,7 +1631,14 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 		if (pause)
 		{
 			fonsMenuPause();
-			menuPause(game, scoreFont, sound);
+			if (botoaudio)
+			{
+				menuAudio(game, scoreFont, sound);
+			}
+			else
+			{
+				menuPause(game, scoreFont, sound);
+			}
 		}
 		ImGui::PushFont(fontDebug);
 		//debugButton(debug);
@@ -1518,11 +1670,20 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 					primeraCarrega = false;
 				}
 				fonsMenu();
-				draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
+				if (botoaudio)
+				{
+					menuAudio(game, fontJoc, sound);
+				}
+				else
+				{
+					draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
+				}
+				
 			}
 			else
 			{
 				draw_garageButtons(iniciar, garatge, configuracio, sortir);
+							
 			}
 			ImGui::PopFont();
 		}
@@ -5484,13 +5645,18 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 GLuint fuelBar = 0;
+GLuint fuelIcon = 0; // Variable per a la icona de fuel
 
 void carregarFuelBar() {
 	if (fuelBar == 0) {
 		fuelBar = loadIMA_SOIL(".\\textures\\fuel.png");
 	}
 }
-
+void carregarFuelIcon() {
+	if (fuelIcon == 0) { 
+		fuelIcon = loadIMA_SOIL(".\\textures\\fuelIcon.png");
+	}
+}
 // DEMO 
 void drawFuelBar(float percentatgeFuel) {
 	carregarFuelBar();
@@ -5519,6 +5685,25 @@ void drawFuelBar(float percentatgeFuel) {
 
 	ImGui::PopStyleVar(2);
 }
+
+void drawFuelIcon() {
+	carregarFuelIcon();
+
+	// Configuració de la posició i mida de la icona
+	ImVec2 iconSize = ImVec2(40, 40);
+	ImVec2 iconPos = ImVec2(20, ImGui::GetIO().DisplaySize.y - 70 + 10); // Posició estàtica
+
+	// Dibuixar la icona en una finestra separada
+	ImGui::SetNextWindowPos(iconPos, ImGuiCond_Always);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::Begin("Fuel Icon", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground);
+	ImGui::Image((ImTextureID)(intptr_t)fuelIcon, iconSize);
+	ImGui::End();
+	ImGui::PopStyleVar(2);
+}
+
+
 
 GLuint escut = 0;
 
@@ -5909,6 +6094,7 @@ int main(void)
 
 			float percentatgeFuel = game.remainingFuel / FUEL_DURATION;
 			drawFuelBar(percentatgeFuel);
+			drawFuelIcon();
 			drawShield(game.shieldEquipped);
 		}
 		else
