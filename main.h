@@ -288,6 +288,7 @@
 	bool final = false;
 	bool primeraCarrega = true;
 	bool dificultats = false;
+	bool botoaudio = false;
 
 
 	// MAURI: Funcions del joc
