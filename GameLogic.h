@@ -15,6 +15,9 @@
 #include <iomanip>
 #include <sstream>
 
+#include <wininet.h>
+#pragma comment(lib, "wininet.lib")
+
 using namespace std;
 using namespace glm;
 

@@ -5833,8 +5833,88 @@ const char* GetDificultatName(DIFICULTATS dificultat) {
 }
 
 
+bool descargarArchivoFTP(const std::string& servidor, const std::string& usuario, const std::string& contrasena,
+	const std::string& archivoRemoto, const std::string& archivoLocal) {
+	// Conectar al servidor FTP
+	HINTERNET hInternet = InternetOpen(L"FTPClient", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+	if (!hInternet) {
+		std::cerr << "Error al iniciar WinINet." << std::endl;
+		return false;
+	}
+
+	HINTERNET hFtpSession = InternetConnectA(hInternet, servidor.c_str(), INTERNET_DEFAULT_FTP_PORT,
+		usuario.c_str(), contrasena.c_str(), INTERNET_SERVICE_FTP, 0, 0);
+	if (!hFtpSession) {
+		std::cerr << "Error al conectar al servidor FTP." << std::endl;
+		InternetCloseHandle(hInternet);
+		return false;
+	}
+
+	// Descargar el archivo
+	if (!FtpGetFileA(hFtpSession, archivoRemoto.c_str(), archivoLocal.c_str(), FALSE, FILE_ATTRIBUTE_NORMAL, FTP_TRANSFER_TYPE_BINARY, 0)) {
+		std::cerr << "Error al descargar el archivo desde el servidor FTP." << std::endl;
+		InternetCloseHandle(hFtpSession);
+		InternetCloseHandle(hInternet);
+		return false;
+	}
+
+	std::cout << "Archivo descargado con éxito: " << archivoLocal << std::endl;
+
+	// Cerrar las conexiones
+	InternetCloseHandle(hFtpSession);
+	InternetCloseHandle(hInternet);
+	return true;
+}
+
+bool subirArchivoFTP(const std::string& servidor, const std::string& usuario, const std::string& contrasena,
+	const std::string& archivoLocal, const std::string& archivoRemoto) {
+	// Conectar al servidor FTP
+	HINTERNET hInternet = InternetOpen(L"FTPClient", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+	if (!hInternet) {
+		std::cerr << "Error al iniciar WinINet." << std::endl;
+		return false;
+	}
+
+	HINTERNET hFtpSession = InternetConnectA(hInternet, servidor.c_str(), INTERNET_DEFAULT_FTP_PORT,
+		usuario.c_str(), contrasena.c_str(), INTERNET_SERVICE_FTP, 0, 0);
+	if (!hFtpSession) {
+		std::cerr << "Error al conectar al servidor FTP." << std::endl;
+		InternetCloseHandle(hInternet);
+		return false;
+	}
+
+	// Subir el archivo
+	if (!FtpPutFileA(hFtpSession, archivoLocal.c_str(), archivoRemoto.c_str(), FTP_TRANSFER_TYPE_BINARY, 0)) {
+		std::cerr << "Error al subir el archivo al servidor FTP." << std::endl;
+		InternetCloseHandle(hFtpSession);
+		InternetCloseHandle(hInternet);
+		return false;
+	}
+
+	std::cout << "Archivo subido con éxito: " << archivoLocal << std::endl;
+
+	// Cerrar las conexiones
+	InternetCloseHandle(hFtpSession);
+	InternetCloseHandle(hInternet);
+	return true;
+}
+
 int main(void)
 {
+
+	std::string servidor = "ftpupload.net";         // FTP Hostname
+	std::string usuario = "if0_37942983";         // Usuario FTP
+	std::string contrasena = "roadrush123";  // Contraseña FTP
+	std::string archivoRemoto1 = "/htdocs/scores_facil.txt";  // Ruta del archivo en el servidor
+	std::string archivoLocal1 = "scores_facil.txt";		// Ruta local del archivo
+	
+	std::string archivoRemoto2 = "/htdocs/scores_mig.txt";  // Ruta del archivo en el servidor
+	std::string archivoLocal2 = "scores_mig.txt";		// Ruta local del archivo
+	
+	std::string archivoRemoto3 = "/htdocs/scores_dificil.txt";  // Ruta del archivo en el servidor
+	std::string archivoLocal3 = "scores_dificil.txt";		// Ruta local del archivo
+
+
 	//    GLFWwindow* window;
 	// Entorn VGI. Timer: Variables
 	float time = elapsedTime;
@@ -5994,6 +6074,11 @@ int main(void)
 	game.musicsounds = true;
 	game.soundsounds = true;
 
+
+	descargarArchivoFTP(servidor, usuario, contrasena, archivoRemoto1, archivoLocal1);
+	descargarArchivoFTP(servidor, usuario, contrasena, archivoRemoto2, archivoLocal2);
+	descargarArchivoFTP(servidor, usuario, contrasena, archivoRemoto3, archivoLocal3);
+
 	// Loop until the user closes the window -- MAURI: BUCLE PRINCIPAL
 	while (!glfwWindowShouldClose(window) && !sortir)
 	{
@@ -6125,7 +6210,6 @@ int main(void)
 					actualizarMejoresPuntuaciones(puntuacions, game.score);
 					guardarMillorsPuntuacions(puntuacions, dificultat);
 
-					
 					final = true;
 					iniciar = false;
 					animationViewed = false;
@@ -6175,7 +6259,9 @@ int main(void)
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(window) == 0 && !sortir);
 
-
+	subirArchivoFTP(servidor, usuario, contrasena, archivoLocal1, archivoRemoto1);
+	subirArchivoFTP(servidor, usuario, contrasena, archivoLocal2, archivoRemoto2);
+	subirArchivoFTP(servidor, usuario, contrasena, archivoLocal3, archivoRemoto3);
 
 	// Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();
