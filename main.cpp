@@ -1690,12 +1690,13 @@ void draw_menuInicial(ImFont* fontJoc, ImFont* fontDebug, ImFont* scoreFont, Gam
 				{
 					draw_ProgramButtons(iniciar, garatge, configuracio, sortir);
 				}
-				
+				llum_ambient = true;
+
 			}
 			else
 			{
 				draw_garageButtons(iniciar, garatge, configuracio, sortir);
-							
+				llum_ambient = false;
 			}
 			ImGui::PopFont();
 		}
@@ -5702,8 +5703,8 @@ void drawFuelIcon() {
 	carregarFuelIcon();
 
 	// Configuració de la posició i mida de la icona
-	ImVec2 iconSize = ImVec2(40, 40);
-	ImVec2 iconPos = ImVec2(20, ImGui::GetIO().DisplaySize.y - 70 + 10); // Posició estàtica
+	ImVec2 iconSize = ImVec2(32, 38);
+	ImVec2 iconPos = ImVec2(24, ImGui::GetIO().DisplaySize.y - 70 + 10); // Posició estàtica
 
 	// Dibuixar la icona en una finestra separada
 	ImGui::SetNextWindowPos(iconPos, ImGuiCond_Always);

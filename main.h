@@ -291,7 +291,6 @@
 	bool botoaudio = false;
 	bool animationViewed = false;
 
-
 	// MAURI: Funcions del joc
 	void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit);
 

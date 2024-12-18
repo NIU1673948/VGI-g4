@@ -25,7 +25,7 @@
 void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool ll_amb, LLUM* lumin, char obj, bool frnt_fcs,
 	bool bc_lin, int step)
 {
-	//bool ll_amb=true;
+	//ll_amb=true;
 	GLdouble angv, angh;
 
 	// Configuraci� de la font de llum LIGHT0
@@ -35,17 +35,17 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	GLfloat ambientg[] = { 1,1,1,1.0 };
 
 
-// Definici� de llum ambient segons booleana ll_amb
-//	if (ll_amb) glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientg);
-//		else glLightModelfv(GL_LIGHT_MODEL_AMBIENT,especular);
+	// Definici� de llum ambient segons booleana ll_amb
+	//	if (ll_amb) glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientg);
+	//		else glLightModelfv(GL_LIGHT_MODEL_AMBIENT,especular);
 	if (ll_amb) glUniform4f(glGetUniformLocation(sh_programID, "LightModelAmbient"), ambientg[0], ambientg[1], ambientg[2], ambientg[3]);
 	else glUniform4f(glGetUniformLocation(sh_programID, "LightModelAmbient"), especular[0], especular[1], especular[2], especular[3]);
 
-// Passar llum fixe a Coordenades M�n o llum lligada a c�mera
+	// Passar llum fixe a Coordenades M�n o llum lligada a c�mera
 	glUniform1i(glGetUniformLocation(sh_programID, "fixedLight"), ifix);
 
-// Llum #0 - (+Z)
-// Conversi� angles graus -> radians
+	// Llum #0 - (+Z)
+	// Conversi� angles graus -> radians
 	angv = lumin[0].posicio.alfa * PI / 180;
 	angh = lumin[0].posicio.beta * PI / 180;
 
@@ -74,12 +74,12 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glEnable(GL_LIGHT0);	//	else glDisable(GL_LIGHT0);
 	glUniform1i(glGetUniformLocation(sh_programID, "LightSource[0].sw_light"), lumin[0].encesa);
 
-// Llum #1 (+X)
-// Conversi� angles graus -> radians
-	angv = lumin[1].posicio.alfa*PI / 180;
-	angh = lumin[1].posicio.beta*PI / 180;
+	// Llum #1 (+X)
+	// Conversi� angles graus -> radians
+	angv = lumin[1].posicio.alfa * PI / 180;
+	angh = lumin[1].posicio.beta * PI / 180;
 
-// Conversi� Coord. esf�riques -> Coord. cartesianes per a la posici� de la llum
+	// Conversi� Coord. esf�riques -> Coord. cartesianes per a la posici� de la llum
 	position[0] = 0;
 	position[1] = -1;
 	position[2] = 0;
@@ -87,15 +87,15 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//glLightfv(GL_LIGHT1, GL_POSITION, position);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[1].position"), position[0], position[1], position[2], position[3]);
 
-//	glLightfv(GL_LIGHT1, GL_DIFFUSE, lumin[1].difusa);
+	//	glLightfv(GL_LIGHT1, GL_DIFFUSE, lumin[1].difusa);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[1].diffuse"), lumin[0].difusa[1], lumin[1].difusa[1], lumin[1].difusa[2], lumin[1].difusa[3]);
-//	glLightfv(GL_LIGHT1, GL_SPECULAR, lumin[1].especular);
+	//	glLightfv(GL_LIGHT1, GL_SPECULAR, lumin[1].especular);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[1].specular"), lumin[1].especular[0], lumin[1].especular[1], lumin[1].especular[2], lumin[1].especular[3]);
 
-// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
-//	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, lumin[1].atenuacio.c);
-//	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, lumin[1].atenuacio.b);
-//	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, lumin[1].atenuacio.a);
+	// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
+	//	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, lumin[1].atenuacio.c);
+	//	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, lumin[1].atenuacio.b);
+	//	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, lumin[1].atenuacio.a);
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[1].attenuation"), lumin[1].atenuacio.a, lumin[1].atenuacio.b, lumin[1].atenuacio.c);
 
 	//	if (lumin[1].restringida) {	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lumin[1].spotdirection);
@@ -110,15 +110,15 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glEnable(GL_LIGHT1);	//	glDisable(GL_LIGHT1);
 	glUniform1i(glGetUniformLocation(sh_programID, "LightSource[1].sw_light"), lumin[1].encesa);
 
-// Llum #2 (+Y)
-// Conversi� angles graus -> radians
-	angv = lumin[2].posicio.alfa*PI / 180;
-	angh = lumin[2].posicio.beta*PI / 180;
-				
-// Conversi� Coord. esf�riques -> Coord. cartesianes
-	position[0] = lumin[2].posicio.R*cos(angh)*cos(angv);
-	position[1] = lumin[2].posicio.R*sin(angh)*cos(angv);
-	position[2] = lumin[2].posicio.R*sin(angv);
+	// Llum #2 (+Y)
+	// Conversi� angles graus -> radians
+	angv = lumin[2].posicio.alfa * PI / 180;
+	angh = lumin[2].posicio.beta * PI / 180;
+
+	// Conversi� Coord. esf�riques -> Coord. cartesianes
+	position[0] = lumin[2].posicio.R * cos(angh) * cos(angv);
+	position[1] = lumin[2].posicio.R * sin(angh) * cos(angv);
+	position[2] = lumin[2].posicio.R * sin(angv);
 	position[3] = 1.0;
 	//	glLightfv(GL_LIGHT2, GL_POSITION, position);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[2].position"), position[0], position[1], position[2], position[3]);
@@ -128,10 +128,10 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glLightfv(GL_LIGHT2, GL_SPECULAR, lumin[2].especular);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[2].specular"), lumin[2].especular[0], lumin[2].especular[1], lumin[2].especular[2], lumin[2].especular[3]);
 
-// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
-	//	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, lumin[2].atenuacio.c);
-	//	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, lumin[2].atenuacio.b);
-	//	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, lumin[2].atenuacio.a);
+	// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
+		//	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, lumin[2].atenuacio.c);
+		//	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, lumin[2].atenuacio.b);
+		//	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, lumin[2].atenuacio.a);
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[2].attenuation"), lumin[2].atenuacio.a, lumin[2].atenuacio.b, lumin[2].atenuacio.c);
 
 	//	if (lumin[2].restringida) {	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lumin[2].spotdirection);
@@ -146,15 +146,15 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glEnable(GL_LIGHT2);	//	glDisable(GL_LIGHT2);
 	glUniform1i(glGetUniformLocation(sh_programID, "LightSource[2].sw_light"), lumin[2].encesa);
 
-// Llum #3 (Z=Y=X)
-// Conversi� angles graus -> radians
-	angv = lumin[3].posicio.alfa*PI / 180;
-	angh = lumin[3].posicio.beta*PI / 180;
+	// Llum #3 (Z=Y=X)
+	// Conversi� angles graus -> radians
+	angv = lumin[3].posicio.alfa * PI / 180;
+	angh = lumin[3].posicio.beta * PI / 180;
 
-// Conversi� Coord. esf�riques -> Coord. cartesianes
-	position[0] = lumin[3].posicio.R*cos(angh)*cos(angv);
-	position[1] = lumin[3].posicio.R*sin(angh)*cos(angv);
-	position[2] = lumin[3].posicio.R*sin(angv);
+	// Conversi� Coord. esf�riques -> Coord. cartesianes
+	position[0] = lumin[3].posicio.R * cos(angh) * cos(angv);
+	position[1] = lumin[3].posicio.R * sin(angh) * cos(angv);
+	position[2] = lumin[3].posicio.R * sin(angv);
 	position[3] = 1.0;
 	//glLightfv(GL_LIGHT3, GL_POSITION, position);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[3].position"), position[0], position[1], position[2], position[3]);
@@ -164,10 +164,10 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glLightfv(GL_LIGHT3, GL_SPECULAR, lumin[3].especular);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[3].specular"), lumin[3].especular[0], lumin[3].especular[1], lumin[3].especular[2], lumin[3].especular[3]);
 
-// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
-	//	glLightf(GL_LIGHT3, GL_CONSTANT_ATTENUATION, lumin[3].atenuacio.c);
-	//	glLightf(GL_LIGHT3, GL_LINEAR_ATTENUATION, lumin[3].atenuacio.b);
-	//	glLightf(GL_LIGHT3, GL_QUADRATIC_ATTENUATION, lumin[3].atenuacio.a);
+	// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
+		//	glLightf(GL_LIGHT3, GL_CONSTANT_ATTENUATION, lumin[3].atenuacio.c);
+		//	glLightf(GL_LIGHT3, GL_LINEAR_ATTENUATION, lumin[3].atenuacio.b);
+		//	glLightf(GL_LIGHT3, GL_QUADRATIC_ATTENUATION, lumin[3].atenuacio.a);
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[3].attenuation"), lumin[3].atenuacio.a, lumin[3].atenuacio.b, lumin[3].atenuacio.c);
 
 	//	if (lumin[3].restringida) {	glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, lumin[3].spotdirection);
@@ -182,15 +182,15 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glEnable(GL_LIGHT3);	// glDisable(GL_LIGHT3);
 	glUniform1i(glGetUniformLocation(sh_programID, "LightSource[3].sw_light"), lumin[3].encesa);
 
-// Llum #4 (-Z)
-// Conversi� angles graus -> radians
-	angv = lumin[4].posicio.alfa*PI / 180;
-	angh = lumin[4].posicio.beta*PI / 180;
-				
-// Conversi� Coord. esf�riques -> Coord. cartesianes
-	position[0] = lumin[4].posicio.R*cos(angh)*cos(angv);
-	position[1] = lumin[4].posicio.R*sin(angh)*cos(angv);
-	position[2] = lumin[4].posicio.R*sin(angv);
+	// Llum #4 (-Z)
+	// Conversi� angles graus -> radians
+	angv = lumin[4].posicio.alfa * PI / 180;
+	angh = lumin[4].posicio.beta * PI / 180;
+
+	// Conversi� Coord. esf�riques -> Coord. cartesianes
+	position[0] = lumin[4].posicio.R * cos(angh) * cos(angv);
+	position[1] = lumin[4].posicio.R * sin(angh) * cos(angv);
+	position[2] = lumin[4].posicio.R * sin(angv);
 	position[3] = 1.0;
 	//glLightfv(GL_LIGHT4, GL_POSITION, position);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[4].position"), position[0], position[1], position[2], position[3]);
@@ -200,10 +200,10 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glLightfv(GL_LIGHT4, GL_SPECULAR, lumin[4].especular);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[4].specular"), lumin[4].especular[0], lumin[4].especular[1], lumin[4].especular[2], lumin[4].especular[3]);
 
-// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
-	//	glLightf(GL_LIGHT4, GL_CONSTANT_ATTENUATION, lumin[4].atenuacio.c);
-	//	glLightf(GL_LIGHT4, GL_LINEAR_ATTENUATION, lumin[4].atenuacio.b);
-	//	glLightf(GL_LIGHT4, GL_QUADRATIC_ATTENUATION, lumin[4].atenuacio.a);
+	// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
+		//	glLightf(GL_LIGHT4, GL_CONSTANT_ATTENUATION, lumin[4].atenuacio.c);
+		//	glLightf(GL_LIGHT4, GL_LINEAR_ATTENUATION, lumin[4].atenuacio.b);
+		//	glLightf(GL_LIGHT4, GL_QUADRATIC_ATTENUATION, lumin[4].atenuacio.a);
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[4].attenuation"), lumin[4].atenuacio.a, lumin[4].atenuacio.b, lumin[4].atenuacio.c);
 
 	//	if (lumin[4].restringida) {	glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lumin[4].spotdirection);
@@ -218,12 +218,12 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glEnable(GL_LIGHT4);	//	else glDisable(GL_LIGHT4);
 	glUniform1i(glGetUniformLocation(sh_programID, "LightSource[4].sw_light"), lumin[4].encesa);
 
-// Llum #5
-// Conversi� angles graus -> radians
+	// Llum #5
+	// Conversi� angles graus -> radians
 	angv = lumin[5].posicio.alfa * PI / 180;
 	angh = lumin[5].posicio.beta * PI / 180;
 
-// Conversi� Coord. esf�riques -> Coord. cartesianes
+	// Conversi� Coord. esf�riques -> Coord. cartesianes
 	position[0] = lumin[5].posicio.R * cos(angh) * cos(angv);
 	position[1] = lumin[5].posicio.R * sin(angh) * cos(angv);
 	position[2] = lumin[5].posicio.R * sin(angv);
@@ -236,10 +236,10 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glLightfv(GL_LIGHT5, GL_SPECULAR, lumin[5].especular);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[5].specular"), lumin[5].especular[0], lumin[5].especular[1], lumin[5].especular[2], lumin[5].especular[3]);
 
-// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
-	//	glLightf(GL_LIGHT5, GL_CONSTANT_ATTENUATION, lumin[5].atenuacio.c);
-	//	glLightf(GL_LIGHT5, GL_LINEAR_ATTENUATION, lumin[5].atenuacio.b);
-	//	glLightf(GL_LIGHT5, GL_QUADRATIC_ATTENUATION, lumin[5].atenuacio.a);
+	// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
+		//	glLightf(GL_LIGHT5, GL_CONSTANT_ATTENUATION, lumin[5].atenuacio.c);
+		//	glLightf(GL_LIGHT5, GL_LINEAR_ATTENUATION, lumin[5].atenuacio.b);
+		//	glLightf(GL_LIGHT5, GL_QUADRATIC_ATTENUATION, lumin[5].atenuacio.a);
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[5].attenuation"), lumin[5].atenuacio.a, lumin[5].atenuacio.b, lumin[5].atenuacio.c);
 
 	//	if (lumin[5].restringida) {	glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, lumin[5].spotdirection);
@@ -250,15 +250,15 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[5].spotDirection"), lumin[5].spotdirection[0], lumin[5].spotdirection[1], lumin[5].spotdirection[2]);
 	glUniform1f(glGetUniformLocation(sh_programID, "LightSource[5].spotCosCutoff"), lumin[5].spotcoscutoff);
 	glUniform1f(glGetUniformLocation(sh_programID, "LightSource[5].spotExponent"), lumin[5].spotexponent);
-//	else glDisable(GL_LIGHT5);
+	//	else glDisable(GL_LIGHT5);
 	glUniform1i(glGetUniformLocation(sh_programID, "LightSource[5].sw_light"), lumin[5].encesa);
 
-// Llum #6 
-// Conversi� angles graus -> radians
+	// Llum #6 
+	// Conversi� angles graus -> radians
 	angv = lumin[6].posicio.alfa * PI / 180;
 	angh = lumin[6].posicio.beta * PI / 180;
 
-// Conversi� Coord. esf�riques -> Coord. cartesianes
+	// Conversi� Coord. esf�riques -> Coord. cartesianes
 	position[0] = lumin[6].posicio.R * cos(angh) * cos(angv);
 	position[1] = lumin[6].posicio.R * sin(angh) * cos(angv);
 	position[2] = lumin[6].posicio.R * sin(angv);
@@ -271,10 +271,10 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glLightfv(GL_LIGHT6, GL_SPECULAR, lumin[6].especular);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[6].specular"), lumin[6].especular[0], lumin[6].especular[1], lumin[6].especular[2], lumin[6].especular[3]);
 
-// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
-	//	glLightf(GL_LIGHT6, GL_CONSTANT_ATTENUATION, lumin[6].atenuacio.c);
-	//	glLightf(GL_LIGHT6, GL_LINEAR_ATTENUATION, lumin[6].atenuacio.b);
-	//	glLightf(GL_LIGHT6, GL_QUADRATIC_ATTENUATION, lumin[6].atenuacio.a);
+	// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
+		//	glLightf(GL_LIGHT6, GL_CONSTANT_ATTENUATION, lumin[6].atenuacio.c);
+		//	glLightf(GL_LIGHT6, GL_LINEAR_ATTENUATION, lumin[6].atenuacio.b);
+		//	glLightf(GL_LIGHT6, GL_QUADRATIC_ATTENUATION, lumin[6].atenuacio.a);
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[6].attenuation"), lumin[6].atenuacio.a, lumin[6].atenuacio.b, lumin[6].atenuacio.c);
 
 	//	if (lumin[6].restringida) {	glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, lumin[6].spotdirection);
@@ -285,16 +285,16 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[6].spotDirection"), lumin[6].spotdirection[0], lumin[6].spotdirection[1], lumin[6].spotdirection[2]);
 	glUniform1f(glGetUniformLocation(sh_programID, "LightSource[6].spotCosCutoff"), lumin[6].spotcoscutoff);
 	glUniform1f(glGetUniformLocation(sh_programID, "LightSource[6].spotExponent"), lumin[6].spotexponent);
-	
+
 	// glEnable(GL_LIGHT6)	//	glDisable(GL_LIGHT6);
 	glUniform1i(glGetUniformLocation(sh_programID, "LightSource[6].sw_light"), lumin[6].encesa);
 
-// Llum #7 
-// Conversi� angles graus -> radians
+	// Llum #7 
+	// Conversi� angles graus -> radians
 	angv = lumin[7].posicio.alfa * PI / 180;
 	angh = lumin[7].posicio.beta * PI / 180;
 
-// Conversi� Coord. esf�riques -> Coord. cartesianes
+	// Conversi� Coord. esf�riques -> Coord. cartesianes
 	position[0] = lumin[7].posicio.R * cos(angh) * cos(angv);
 	position[1] = lumin[7].posicio.R * sin(angh) * cos(angv);
 	position[2] = lumin[7].posicio.R * sin(angv);
@@ -307,10 +307,10 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//	glLightfv(GL_LIGHT7, GL_SPECULAR, lumin[7].especular);
 	glUniform4f(glGetUniformLocation(sh_programID, "LightSource[7].specular"), lumin[7].especular[0], lumin[7].especular[1], lumin[7].especular[2], lumin[7].especular[3]);
 
-// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
-	//	glLightf(GL_LIGHT7, GL_CONSTANT_ATTENUATION, lumin[7].atenuacio.c);
-	//	glLightf(GL_LIGHT7, GL_LINEAR_ATTENUATION, lumin[7].atenuacio.b);
-	//	glLightf(GL_LIGHT7, GL_QUADRATIC_ATTENUATION, lumin[7].atenuacio.a);
+	// Coeficients factor atenuaci� f_att=1/(ad2+bd+c)
+		//	glLightf(GL_LIGHT7, GL_CONSTANT_ATTENUATION, lumin[7].atenuacio.c);
+		//	glLightf(GL_LIGHT7, GL_LINEAR_ATTENUATION, lumin[7].atenuacio.b);
+		//	glLightf(GL_LIGHT7, GL_QUADRATIC_ATTENUATION, lumin[7].atenuacio.a);
 	glUniform3f(glGetUniformLocation(sh_programID, "LightSource[7].attenuation"), lumin[7].atenuacio.a, lumin[7].atenuacio.b, lumin[7].atenuacio.c);
 
 	//	if (lumin[5].restringida) {	glLightfv(GL_LIGHT7, GL_SPOT_DIRECTION, lumin[7].spotdirection);
@@ -328,22 +328,22 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 	//glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
 
 // Selecci� del model d'iluminaci� segons variable ilumin
-	switch(ilumin)
+	switch (ilumin)
 	{
 	case PUNTS:
 		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 		break;
 
 	case FILFERROS:
-		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		break;
 
-    case PLANA:
+	case PLANA:
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-// PR�CTICA 3: Crida a la funci� pel c�lcul dels vectors normals normals a les cares si l'objecte �s un fractal
-   
-// Il.luminaci� per cares planes
-		glShadeModel(GL_FLAT); 
+		// PR�CTICA 3: Crida a la funci� pel c�lcul dels vectors normals normals a les cares si l'objecte �s un fractal
+
+		// Il.luminaci� per cares planes
+		glShadeModel(GL_FLAT);
 		break;
 
 	case SUAU:
