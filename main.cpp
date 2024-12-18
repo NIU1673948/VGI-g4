@@ -3277,59 +3277,64 @@ void Menu_Shaders_Opcio_CarregarVSFS()
 //    - mods: Variable que identifica si la tecla s'ha pulsat directa (mods=0), juntament amb la tecla Shift (mods=1) o la tecla Ctrl (mods=2).
 void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	// TODO: Agregue aqu� su c�digo de controlador de mensajes o llame al valor predeterminado
-	const double incr = 0.025f;
-	double modul = 0;
-	GLdouble vdir[3] = { 0, 0, 0 };
+	if (!glfwJoystickPresent(GLFW_JOYSTICK_1))
+	{
+		// TODO: Agregue aqu� su c�digo de controlador de mensajes o llame al valor predeterminado
+		const double incr = 0.025f;
+		double modul = 0;
+		GLdouble vdir[3] = { 0, 0, 0 };
 
-	// EntornVGI.ImGui: Test si events de mouse han sigut filtrats per ImGui (io.WantCaptureMouse)
-// (1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
-	ImGuiIO& io = ImGui::GetIO();
-	//io.AddMouseButtonEvent(button, true);
+		// EntornVGI.ImGui: Test si events de mouse han sigut filtrats per ImGui (io.WantCaptureMouse)
+	// (1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
+		ImGuiIO& io = ImGui::GetIO();
+		//io.AddMouseButtonEvent(button, true);
 
-	// (2) ONLY forward mouse data to your underlying app/game.
-	if (!io.WantCaptureKeyboard) { //<Tractament mouse de l'aplicaci�>}
-		// EntornVGI: Si tecla pulsada �s ESCAPE, tancar finestres i aplicaci�.
-		if (mods == 0 && key == GLFW_KEY_PRINT_SCREEN && action == GLFW_PRESS) statusB = !statusB;
-		else if ((mods == 1) && (action == GLFW_PRESS)) Teclat_Shift(key, window);	// Shorcuts Shift Key
-		else if ((mods == 2) && (action == GLFW_PRESS)) Teclat_Ctrl(key);	// Shortcuts Ctrl Key
-		else if ((objecte == C_BEZIER || objecte == C_BSPLINE || objecte == C_LEMNISCATA || objecte == C_HERMITTE
-			|| objecte == C_CATMULL_ROM) && (action == GLFW_PRESS)) Teclat_PasCorbes(key, action);
-		else if ((sw_grid) && ((grid.x) || (grid.y) || (grid.z))) Teclat_Grid(key, action);
-		else if (((key == GLFW_KEY_G) && (action == GLFW_PRESS)) && ((grid.x) || (grid.y) || (grid.z))) sw_grid = !sw_grid;
-		else if ((key == GLFW_KEY_O) && (action == GLFW_PRESS)) sw_color = true; // Activaci� color objecte
-		else if ((key == GLFW_KEY_F) && (action == GLFW_PRESS)) sw_color = false; // Activaci� color objecte
-		else if (pan) Teclat_Pan(key, action);
-		else if (transf)
-		{
-			if (rota) Teclat_TransRota(key, action);
-			else if (trasl) Teclat_TransTraslada(key, action);
-			else if (escal) Teclat_TransEscala(key, action);
+		// (2) ONLY forward mouse data to your underlying app/game.
+		if (!io.WantCaptureKeyboard) { //<Tractament mouse de l'aplicaci�>}
+			// EntornVGI: Si tecla pulsada �s ESCAPE, tancar finestres i aplicaci�.
+
+			if (mods == 0 && key == GLFW_KEY_PRINT_SCREEN && action == GLFW_PRESS) statusB = !statusB;
+			else if ((mods == 1) && (action == GLFW_PRESS)) Teclat_Shift(key, window);	// Shorcuts Shift Key
+			else if ((mods == 2) && (action == GLFW_PRESS)) Teclat_Ctrl(key);	// Shortcuts Ctrl Key
+			else if ((objecte == C_BEZIER || objecte == C_BSPLINE || objecte == C_LEMNISCATA || objecte == C_HERMITTE
+				|| objecte == C_CATMULL_ROM) && (action == GLFW_PRESS)) Teclat_PasCorbes(key, action);
+			else if ((sw_grid) && ((grid.x) || (grid.y) || (grid.z))) Teclat_Grid(key, action);
+			else if (((key == GLFW_KEY_G) && (action == GLFW_PRESS)) && ((grid.x) || (grid.y) || (grid.z))) sw_grid = !sw_grid;
+			else if ((key == GLFW_KEY_O) && (action == GLFW_PRESS)) sw_color = true; // Activaci� color objecte
+			else if ((key == GLFW_KEY_F) && (action == GLFW_PRESS)) sw_color = false; // Activaci� color objecte
+			else if (pan) Teclat_Pan(key, action);
+			else if (transf)
+			{
+				if (rota) Teclat_TransRota(key, action);
+				else if (trasl) Teclat_TransTraslada(key, action);
+				else if (escal) Teclat_TransEscala(key, action);
+			}
+			//JAN Canviar la camera al pulsar 'R'
+			else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 1 && garatge == false) c = (c < 1) ? (c + 1) : 0, camera = CAM_ESFERICA;
+			else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 1 && garatge == false) camera = CAM_NAVEGA, c++;
+			else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
+
+
+			//MAURI: Menu Pause
+			else if (((key == GLFW_KEY_P) || (key == GLFW_KEY_ESCAPE)) && action == GLFW_PRESS && !pause && iniciar) pause = true;
+			else if (((key == GLFW_KEY_P) || (key == GLFW_KEY_ESCAPE)) && action == GLFW_PRESS && pause && iniciar) pause = false;
+
+			else if (!sw_color) Teclat_ColorFons(key, action);
+			else Teclat_ColorObjecte(key, action);
+
 		}
-		//JAN Canviar la camera al pulsar 'R'
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c != 1 && garatge == false) c = (c < 1) ? (c + 1) : 0, camera = CAM_ESFERICA;
-		else if ((key == GLFW_KEY_R) && action == GLFW_PRESS && c == 1 && garatge == false) camera = CAM_NAVEGA, c++;
-		else if (camera == CAM_NAVEGA) Teclat_Navega(key, action);
 
+		// Crida a 
+		// ) per redibuixar l'escena
+			//OnPaint(window);
 
-		//MAURI: Menu Pause
-		else if (((key == GLFW_KEY_P) ||(key==GLFW_KEY_ESCAPE)) && action == GLFW_PRESS && !pause && iniciar) pause = true;
-		else if (((key == GLFW_KEY_P) || (key == GLFW_KEY_ESCAPE)) && action == GLFW_PRESS && pause && iniciar) pause = false;
+		/*	if (key == GLFW_KEY_E && action == GLFW_PRESS)
+				activate_airship();
 
-		else if (!sw_color) Teclat_ColorFons(key, action);
-		else Teclat_ColorObjecte(key, action);
-
+			int state = glfwGetKey(window, GLFW_KEY_E);
+			if (state == GLFW_PRESS) activate_airship();
+		*/
 	}
-	// Crida a 
-	// ) per redibuixar l'escena
-		//OnPaint(window);
-
-	/*	if (key == GLFW_KEY_E && action == GLFW_PRESS)
-			activate_airship();
-
-		int state = glfwGetKey(window, GLFW_KEY_E);
-		if (state == GLFW_PRESS) activate_airship();
-	*/
 }
 
 void OnKeyUp(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -5938,7 +5943,8 @@ int main(void)
 	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)OnMouseButton);			// - Directly redirect GLFW mouse button events
 	glfwSetCursorPosCallback(window, (GLFWcursorposfun)OnMouseMove);				// - Directly redirect GLFW mouse position events
 	glfwSetScrollCallback(window, (GLFWscrollfun)OnMouseWheel);						// - Directly redirect GLFW mouse wheel events
-	glfwSetKeyCallback(window, (GLFWkeyfun)OnKeyDown);								// - Directly redirect GLFW key events
+	glfwSetKeyCallback(window, (GLFWkeyfun)OnKeyDown);
+	// - Directly redirect GLFW key events
 	//glfwSetCharCallback(window, OnTextDown);										// - Directly redirect GLFW char events
 	glfwSetErrorCallback(error_callback);											// Error callback
 	glfwSetWindowRefreshCallback(window, (GLFWwindowrefreshfun)OnPaint);			// - Callback to refresh the screen
@@ -5993,6 +5999,41 @@ int main(void)
 	{
 		// Poll for and process events */
 		//        glfwPollEvents();
+		if (glfwJoystickPresent(GLFW_JOYSTICK_1))
+		{
+			int buttonCount;
+			const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+			static bool startButtonPressed = false;
+			if (buttons[7] == GLFW_PRESS && !startButtonPressed && iniciar) {
+				pause = !pause;
+				startButtonPressed = true;
+			}
+			if (buttons[7] == GLFW_RELEASE) {
+				startButtonPressed = false;
+			}
+
+			static bool yButtonPressed = false;
+			if (buttons[3] == GLFW_PRESS && !yButtonPressed && !garatge) {
+				if (c != 1) {
+					if (c < 1) {
+						c = c + 1;
+					}
+					else {
+						c = 0;
+					}
+					camera = CAM_ESFERICA;
+				}
+				else if (c == 1) {
+					camera = CAM_NAVEGA;
+					c++;
+				}
+				yButtonPressed = true;
+			}
+
+			if (buttons[3] == GLFW_RELEASE) {
+				yButtonPressed = false;
+			}
+		}
 
 		now = glfwGetTime();
 		delta = now - previous;
@@ -6010,6 +6051,8 @@ int main(void)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		
+
 		draw_menuInicial(largeFont, debugFont, scoreFont, game, soundManager);
 
 		if (dificultat != game.dificultat) game = GameLogic(dificultat, game.musicsounds, game.soundsounds);
@@ -6020,6 +6063,7 @@ int main(void)
 
 		if (iniciar && !pause)
 		{
+
 			puntuacions = cargarMillorsPuntuacions(dificultat);
 
 			if (!puntuacions.empty()) {
