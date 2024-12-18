@@ -3,6 +3,10 @@
 vector<COBJModel*> CAR_MODELS;
 COBJModel* OBJECT_MODELS[3];
 vector<COBJModel*> ENVIRONMENT_MODELS;
+COBJModel* MODEL_MONEDA;
+COBJModel* MODEL_ROAD;
+COBJModel* MODEL_TREE;
+
 
 vector<string> environmentPaths = {
     ".\\OBJFiles\\low_poly_houses_pack\\house_01.obj",
@@ -344,13 +348,8 @@ void EnvironmentRow::draw(GLuint sh_programID, glm::mat4 MatriuVista, glm::mat4 
 
 Environment::Environment() : m_roadY(0), m_road(nullptr)
 {
-    m_road = new COBJModel();
-    const char* rutaArxiu = ".\\OBJFiles\\Road\\Road.obj";
-    m_road->LoadModel(const_cast<char*>(rutaArxiu));
-
-    m_tree = new COBJModel();
-    rutaArxiu = ".\\OBJFiles\\Tree\\WC_Tree_01.obj";
-    m_tree->LoadModel(const_cast<char*>(rutaArxiu));
+    m_road = MODEL_ROAD;
+    m_tree = MODEL_TREE;
 
     nextRightHouse = true;
 
@@ -404,9 +403,7 @@ GameLogic::GameLogic(DIFICULTATS dificultat, bool music, bool sounds) : gameRunn
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    modelCoin = new COBJModel();
-    string path = ".\\OBJFiles\\Final_Coin\\Final_Coin.obj";
-    modelCoin->LoadModel(const_cast<char*>(path.c_str()));
+    modelCoin = MODEL_MONEDA;
 
     remainingFuel = FUEL_DURATION;
     remainingShield = -SHIELD_DURATION;

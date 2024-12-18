@@ -81,6 +81,10 @@ extern COBJModel* OBJECT_MODELS[3];
 
 // Constants de la moneda final
 const float ANIMATION_DURATION = 2; //segons
+extern COBJModel* MODEL_MONEDA;
+
+extern COBJModel* MODEL_ROAD;
+extern COBJModel* MODEL_TREE;
 
 // Constants de visualitzaci�
 const float TARGET_FPS = 60.0f;      // Freq��ncia de la l�gica

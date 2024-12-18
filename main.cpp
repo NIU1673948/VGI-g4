@@ -453,6 +453,17 @@ void configModels()
 
 	SeleccionaColorMaterial(shader_programID, white, mat);
 
+	MODEL_MONEDA = new COBJModel();
+	path = ".\\OBJFiles\\Final_Coin\\Final_Coin.obj";
+	MODEL_MONEDA->LoadModel(const_cast<char*>(path.c_str()));
+
+	MODEL_ROAD = new COBJModel();
+	const char* rutaArxiu = ".\\OBJFiles\\Road\\Road.obj";
+	MODEL_ROAD->LoadModel(const_cast<char*>(rutaArxiu));
+
+	MODEL_TREE = new COBJModel();
+	rutaArxiu = ".\\OBJFiles\\Tree\\WC_Tree_01.obj";
+	MODEL_TREE->LoadModel(const_cast<char*>(rutaArxiu));
 }
 
 
@@ -846,7 +857,7 @@ void draw_inici_garage() {
 	//draw_initial_car();
 
 	//necessari perqu? l'objecte es vegi b?, es pot canviar iluminaci? per? compte amb les altres variables
-	ilumina = SUAU;  oculta = true; test_vis = true;
+	ilumina = SUAU;  oculta = true; /*test_vis = true;*/
 
 	draw_skycube_garage();
 
@@ -903,6 +914,7 @@ void draw_ProgramButtons(bool& inici, bool& garage, bool& config, bool& exit) {
 		}
 	}
 	else {
+		animationViewed = false;
 		if (!config && !garage && !dificultats) {
 			float centerX = (totalWidth - 4 * buttonSize.x) / 2.0f;
 			ImGui::SetCursorPos(ImVec2(centerX, (totalHeight - buttonSize.y) / 2.0f));
@@ -5964,14 +5976,14 @@ int main(void)
 
 	io.Fonts->AddFontFromFileTTF(".\\Fonts\\Fifties Movies.ttf", 42.0f);
 
-	// Intent de posar el joc ALBERT
+	// Carregar models ALBERT
 
 	configModels();
 
 	GameLogic game(dificultat, true, true);
 	Player& player = game.player;
 	RoadRow* roadRows = game.roadRows;
-	bool animationViewed = false;
+	animationViewed = false;
 	game.musicsounds = true;
 	game.soundsounds = true;
 
